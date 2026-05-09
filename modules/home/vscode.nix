@@ -71,6 +71,16 @@
         "vim.useSystemClipboard" = true;
         "vim.hlsearch" = true;
         "vim.leader" = "<space>";
+
+        # Nix IDE
+        "nix.enableLanguageServer" = true;
+        "nix.serverPath" = "nixd";
+        "nix.formatterPath" = "nixfmt";
+        "nix.serverSettings" = {
+          "nixd" = {
+            "formatting" = { "command" = [ "nixfmt" ]; };
+          };
+        };
       };
     };
   };
