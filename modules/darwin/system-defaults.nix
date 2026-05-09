@@ -54,7 +54,10 @@
     trackpad = {
       Clicking = true;
       TrackpadRightClick = true;
-      TrackpadThreeFingerDrag = true;
+      # 3-finger swipes for navigation (Spaces, Mission Control, App Expose).
+      # Drag-windows-by-3-fingers off so swipes stay on 3 fingers (not 4).
+      TrackpadThreeFingerDrag = false;
+      TrackpadThreeFingerTapGesture = 0;
     };
 
     screencapture = {
@@ -85,6 +88,22 @@
       # bindings (block/dash/toggle/applications/buttonBindings) are JSON-data
       # blobs and stay user-managed in the app — Mos preserves them across
       # switches.
+      # 3-finger swipes for both built-in + external Magic Trackpad.
+      # Horiz=2 -> swipe between full-screen apps/spaces.
+      # Vert=2  -> swipe up = Mission Control, swipe down = App Expose.
+      "com.apple.driver.AppleBluetoothMultitouch.trackpad" = {
+        TrackpadThreeFingerHorizSwipeGesture = 2;
+        TrackpadThreeFingerVertSwipeGesture = 2;
+      };
+      "com.apple.AppleMultitouchTrackpad" = {
+        TrackpadThreeFingerHorizSwipeGesture = 2;
+        TrackpadThreeFingerVertSwipeGesture = 2;
+      };
+      "com.apple.dock" = {
+        showMissionControlGestureEnabled = true;
+        showAppExposeGestureEnabled = true;
+      };
+
       "com.caldis.Mos" = {
         optionsExist = "optionsExist";
         hideStatusItem = true;
