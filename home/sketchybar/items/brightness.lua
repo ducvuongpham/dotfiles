@@ -48,11 +48,11 @@ local function list_displays()
   return list
 end
 
-local sliders = {} -- uuid → slider
+local sliders = {} -- uuid → { slider, name }
 
 for _, d in ipairs(list_displays()) do
   local key = "brightness.slider." .. d.uuid:gsub("%W", "_")
-  sliders[d.uuid] = sbar.add("slider", key, 220, {
+  local s = sbar.add("slider", key, 220, {
     position = "popup." .. brightness.name,
     background = { drawing = false },
     slider = {
@@ -65,10 +65,10 @@ for _, d in ipairs(list_displays()) do
       BDCLI, d.uuid
     ),
     label = {
-      string = d.name,
+      string = d.name,                 -- updated in refresh() to "name  N%"
       color = colors.subtext0,
       font = { size = 11.0 },
-      max_chars = 22,
+      max_chars = 30,
       padding_right = 12,
       padding_left = 6,
     },
@@ -82,28 +82,32 @@ for _, d in ipairs(list_displays()) do
     padding_left = 4,
     padding_right = 12,
   })
+  sliders[d.uuid] = { slider = s, name = d.name }
 end
 
 local function refresh()
-  -- "get -brightness" returns CSV, one value per display in identifier order.
-  -- Easier: query each by UUID.
-  for uuid, slider in pairs(sliders) do
+  for uuid, entry in pairs(sliders) do
     local cmd = string.format("%s get --UUID=%s --brightness", BDCLI, uuid)
     sbar.exec(cmd, function(out)
       local frac = (out or ""):match("([%d%.]+)")
       local n = math.floor((tonumber(frac) or 0) * 100 + 0.5)
-      slider:set({ slider = { percentage = n } })
+      entry.slider:set({
+        label = { string = entry.name .. "  " .. n .. "%" },
+        slider = { percentage = n },
+      })
     end)
   end
-  -- Headline label: built-in display only
+  -- Bar headline: average of all displays.
+  local total, count = 0, 0
   for uuid, _ in pairs(sliders) do
     local cmd = string.format("%s get --UUID=%s --brightness", BDCLI, uuid)
     sbar.exec(cmd, function(out)
       local frac = (out or ""):match("([%d%.]+)")
       local n = math.floor((tonumber(frac) or 0) * 100 + 0.5)
-      brightness:set({ label = { string = n .. "%" } })
+      total = total + n
+      count = count + 1
+      brightness:set({ label = { string = math.floor(total / count + 0.5) .. "%" } })
     end)
-    break -- only first display for headline
   end
 end
 
