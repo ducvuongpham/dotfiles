@@ -34,8 +34,12 @@
     # lang version manager
     mise
 
-    # nix helper
+    # nix helper + dev tooling
     nh
+    nixd                # LSP server (richer, uses nixpkgs eval)
+    nixfmt-rfc-style    # formatter (rfc spec)
+    statix              # linter
+    deadnix             # find dead code
 
     # misc
     wget
