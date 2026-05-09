@@ -152,8 +152,12 @@
       # 60 = previous input source, 61 = next source in Input menu.
       "com.apple.symbolichotkeys" = {
         AppleSymbolicHotKeys = {
+          # 60/61: input source switching (free Ctrl-Space for tmux).
+          # 64/65: Spotlight (free Cmd-Space for Raycast).
           "60".enabled = false;
           "61".enabled = false;
+          "64".enabled = false;
+          "65".enabled = false;
         };
       };
     };
