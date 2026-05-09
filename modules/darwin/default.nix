@@ -3,6 +3,7 @@
   imports = [
     ./system-defaults.nix
     ./homebrew.nix
+    ./login-items.nix
   ];
 
   # Determinate Nix manages the daemon itself — keep nix-darwin off the daemon.
