@@ -19,10 +19,13 @@
 
   # Allow tada to toggle Low Power Mode without password prompt
   # (sketchybar's battery popup uses this; click-script runs non-interactively).
-  environment.etc."sudoers.d/lowpowermode" = {
-    text = "tada ALL=(root) NOPASSWD: /usr/bin/pmset -a lowpowermode *\n";
-    mode = "0440";
-  };
+  # nix-darwin's environment.etc doesn't accept `mode`, so write via activation.
+  system.activationScripts.lowpowermodeSudoers.text = ''
+    /bin/cat > /etc/sudoers.d/lowpowermode <<'EOF'
+    tada ALL=(root) NOPASSWD: /usr/bin/pmset -a lowpowermode *
+    EOF
+    /bin/chmod 0440 /etc/sudoers.d/lowpowermode
+  '';
 
   environment.systemPackages = with pkgs; [
     git
