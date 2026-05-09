@@ -83,8 +83,17 @@ local function pick_icon(pct, charging)
     if pct >= 15 then return "󰂆" end
     return "󰢟"
   end
-  -- Static battery glyph (color signals level).
-  return "󰁹"
+  -- Unplugged: battery-N fill glyphs.
+  if pct >= 95 then return "󰁹" end
+  if pct >= 85 then return "󰂂" end
+  if pct >= 75 then return "󰂁" end
+  if pct >= 65 then return "󰂀" end
+  if pct >= 55 then return "󰁿" end
+  if pct >= 45 then return "󰁾" end
+  if pct >= 35 then return "󰁽" end
+  if pct >= 25 then return "󰁼" end
+  if pct >= 15 then return "󰁻" end
+  return "󰁺"
 end
 
 local function pick_color(pct, charging)
