@@ -12,7 +12,9 @@
       tmp="$(mktemp -d)"
       ${pkgs.git}/bin/git clone --depth=1 https://github.com/FelixKratz/SbarLua.git "$tmp/SbarLua"
       (
-        export PATH="${pkgs.gnumake}/bin:${pkgs.lua5_4}/bin:${pkgs.gcc}/bin:$PATH"
+        export PATH="${pkgs.gnumake}/bin:${pkgs.gcc}/bin:$PATH"
+        export CPATH="${pkgs.readline.dev}/include:${pkgs.ncurses.dev}/include:$CPATH"
+        export LIBRARY_PATH="${pkgs.readline}/lib:${pkgs.ncurses}/lib:$LIBRARY_PATH"
         cd "$tmp/SbarLua" && ${pkgs.gnumake}/bin/make install
       )
       rm -rf "$tmp"
