@@ -102,8 +102,9 @@ local function refresh()
     local time = out:match("(%d+:%d+) remaining") or out:match("(%d+:%d+) until") or ""
     local charged = out:find("charged") ~= nil
 
+    -- Bolt whenever plugged in (AC), regardless of full-charge state.
     battery:set({
-      icon = { string = pick_icon(pct, on_ac and not charged), color = pick_color(pct, on_ac) },
+      icon = { string = pick_icon(pct, on_ac), color = pick_color(pct, on_ac) },
       label = { string = pct .. "%" },
     })
 
