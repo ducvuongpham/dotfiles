@@ -16,6 +16,7 @@
       "felixkratz/formulae/borders"      # JankyBorders — colored window borders
       "felixkratz/formulae/sketchybar"   # custom menu bar
       "switchaudio-osx"                  # SwitchAudioSource CLI (audio output picking)
+      "blueutil"                         # bluetooth CLI (power + paired devices)
     ];
 
     casks = [
