@@ -35,7 +35,7 @@ local volume_slider = sbar.add("slider", "volume.slider", 200, {
   slider = {
     highlight_color = colors.mauve,
     background = { height = 6, corner_radius = 3, color = colors.surface2 },
-    knob = { string = "󰊠", drawing = true, color = colors.lavender },
+    knob = { string = "󰇥", drawing = true, color = colors.lavender },
   },
   click_script = [[osascript -e "set volume output volume $PERCENTAGE"; SEQ=$$; echo $SEQ > /tmp/sbar_vol_seq; ( sleep 0.01; [ "$(cat /tmp/sbar_vol_seq 2>/dev/null)" = "$SEQ" ] && afplay -v 1.5 /System/Library/Sounds/Tink.aiff ) &]],
   label = { drawing = false },

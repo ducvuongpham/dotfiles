@@ -64,7 +64,7 @@ local function refresh()
     row_status:set({ label = { string = on and "Bluetooth On" or "Bluetooth Off" } })
 
     if not on then
-      bt:set({ label = { string = "" } })
+      bt:set({ label = { drawing = false } })
       for _, it in pairs(device_items) do it:remove() end
       device_items = {}
       return
@@ -92,7 +92,11 @@ local function refresh()
         if not seen[name] then it:remove(); device_items[name] = nil end
       end
 
-      bt:set({ label = { string = count > 0 and tostring(count) or "" } })
+      if count > 0 then
+        bt:set({ label = { string = tostring(count), drawing = true } })
+      else
+        bt:set({ label = { drawing = false } })
+      end
     end)
   end)
 end

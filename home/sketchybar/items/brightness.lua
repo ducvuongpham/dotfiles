@@ -40,7 +40,7 @@ local function make_slider(parent_name, target)
     slider = {
       highlight_color = colors.peach,
       background = { height = 6, corner_radius = 3, color = colors.surface2 },
-      knob = { string = "󰊠", drawing = true, color = colors.yellow },
+      knob = { string = "󰇥", drawing = true, color = colors.yellow },
     },
     click_script = string.format(
       [[%s set --UUID=%s --brightness="$(echo "scale=2; $PERCENTAGE/100" | bc)"]],

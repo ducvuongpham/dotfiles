@@ -49,26 +49,30 @@ sbar.add("event", "wifi_changed")
 
 local function refresh()
   sbar.exec(
-    [[bash -c 'pwr=$(networksetup -getairportpower en0 | awk "{print \$NF}"); ssid=$(networksetup -getairportnetwork en0 | sed "s/^Current Wi-Fi Network: //"); echo "$pwr|$ssid"']],
+    [[bash -c 'pwr=$(networksetup -getairportpower en0 | awk "{print \$NF}"); active=no; /sbin/ifconfig en0 | grep -q "status: active" && active=yes; echo "$pwr|$active"']],
     function(out)
-      local power, ssid = (out or ""):match("([^|]+)|(.+)")
+      local power, active = (out or ""):match("([^|]*)|(.*)")
       power = (power or ""):gsub("%s+$", "")
-      ssid = (ssid or ""):gsub("%s+$", "")
+      active = (active or ""):gsub("%s+$", "")
       local off = power ~= "On"
-      local connected = (not off) and not ssid:find("not associated") and ssid ~= ""
+      local connected = (not off) and active == "yes"
 
-      local icon, color, label
+      local icon, color
       if off then
-        icon = "󰖪"; color = colors.subtext0; label = "Off"
+        icon = "󰖪"; color = colors.subtext0
       elseif connected then
-        icon = "󰖩"; color = colors.blue; label = ssid
+        icon = "󰖩"; color = colors.blue
       else
-        icon = "󰖩"; color = colors.peach; label = "On"
+        icon = "󰖩"; color = colors.peach
       end
 
-      wifi:set({ icon = { string = icon, color = color }, label = { string = label, max_chars = 18 } })
+      wifi:set({ icon = { string = icon, color = color }, label = { drawing = false } })
+      local status_label
+      if off then status_label = "Wi-Fi Off"
+      elseif connected then status_label = "Connected"
+      else status_label = "Not connected" end
       row_status:set({
-        label = { string = off and "Wi-Fi Off" or (connected and ("Connected: " .. ssid) or "Not connected") },
+        label = { string = status_label },
         icon = { color = off and colors.subtext0 or colors.blue },
       })
     end
