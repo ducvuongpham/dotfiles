@@ -81,5 +81,16 @@
     if ! type _direnv_hook >/dev/null 2>&1; then
       eval "$(direnv hook zsh)"
     fi
+
+    # yazi: y = launch yazi, cd to last dir on quit
+    function y() {
+      local tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+      yazi "$@" --cwd-file="$tmp"
+      local cwd="$(cat -- "$tmp")"
+      if [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+      fi
+      rm -f -- "$tmp"
+    }
   '';
 }

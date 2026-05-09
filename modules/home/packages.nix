@@ -16,6 +16,13 @@
     htop
     btop
 
+    # yazi runtime previewers
+    ffmpeg
+    p7zip
+    poppler
+    imagemagick
+    chafa
+
     # nvim runtime deps
     neovim
     gcc

@@ -10,6 +10,7 @@
     ./neovim.nix
     ./vscode.nix
     ./tmux.nix
+    ./yazi.nix
     # spotlight.nix renamed to apps.nix conceptually — keeping path same.
     ./spotlight.nix
   ];
