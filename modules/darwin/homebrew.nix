@@ -21,11 +21,11 @@
       "slack"
       "dbeaver-community"
       "nikitabobko/tap/aerospace"
-      "raycast"
+      # raycast: managed via nix (modules/darwin/default.nix)
       # vscode managed via home-manager (modules/home/vscode.nix)
       "telegram"
       "tailscale-app"
-      "karabiner-elements"
+      # karabiner-elements: managed via nix (modules/darwin/default.nix)
       "maccy"
       "monitorcontrol"
       "keycastr"

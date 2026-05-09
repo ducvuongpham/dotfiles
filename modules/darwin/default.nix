@@ -27,6 +27,8 @@
     # (Spotlight indexes that path; user-level HM apps don't get indexed reliably).
     alacritty-graphics
     vscode
+    karabiner-elements
+    raycast
   ];
 
   fonts.packages = with pkgs; [
