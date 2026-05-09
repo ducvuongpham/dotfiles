@@ -13,8 +13,8 @@
     ];
 
     brews = [
-      "borders"        # JankyBorders — colored window borders
-      "sketchybar"     # custom menu bar
+      "felixkratz/formulae/borders"      # JankyBorders — colored window borders
+      "felixkratz/formulae/sketchybar"   # custom menu bar
     ];
 
     casks = [
