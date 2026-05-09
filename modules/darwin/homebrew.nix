@@ -32,6 +32,7 @@
       "telegram"               # nixpkgs builds from source (~45 min) — too slow
       "karabiner-elements"     # DriverKit + helper SMAppServices need real codesigned bundle
       "nikitabobko/tap/aerospace"  # nix rsync of /Applications/Nix Apps killed the running daemon every switch
+      "hammerspoon"                # multitouch + automation; binds 3-finger swipe → aerospace
     ];
 
     masApps = { };
