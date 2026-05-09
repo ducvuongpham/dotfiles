@@ -24,8 +24,6 @@ local volume = sbar.add("item", "volume", {
       border_color = colors.surface2,
       border_width = 1,
       corner_radius = 9,
-      blur_radius = 20,
-      shadow = { drawing = true },
     },
   },
 })
