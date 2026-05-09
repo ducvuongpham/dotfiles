@@ -96,10 +96,10 @@
         reverse = true;
         reverseVertical = true;
         reverseHorizontal = true;
-        speed = 3;
-        step = 70;
-        duration = 2;
-        deadZone = 1;
+        speed = 10;
+        step = 200;
+        duration = 0.5;
+        deadZone = 0;
         updateCheckOnAppStart = false;
         updateIncludingBetaVersion = false;
       };
