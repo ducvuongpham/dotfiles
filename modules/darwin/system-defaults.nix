@@ -93,14 +93,14 @@
       # Horiz=2 -> swipe between full-screen apps/spaces.
       # Vert=2  -> swipe up = Mission Control, swipe down = App Expose.
       "com.apple.driver.AppleBluetoothMultitouch.trackpad" = {
-        TrackpadThreeFingerHorizSwipeGesture = 0;  # off — Hammerspoon handles 3-finger horiz swipe → aerospace
+        TrackpadThreeFingerHorizSwipeGesture = 0;  # off — aerospace-swipe captures raw multitouch
         TrackpadThreeFingerVertSwipeGesture = 2;
         # tap+hold-drag (no drag lock — lift = drop).
         Dragging = true;
         DragLock = false;
       };
       "com.apple.AppleMultitouchTrackpad" = {
-        TrackpadThreeFingerHorizSwipeGesture = 0;  # off — Hammerspoon handles 3-finger horiz swipe → aerospace
+        TrackpadThreeFingerHorizSwipeGesture = 0;  # off — aerospace-swipe captures raw multitouch
         TrackpadThreeFingerVertSwipeGesture = 2;
         Dragging = true;
         DragLock = false;
