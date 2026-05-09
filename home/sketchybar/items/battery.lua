@@ -70,14 +70,8 @@ local row_settings = sbar.add("item", "battery.row.settings", {
 })
 
 local function pick_icon(pct, charging)
-  if charging then return "󰂄" end
-  if pct >= 90 then return "󰁹" end
-  if pct >= 75 then return "󰂁" end
-  if pct >= 60 then return "󰂀" end
-  if pct >= 45 then return "󰁿" end
-  if pct >= 30 then return "󰁽" end
-  if pct >= 15 then return "󰁻" end
-  return "󰁺"
+  -- Bolt when charging; static battery glyph otherwise.
+  return charging and "󰂄" or "󰁹"
 end
 
 local function pick_color(pct, charging)
