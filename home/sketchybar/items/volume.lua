@@ -33,7 +33,8 @@ local volume_slider = sbar.add("slider", "volume.slider", 130, {
     background = { height = 6, corner_radius = 3, color = colors.surface2 },
     knob = { string = "󰊠", drawing = true, color = colors.lavender },
   },
-  click_script = "osascript -e 'set volume output volume $PERCENTAGE'",
+  -- $PERCENTAGE is set by sketchybar; use shell double-quotes around the applescript so it expands.
+  click_script = [[osascript -e "set volume output volume $PERCENTAGE"]],
   label = { drawing = false },
   icon = { string = "󰕾", color = colors.sky, padding_left = 8, padding_right = 8 },
   padding_left = 8,
