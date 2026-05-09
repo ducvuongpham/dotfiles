@@ -175,10 +175,11 @@ popups.register("battery", close_self)
 battery:subscribe({ "routine", "system_woke", "power_source_change", "forced" }, refresh)
 local FMM = os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor"
 battery:subscribe("mouse.clicked", function()
-  sbar.exec(FMM)
-  popups.close_all_except("battery")
-  refresh()
-  battery:set({ popup = { drawing = "toggle" } })
+  sbar.exec(FMM, function()
+    popups.close_all_except("battery")
+    refresh()
+    battery:set({ popup = { drawing = "toggle" } })
+  end)
 end)
 battery:subscribe(
   { "front_app_switched", "aerospace_workspace_change", "system_woke", "space_change" },

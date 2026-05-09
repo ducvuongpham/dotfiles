@@ -127,9 +127,11 @@ popups.register("volume", close_self)
 
 local FMM = os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor"
 volume:subscribe("mouse.clicked", function()
-  sbar.exec(FMM)
-  popups.close_all_except("volume")
-  refresh_active(true)
+  -- Focus monitor first, THEN open popup (so it lands on the right display).
+  sbar.exec(FMM, function()
+    popups.close_all_except("volume")
+    refresh_active(true)
+  end)
 end)
 volume:subscribe("volume_outputs_changed", function() refresh_active(false) end)
 volume:subscribe(

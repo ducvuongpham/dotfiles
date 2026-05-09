@@ -103,10 +103,11 @@ popups.register("bluetooth", close_self)
 bt:subscribe({ "routine", "system_woke", "forced", "bluetooth_changed" }, refresh)
 local FMM = os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor"
 bt:subscribe("mouse.clicked", function()
-  sbar.exec(FMM)
-  popups.close_all_except("bluetooth")
-  refresh()
-  bt:set({ popup = { drawing = "toggle" } })
+  sbar.exec(FMM, function()
+    popups.close_all_except("bluetooth")
+    refresh()
+    bt:set({ popup = { drawing = "toggle" } })
+  end)
 end)
 bt:subscribe(
   { "front_app_switched", "aerospace_workspace_change", "system_woke", "space_change" },

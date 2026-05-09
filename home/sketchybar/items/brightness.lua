@@ -129,13 +129,14 @@ popups.register("brightness", close_all_brightness_popups)
 for uuid, owner_entry in pairs(entries) do
   owner_entry.item:subscribe({ "routine", "system_woke", "forced" }, refresh_all)
   owner_entry.item:subscribe("mouse.clicked", function()
-    sbar.exec(os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor")
-    popups.close_all_except("brightness")
-    for u, e in pairs(entries) do
-      if u ~= uuid then e.item:set({ popup = { drawing = false } }) end
-    end
-    refresh_all()
-    owner_entry.item:set({ popup = { drawing = "toggle" } })
+    sbar.exec(os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor", function()
+      popups.close_all_except("brightness")
+      for u, e in pairs(entries) do
+        if u ~= uuid then e.item:set({ popup = { drawing = false } }) end
+      end
+      refresh_all()
+      owner_entry.item:set({ popup = { drawing = "toggle" } })
+    end)
   end)
   owner_entry.item:subscribe(
     { "front_app_switched", "aerospace_workspace_change", "system_woke", "space_change" },
