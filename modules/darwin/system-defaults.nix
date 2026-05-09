@@ -89,5 +89,11 @@
 
   system.activationScripts.postActivation.text = ''
     mkdir -p "/Users/tada/Pictures/Screenshots"
+
+    # Install Rosetta 2 on Apple Silicon if not already present.
+    if [ "$(/usr/bin/uname -m)" = "arm64" ] && ! /usr/bin/pgrep -q oahd; then
+      echo "installing Rosetta 2..."
+      /usr/sbin/softwareupdate --install-rosetta --agree-to-license || true
+    fi
   '';
 }
