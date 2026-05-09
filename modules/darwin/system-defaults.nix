@@ -94,10 +94,15 @@
       "com.apple.driver.AppleBluetoothMultitouch.trackpad" = {
         TrackpadThreeFingerHorizSwipeGesture = 2;
         TrackpadThreeFingerVertSwipeGesture = 2;
+        # tap+hold-drag (no drag lock — lift = drop).
+        Dragging = true;
+        DragLock = false;
       };
       "com.apple.AppleMultitouchTrackpad" = {
         TrackpadThreeFingerHorizSwipeGesture = 2;
         TrackpadThreeFingerVertSwipeGesture = 2;
+        Dragging = true;
+        DragLock = false;
       };
       "com.apple.dock" = {
         showMissionControlGestureEnabled = true;
