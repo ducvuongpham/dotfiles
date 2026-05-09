@@ -13,6 +13,7 @@
     ./yazi.nix
     ./sketchybar.nix
     ./borders.nix
+    ./browser-font.nix
     # spotlight.nix renamed to apps.nix conceptually — keeping path same.
     ./spotlight.nix
   ];

@@ -15,6 +15,8 @@
     tree
     htop
     btop
+    atuin             # shell history search/sync
+    android-tools     # adb / fastboot
 
     # yazi runtime previewers
     ffmpeg

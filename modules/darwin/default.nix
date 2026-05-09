@@ -35,6 +35,7 @@
     # (Spotlight indexes that path; user-level HM apps don't get indexed reliably).
     alacritty-graphics
     vscode
+    zed-editor
     # karabiner-elements: managed via brew (nix bundle breaks DriverKit + helper SMAppServices)
     raycast
     google-chrome

@@ -78,6 +78,9 @@
     # mise (lang version manager)
     eval "$(mise activate zsh)"
 
+    # atuin (shell history search). Hooks Up-Arrow + Ctrl-R.
+    eval "$(atuin init zsh)"
+
     # direnv (z4h has its own integration via zstyle above; this is a fallback)
     if ! type _direnv_hook >/dev/null 2>&1; then
       eval "$(direnv hook zsh)"
