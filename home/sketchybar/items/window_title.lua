@@ -16,6 +16,7 @@ local title = sbar.add("item", "window_title", {
   background = { color = colors.transparent },
   updates = true,
   padding_left = 6,
+  click_script = [[$HOME/.local/share/sketchybar_lua/focus-mouse-monitor]],
 })
 
 local function refresh()

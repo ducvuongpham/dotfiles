@@ -15,6 +15,7 @@ local front_app = sbar.add("item", "front_app", {
   background = { color = colors.transparent },
   updates = true,
   padding_left = 12,
+  click_script = [[$HOME/.local/share/sketchybar_lua/focus-mouse-monitor]],
 })
 
 front_app:subscribe("front_app_switched", function(env)

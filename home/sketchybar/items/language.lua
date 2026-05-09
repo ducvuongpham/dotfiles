@@ -12,6 +12,7 @@ local lang = sbar.add("item", "language", {
   padding_left = 4,
   padding_right = 4,
   update_freq = 2,
+  click_script = [[$HOME/.local/share/sketchybar_lua/focus-mouse-monitor]],
 })
 
 local function short_label(id)
