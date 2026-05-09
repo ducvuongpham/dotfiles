@@ -122,5 +122,10 @@
       echo "installing Rosetta 2..."
       /usr/sbin/softwareupdate --install-rosetta --agree-to-license || true
     fi
+
+    # Wipe all desktop widgets (Sonoma+ chronod data) every switch.
+    /usr/bin/sudo -u tada /usr/bin/defaults delete com.apple.chronod 2>/dev/null || true
+    /usr/bin/sudo -u tada /usr/bin/killall chronod 2>/dev/null || true
+    /usr/bin/sudo -u tada /usr/bin/killall WindowManager 2>/dev/null || true
   '';
 }
