@@ -1,8 +1,8 @@
 { ... }:
 {
   launchd.user.agents.monitorcontrol = {
-    command = "/Applications/MonitorControl.app/Contents/MacOS/MonitorControl";
     serviceConfig = {
+      ProgramArguments = [ "/Applications/MonitorControl.app/Contents/MacOS/MonitorControl" ];
       RunAtLoad = true;
       KeepAlive = false;
       ProcessType = "Interactive";
@@ -10,8 +10,8 @@
   };
 
   launchd.user.agents.maccy = {
-    command = "/Applications/Maccy.app/Contents/MacOS/Maccy";
     serviceConfig = {
+      ProgramArguments = [ "/Applications/Maccy.app/Contents/MacOS/Maccy" ];
       RunAtLoad = true;
       KeepAlive = false;
       ProcessType = "Interactive";
@@ -19,8 +19,8 @@
   };
 
   launchd.user.agents.mos = {
-    command = "/Applications/Mos.app/Contents/MacOS/Mos";
     serviceConfig = {
+      ProgramArguments = [ "/Applications/Mos.app/Contents/MacOS/Mos" ];
       RunAtLoad = true;
       KeepAlive = false;
       ProcessType = "Interactive";
