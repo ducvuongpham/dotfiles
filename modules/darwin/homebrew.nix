@@ -16,7 +16,7 @@
       "felixkratz/formulae/borders"      # JankyBorders — colored window borders
       "felixkratz/formulae/sketchybar"   # custom menu bar
       "switchaudio-osx"                  # SwitchAudioSource CLI (audio output picking)
-      "brightness"                       # internal display brightness CLI
+      # `brightness` formula doesn't work on Apple Silicon — F1/F2 key events instead
     ];
 
     casks = [

@@ -1,34 +1,43 @@
 local sbar = require("sketchybar")
 local colors = require("colors")
 
--- Internal display brightness via `brightness` CLI (brew install brightness).
--- Click → popup with slider for the built-in display + button to launch
--- MonitorControl for external screens (DDC adjustment).
+-- Apple Silicon Macs don't expose brightness via the legacy IOKit API used by
+-- the `brightness` CLI; sending F1/F2 key events through System Events works
+-- on every Mac (built-in display + DDC-aware externals via MonitorControl).
 local brightness = sbar.add("item", "brightness", {
   position = "right",
   icon = { string = "󰃟", color = colors.yellow },
-  label = { color = colors.text },
+  label = { drawing = false },
   background = { color = colors.surface0 },
   padding_left = 4,
   padding_right = 4,
-  update_freq = 30,
   popup = { align = "center", height = 30 },
 })
 
-local slider = sbar.add("slider", "brightness.slider", 130, {
+-- Popup row: down button | label | up button | open MC
+local btn_down = sbar.add("item", "brightness.down", {
   position = "popup." .. brightness.name,
-  background = { height = 6, color = colors.surface2, corner_radius = 3, border_width = 0 },
-  slider = {
-    highlight_color = colors.yellow,
-    background = { height = 6, corner_radius = 3, color = colors.surface2 },
-    knob = { string = "󰊠", drawing = true, color = colors.peach },
-  },
-  -- brightness CLI takes 0.0 - 1.0
-  click_script = [[/opt/homebrew/bin/brightness "$(echo "scale=2; $PERCENTAGE / 100" | bc)"]],
+  icon = { string = "󰃞", color = colors.yellow, padding_left = 12, padding_right = 12 },
   label = { drawing = false },
-  icon = { string = "󰃞", color = colors.yellow, padding_left = 8, padding_right = 8 },
-  padding_left = 8,
-  padding_right = 8,
+  background = { color = colors.transparent, height = 24 },
+  -- key code 145 = F2 (brightness down)
+  click_script = [[osascript -e 'tell application "System Events" to key code 145']],
+})
+
+local label = sbar.add("item", "brightness.label", {
+  position = "popup." .. brightness.name,
+  icon = { drawing = false },
+  label = { string = "Brightness", color = colors.text, padding_left = 4, padding_right = 4 },
+  background = { color = colors.transparent, height = 24 },
+})
+
+local btn_up = sbar.add("item", "brightness.up", {
+  position = "popup." .. brightness.name,
+  icon = { string = "󰃠", color = colors.yellow, padding_left = 12, padding_right = 12 },
+  label = { drawing = false },
+  background = { color = colors.transparent, height = 24 },
+  -- key code 144 = F1 (brightness up)
+  click_script = [[osascript -e 'tell application "System Events" to key code 144']],
 })
 
 local mc_button = sbar.add("item", "brightness.mc", {
@@ -39,23 +48,9 @@ local mc_button = sbar.add("item", "brightness.mc", {
   click_script = "open -a MonitorControl",
 })
 
-local function refresh()
-  sbar.exec("/opt/homebrew/bin/brightness -l", function(out)
-    -- output: "display 0: brightness 0.50"; pick first display
-    local frac = (out or ""):match("brightness%s+([%d%.]+)")
-    local n = math.floor((tonumber(frac) or 0) * 100 + 0.5)
-    brightness:set({ label = { string = n .. "%" } })
-    slider:set({ slider = { percentage = n } })
-  end)
-end
-
-brightness:subscribe({ "routine", "system_woke", "forced" }, refresh)
 brightness:subscribe("mouse.clicked", function()
-  refresh()
   brightness:set({ popup = { drawing = "toggle" } })
 end)
 brightness:subscribe("mouse.exited.global", function()
   brightness:set({ popup = { drawing = false } })
 end)
-
-refresh()
