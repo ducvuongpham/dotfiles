@@ -3,7 +3,7 @@ local colors = require("colors")
 
 sbar.bar({
   position = "top",
-  height = 30,
+  height = 32,
   y_offset = 0,             -- sketchybar at y=0; native menu bar (auto-hide) overlays it on cursor reveal
   color = 0xff000000,       -- pure black so the notch on internal display blends in
   border_width = 0,
