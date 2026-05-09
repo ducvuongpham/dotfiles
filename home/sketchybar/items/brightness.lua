@@ -119,15 +119,25 @@ local function refresh_all()
   end
 end
 
+local function close_all_popups()
+  for _, e in pairs(entries) do e.item:set({ popup = { drawing = false } }) end
+end
+
 for _, owner_entry in pairs(entries) do
   owner_entry.item:subscribe({ "routine", "system_woke", "forced" }, refresh_all)
   owner_entry.item:subscribe("mouse.clicked", function()
+    -- close other displays' popups before opening this one
+    for u, e in pairs(entries) do
+      if u ~= owner_entry.item.name then e.item:set({ popup = { drawing = false } }) end
+    end
     refresh_all()
     owner_entry.item:set({ popup = { drawing = "toggle" } })
   end)
-  owner_entry.item:subscribe("mouse.exited.global", function()
-    owner_entry.item:set({ popup = { drawing = false } })
-  end)
+  -- auto-close on focus shift / workspace change / mouse leaving bar area
+  owner_entry.item:subscribe(
+    { "mouse.exited.global", "front_app_switched", "aerospace_workspace_change", "system_woke" },
+    close_all_popups
+  )
 end
 
 refresh_all()

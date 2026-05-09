@@ -123,9 +123,10 @@ end
 
 volume:subscribe("mouse.clicked", function() refresh_active(true) end)
 volume:subscribe("volume_outputs_changed", function() refresh_active(false) end)
-volume:subscribe("mouse.exited.global", function()
-  volume:set({ popup = { drawing = false } })
-end)
+volume:subscribe(
+  { "mouse.exited.global", "front_app_switched", "aerospace_workspace_change", "system_woke" },
+  function() volume:set({ popup = { drawing = false } }) end
+)
 
 volume:subscribe("volume_change", function(env)
   set_volume_label(tonumber(env.INFO) or 0, false)
