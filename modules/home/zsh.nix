@@ -70,6 +70,7 @@
     alias less='bat'
     alias g='git'
     alias lg='lazygit'
+    alias v='nvim'
 
     # zoxide as cd
     eval "$(zoxide init zsh --cmd cd)"
