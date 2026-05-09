@@ -55,6 +55,16 @@ EOF
     fi
   '';
 
+  # aerospace-swipe (acsandmann, MIT) — 3-finger trackpad swipe → next/prev workspace.
+  # Their install.sh clones, builds the .app, and writes the launchd plist.
+  home.activation.installAerospaceSwipe = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    plist="$HOME/Library/LaunchAgents/com.acsandmann.swipe.plist"
+    if [ ! -f "$plist" ]; then
+      export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+      ${pkgs.curl}/bin/curl -fsSL https://raw.githubusercontent.com/acsandmann/aerospace-swipe/main/install.sh | bash
+    fi
+  '';
+
   # Compile a helper that finds the NSScreen under the mouse cursor and runs
   # `aerospace focus-monitor <name>` for it. Sketchybar click_scripts call
   # this so clicking the bar on monitor X focuses that monitor.
