@@ -11,10 +11,14 @@ local colors = require("colors")
 -- Label = concatenated app glyphs for windows in the workspace, mapped via
 -- sketchybar-app-font's icon_map.sh (fetched once into ~/.local/share).
 
--- icon_map.lua is a single-file table fetched at activation; require it.
+-- icon_map.lua is a `{ [app_name] = ":icon_token:" }` table fetched at activation.
+-- The sketchybar-app-font font has ligatures that render :icon_token: as glyphs.
 package.path = os.getenv("HOME") .. "/.local/share/sketchybar_lua/?.lua;" .. package.path
-local ok, app_icons = pcall(require, "icon_map")
-if not ok then app_icons = function() return ":default:" end end
+local ok, icon_table = pcall(require, "icon_map")
+if not ok then icon_table = {} end
+local function app_icon(name)
+  return icon_table[name] or ":default:"
+end
 
 local items = {}
 for i = 1, 9 do
@@ -50,8 +54,8 @@ end
 local function lookup_icons(app_names)
   local icons = {}
   for _, name in ipairs(app_names) do
-    local glyph = app_icons(name)
-    if glyph and glyph ~= "" then table.insert(icons, glyph) end
+    local token = app_icon(name)
+    if token and token ~= "" then table.insert(icons, token) end
   end
   return icons
 end
