@@ -6,7 +6,7 @@
   home.file.".config/karabiner/karabiner.json".text = builtins.toJSON {
     global = {
       check_for_updates_on_startup = true;
-      show_in_menu_bar = true;
+      show_in_menu_bar = false;
       show_profile_name_in_menu_bar = false;
     };
     profiles = [
