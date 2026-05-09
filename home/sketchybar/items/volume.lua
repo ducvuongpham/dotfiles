@@ -28,15 +28,9 @@ local volume = sbar.add("item", "volume", {
   },
 })
 
--- Slider row.
-local volume_slider = sbar.add("slider", "volume.slider", 180, {
+local volume_slider = sbar.add("slider", "volume.slider", 200, {
   position = "popup." .. volume.name,
-  background = {
-    height = 6,
-    color = colors.surface2,
-    corner_radius = 3,
-    border_width = 0,
-  },
+  background = { drawing = false },
   slider = {
     highlight_color = colors.mauve,
     background = { height = 6, corner_radius = 3, color = colors.surface2 },
@@ -44,9 +38,15 @@ local volume_slider = sbar.add("slider", "volume.slider", 180, {
   },
   click_script = [[osascript -e "set volume output volume $PERCENTAGE"]],
   label = { drawing = false },
-  icon = { string = "󰕾", color = colors.sky, padding_left = 12, padding_right = 8, font = { size = 14.0 } },
-  padding_left = 8,
-  padding_right = 12,
+  icon = {
+    string = "󰕾",
+    color = colors.sky,
+    padding_left = 14,
+    padding_right = 10,
+    font = { size = 14.0 },
+  },
+  padding_left = 4,
+  padding_right = 14,
 })
 
 local function set_volume_label(n, muted)
