@@ -23,16 +23,15 @@
     fi
   '';
 
-  # Fetch sketchybar-app-font icon_map.sh (MIT, kvndrsslr) — maps macOS app
-  # names to glyphs in the sketchybar-app-font cask.
+  # Fetch sketchybar-app-font icon_map.lua (MIT, kvndrsslr release asset) —
+  # maps macOS app names to glyphs in the sketchybar-app-font font.
   home.activation.fetchAppIconMap = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    icon_map="$HOME/.local/share/sketchybar_lua/icon_map.sh"
+    icon_map="$HOME/.local/share/sketchybar_lua/icon_map.lua"
     if [ ! -f "$icon_map" ]; then
       mkdir -p "$HOME/.local/share/sketchybar_lua"
       ${pkgs.curl}/bin/curl -fsSL \
-        "https://github.com/kvndrsslr/sketchybar-app-font/raw/refs/heads/main/icon_map.sh" \
+        "https://github.com/kvndrsslr/sketchybar-app-font/releases/latest/download/icon_map.lua" \
         -o "$icon_map"
-      chmod +x "$icon_map"
     fi
   '';
 }

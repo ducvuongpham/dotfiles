@@ -11,8 +11,10 @@ local colors = require("colors")
 -- Label = concatenated app glyphs for windows in the workspace, mapped via
 -- sketchybar-app-font's icon_map.sh (fetched once into ~/.local/share).
 
-local APP_FONT = "sketchybar-app-font:Regular:14.0"
-local ICON_MAP = os.getenv("HOME") .. "/.local/share/sketchybar_lua/icon_map.sh"
+-- icon_map.lua is a single-file table fetched at activation; require it.
+package.path = os.getenv("HOME") .. "/.local/share/sketchybar_lua/?.lua;" .. package.path
+local ok, app_icons = pcall(require, "icon_map")
+if not ok then app_icons = function() return ":default:" end end
 
 local items = {}
 for i = 1, 9 do
@@ -45,23 +47,13 @@ for i = 1, 9 do
   })
 end
 
--- Run a small bash snippet that sources icon_map.sh and prints the glyph for $1.
-local function lookup_icons(app_names, cb)
-  if #app_names == 0 then cb({}) return end
-  -- Build a single shell call that emits one glyph per line.
-  local script = ". '" .. ICON_MAP .. "'\n"
+local function lookup_icons(app_names)
+  local icons = {}
   for _, name in ipairs(app_names) do
-    -- escape single quotes in app name
-    local safe = name:gsub("'", "'\\''")
-    script = script .. "__icon_map '" .. safe .. "' && printf '%s\\n' \"$icon_result\"\n"
+    local glyph = app_icons(name)
+    if glyph and glyph ~= "" then table.insert(icons, glyph) end
   end
-  sbar.exec("bash -c " .. string.format("%q", script), function(out)
-    local icons = {}
-    for line in (out or ""):gmatch("([^\n]*)\n?") do
-      if line ~= "" then table.insert(icons, line) end
-    end
-    cb(icons)
-  end)
+  return icons
 end
 
 local function refresh(focused)
@@ -105,12 +97,11 @@ local function refresh(focused)
 
           if not draw then return end
 
-          -- Resolve glyphs and set as label.
-          lookup_icons(apps, function(icons)
-            local label = ""
-            for _, g in ipairs(icons) do label = label .. g .. " " end
-            items[i]:set({ label = { string = label:gsub("%s+$", "") } })
-          end)
+          -- Resolve glyphs synchronously (icon_map.lua is in-process).
+          local icons = lookup_icons(apps)
+          local label = ""
+          for _, g in ipairs(icons) do label = label .. g .. " " end
+          items[i]:set({ label = { string = label:gsub("%s+$", "") } })
         end
       )
     end
