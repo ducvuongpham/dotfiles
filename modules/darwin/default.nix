@@ -30,7 +30,7 @@
     # karabiner-elements: managed via brew (nix bundle breaks DriverKit + helper SMAppServices)
     raycast
     google-chrome
-    brave
+    # brave: managed via brew (nix freezes browser version)
     slack
     # telegram-desktop on darwin source-builds (~45 min) — using brew instead
     dbeaver-bin

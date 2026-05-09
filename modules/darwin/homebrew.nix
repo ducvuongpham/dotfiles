@@ -15,6 +15,7 @@
     casks = [
       # Brew-only because not in nixpkgs or has Mac-specific entitlements:
       "zen"                    # not in nixpkgs
+      "brave-browser"          # auto-update via brew
       "tailscale-app"          # NetworkExtension entitlements, GUI not in nixpkgs
       "microsoft-office"       # proprietary, not in nixpkgs
       "telegram"               # nixpkgs builds from source (~45 min) — too slow
