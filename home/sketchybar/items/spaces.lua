@@ -59,12 +59,19 @@ local function refresh(focused)
   end)
 end
 
-items[1]:subscribe({ "aerospace_workspace_change", "front_app_switched", "system_woke", "forced" }, function(env)
+local function refresh_query()
+  sbar.exec("aerospace list-workspaces --focused", function(out)
+    refresh((out or ""):match("^%s*(.-)%s*$"))
+  end)
+end
+
+items[1]:subscribe("aerospace_workspace_change", function(env)
   refresh(env.FOCUSED_WORKSPACE)
 end)
 
--- Initial paint: ask AeroSpace which workspace is currently focused so the
--- bar shows the right colors before the first workspace change.
-sbar.exec("aerospace list-workspaces --focused", function(out)
-  refresh((out or ""):match("^%s*(.-)%s*$"))
+-- Other events don't carry FOCUSED_WORKSPACE — query AeroSpace fresh.
+items[1]:subscribe({ "front_app_switched", "system_woke", "forced" }, function()
+  refresh_query()
 end)
+
+refresh_query()
