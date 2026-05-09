@@ -131,13 +131,18 @@ map("i", "<C-V>", "<Plug>(copilot-accept-word)", { desc = "Copilot accept word" 
 
 -- ── Open in VSCode ────────────────────────────────────────────────────────────
 map("n", "<leader>ox", function()
-  local file_path = vim.fn.expand "%:p"
-  if file_path ~= "" then
-    vim.fn.system('code --goto "' .. file_path .. ":" .. vim.fn.line "." .. '"')
-  else
+  local file = vim.fn.expand "%:p"
+  if file == "" then
     vim.notify("No file is open", vim.log.levels.WARN)
+    return
   end
-end, { desc = "Open current file in VSCode" })
+  local line = vim.fn.line "."
+  local col = vim.fn.col "."
+  -- folder = git root if found, else cwd
+  local git = vim.fs.find(".git", { upward = true, path = vim.fn.expand "%:p:h" })[1]
+  local folder = git and vim.fs.dirname(git) or vim.fn.getcwd()
+  vim.fn.system(string.format('code "%s" --goto "%s:%d:%d"', folder, file, line, col))
+end, { desc = "Open folder + focus current file in VSCode" })
 
 -- ── Change without yank ───────────────────────────────────────────────────────
 map({ "n", "x" }, "c", '"_c', { noremap = true, desc = "Change without yank" })
