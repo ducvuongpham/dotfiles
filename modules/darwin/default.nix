@@ -42,7 +42,7 @@
     slack
     # telegram-desktop on darwin source-builds (~45 min) — using brew instead
     dbeaver-bin
-    aerospace
+    # aerospace: managed via brew (nix systemPackages rsync kills the running daemon every switch)
     maccy
     monitorcontrol
     keycastr
