@@ -45,6 +45,21 @@ local row_health = sbar.add("item", "battery.row.health", {
   background = { color = colors.transparent, height = 24 },
 })
 
+local row_lowpower = sbar.add("item", "battery.row.lowpower", {
+  position = "popup." .. battery.name,
+  icon = { string = "󰁹", color = colors.green, padding_left = 14, padding_right = 8 },
+  label = { string = "Low Power Mode: —", color = colors.text, padding_right = 14, font = { size = 12.0 } },
+  background = { color = colors.transparent, height = 24 },
+  click_script = [[open "x-apple.systempreferences:com.apple.preference.battery"]],
+})
+
+local row_energy = sbar.add("item", "battery.row.energy", {
+  position = "popup." .. battery.name,
+  icon = { string = "󰈸", color = colors.peach, padding_left = 14, padding_right = 8 },
+  label = { string = "No Apps Using Significant Energy", color = colors.subtext0, padding_right = 14, font = { size = 12.0 } },
+  background = { color = colors.transparent, height = 24 },
+})
+
 local row_settings = sbar.add("item", "battery.row.settings", {
   position = "popup." .. battery.name,
   icon = { string = "󰒓", color = colors.lavender, padding_left = 14, padding_right = 8 },
@@ -105,6 +120,29 @@ local function refresh()
       cond = (cond or ""):gsub("%s+$", "")
       local text = (#cond > 0 and cond or "?") .. (cycles ~= "" and ("  ·  " .. cycles .. " cycles") or "")
       row_health:set({ label = { string = text } })
+    end
+  )
+
+  -- Low Power Mode (system-wide flag from pmset).
+  sbar.exec("pmset -g | awk '/lowpowermode/ {print $2}'", function(out)
+    local on = ((out or ""):match("(%d)") == "1")
+    row_lowpower:set({
+      icon = { color = (on and colors.peach or colors.subtext0) },
+      label = { string = "Low Power Mode: " .. (on and "On" or "Off") },
+    })
+  end)
+
+  -- Apps using significant energy: any process > 20% CPU.
+  sbar.exec(
+    [[top -l 1 -n 5 -o cpu -stats "command,cpu" 2>/dev/null | awk 'NR>12 && $2+0 > 20 {gsub(/^ +/, ""); print $1 " (" $2 "%)"}' | head -3]],
+    function(out)
+      local lines = {}
+      for line in (out or ""):gmatch("[^\r\n]+") do table.insert(lines, line) end
+      if #lines == 0 then
+        row_energy:set({ label = { string = "No Apps Using Significant Energy", color = colors.subtext0 } })
+      else
+        row_energy:set({ label = { string = table.concat(lines, ", "), color = colors.text } })
+      end
     end
   )
 end
