@@ -6,7 +6,9 @@
   # flip false later for strict declarative.
   programs.vscode = {
     enable = true;
-    package = pkgs.vscode;
+    # Bundle installed via nix-darwin environment.systemPackages so it lands in
+    # /Applications/Nix Apps (Spotlight-indexed). HM only manages settings + extensions.
+    package = null;
     mutableExtensionsDir = true;
 
     profiles.default = {

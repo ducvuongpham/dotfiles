@@ -2,7 +2,9 @@
 {
   programs.alacritty = {
     enable = true;
-    package = pkgs.alacritty-graphics;
+    # Bundle installed via nix-darwin environment.systemPackages so it lands in
+    # /Applications/Nix Apps (Spotlight-indexed). HM only manages settings.
+    package = null;
 
     settings = {
       env.TERM = "xterm-256color";

@@ -22,6 +22,11 @@
     curl
     wget
     coreutils
+
+    # GUI apps go here so nix-darwin rsyncs them to /Applications/Nix Apps
+    # (Spotlight indexes that path; user-level HM apps don't get indexed reliably).
+    alacritty-graphics
+    vscode
   ];
 
   fonts.packages = with pkgs; [
