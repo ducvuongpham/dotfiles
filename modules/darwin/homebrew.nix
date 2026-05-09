@@ -17,6 +17,7 @@
       "felixkratz/formulae/sketchybar"   # custom menu bar
       "switchaudio-osx"                  # SwitchAudioSource CLI (audio output picking)
       "blueutil"                         # bluetooth CLI (power + paired devices)
+      "keyboardswitcher"                 # live current-input-source CLI (defaults read is cached)
     ];
 
     casks = [

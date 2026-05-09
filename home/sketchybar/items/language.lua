@@ -23,10 +23,8 @@ local function short_label(id)
 end
 
 lang:subscribe({ "routine", "system_woke", "forced" }, function()
-  sbar.exec(
-    [[defaults read com.apple.HIToolbox AppleCurrentKeyboardLayoutInputSourceID 2>/dev/null]],
-    function(out)
-      lang:set({ label = { string = short_label((out or ""):gsub("%s+$", "")) } })
-    end
-  )
+  -- keyboardSwitcher reads via Carbon TISCopyCurrentKeyboardInputSource (live, uncached).
+  sbar.exec("/opt/homebrew/bin/keyboardSwitcher get 2>/dev/null", function(out)
+    lang:set({ label = { string = short_label((out or ""):gsub("%s+$", "")) } })
+  end)
 end)
