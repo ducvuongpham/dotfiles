@@ -58,6 +58,19 @@
                 }
               ];
             }
+            {
+              description = "kana (かな) -> left_option";
+              manipulators = [
+                {
+                  type = "basic";
+                  from = {
+                    key_code = "japanese_kana";
+                    modifiers.optional = [ "any" ];
+                  };
+                  to = [ { key_code = "left_option"; } ];
+                }
+              ];
+            }
           ];
         };
         virtual_hid_keyboard = {
