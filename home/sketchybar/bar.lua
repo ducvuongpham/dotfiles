@@ -11,7 +11,7 @@ sbar.bar({
   padding_left = 6,
   padding_right = 6,
   blur_radius = 0,
-  topmost = "off",
+  topmost = "window",
   sticky = "on",
   shadow = "off",
   display = "all",
