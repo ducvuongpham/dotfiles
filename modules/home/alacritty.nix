@@ -14,7 +14,7 @@
         padding = { x = 12; y = 12; };
         decorations = "buttonless";
         option_as_alt = "Both";
-        startup_mode = "Maximized";
+        startup_mode = "Windowed";  # AeroSpace tiles it; Maximized bypasses tiling
       };
 
       scrolling.history = 100000;
