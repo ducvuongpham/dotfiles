@@ -14,6 +14,9 @@ local clock = sbar.add("item", "clock", {
   update_freq = 30,
   padding_left = 4,
   padding_right = 4,
+  -- Click toggles Notification Center via the macOS menu bar clock item.
+  -- Requires Accessibility permission for the process invoking this (sketchybar).
+  click_script = [[$HOME/.local/share/sketchybar_lua/focus-mouse-monitor; osascript -e 'tell application "System Events" to tell process "Control Center" to click menu bar item "Clock" of menu bar 1']],
 })
 
 clock:subscribe({ "routine", "system_woke", "forced" }, function()
