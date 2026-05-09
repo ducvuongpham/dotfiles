@@ -16,11 +16,11 @@
       "felixkratz/formulae/borders"      # JankyBorders — colored window borders
       "felixkratz/formulae/sketchybar"   # custom menu bar
       "switchaudio-osx"                  # SwitchAudioSource CLI (audio output picking)
-      # `brightness` formula doesn't work on Apple Silicon — F1/F2 key events instead
     ];
 
     casks = [
       "font-sketchybar-app-font"  # icon font for sketchybar app icons
+      "betterdisplay"             # CLI for internal+external brightness (Apple Silicon)
       # Brew-only because not in nixpkgs or has Mac-specific entitlements:
       "zen"                    # not in nixpkgs
       "brave-browser"          # auto-update via brew
