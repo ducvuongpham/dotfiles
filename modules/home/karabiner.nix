@@ -30,6 +30,34 @@
                 }
               ];
             }
+            {
+              description = "left_control -> esc (tap) / left_control (hold)";
+              manipulators = [
+                {
+                  type = "basic";
+                  from = {
+                    key_code = "left_control";
+                    modifiers.optional = [ "any" ];
+                  };
+                  to = [ { key_code = "left_control"; } ];
+                  to_if_alone = [ { key_code = "escape"; } ];
+                }
+              ];
+            }
+            {
+              description = "right_control -> esc (tap) / right_control (hold)";
+              manipulators = [
+                {
+                  type = "basic";
+                  from = {
+                    key_code = "right_control";
+                    modifiers.optional = [ "any" ];
+                  };
+                  to = [ { key_code = "right_control"; } ];
+                  to_if_alone = [ { key_code = "escape"; } ];
+                }
+              ];
+            }
           ];
         };
         virtual_hid_keyboard = {

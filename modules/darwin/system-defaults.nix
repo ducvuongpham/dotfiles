@@ -5,8 +5,8 @@
       AppleInterfaceStyle = "Dark";
       AppleShowAllExtensions = true;
       AppleShowScrollBars = "WhenScrolling";
-      InitialKeyRepeat = 15;
-      KeyRepeat = 2;
+      InitialKeyRepeat = 10;
+      KeyRepeat = 1;
       ApplePressAndHoldEnabled = false;
       NSAutomaticCapitalizationEnabled = false;
       NSAutomaticDashSubstitutionEnabled = false;
@@ -20,7 +20,7 @@
       "com.apple.keyboard.fnState" = true;
       "com.apple.mouse.tapBehavior" = 1;
       "com.apple.swipescrolldirection" = false;
-      "com.apple.trackpad.scaling" = 2.0;
+      "com.apple.trackpad.scaling" = 3.0;
     };
 
     dock = {
@@ -75,6 +75,9 @@
       };
       "com.apple.AdLib" = {
         allowApplePersonalizedAdvertising = false;
+      };
+      ".GlobalPreferences" = {
+        "com.apple.mouse.scaling" = 3.0;
       };
       # Free up Ctrl-Space (and Ctrl-Opt-Space) by disabling input-source switching.
       # 60 = previous input source, 61 = next source in Input menu.
