@@ -59,7 +59,12 @@ local function refresh(focused)
   end)
 end
 
--- Initial state + every workspace change refreshes all 9 items.
 items[1]:subscribe({ "aerospace_workspace_change", "front_app_switched", "system_woke", "forced" }, function(env)
   refresh(env.FOCUSED_WORKSPACE)
+end)
+
+-- Initial paint: ask AeroSpace which workspace is currently focused so the
+-- bar shows the right colors before the first workspace change.
+sbar.exec("aerospace list-workspaces --focused", function(out)
+  refresh((out or ""):match("^%s*(.-)%s*$"))
 end)
