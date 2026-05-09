@@ -12,10 +12,10 @@
       tmp="$(mktemp -d)"
       ${pkgs.git}/bin/git clone --depth=1 https://github.com/FelixKratz/SbarLua.git "$tmp/SbarLua"
       (
-        export PATH="${pkgs.gnumake}/bin:${pkgs.gcc}/bin:${pkgs.clang}/bin:${pkgs.llvm}/bin:$PATH"
-        export CPATH="${pkgs.readline.dev}/include:${pkgs.ncurses.dev}/include:''${CPATH:-}"
-        export LIBRARY_PATH="${pkgs.readline}/lib:${pkgs.ncurses}/lib:''${LIBRARY_PATH:-}"
-        cd "$tmp/SbarLua" && ${pkgs.gnumake}/bin/make install
+        # Use Apple's system toolchain (Command Line Tools) — nix's wrapped
+        # clang fights dsymutil/lto-paths during SbarLua's link step.
+        export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+        cd "$tmp/SbarLua" && /usr/bin/make install
       )
       rm -rf "$tmp"
     fi
