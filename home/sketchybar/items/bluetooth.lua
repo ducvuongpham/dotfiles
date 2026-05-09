@@ -47,7 +47,7 @@ local row_settings = sbar.add("item", "bluetooth.row.settings", {
   icon = { string = "󰒓", color = colors.lavender, padding_left = 14, padding_right = 8 },
   label = { string = "Bluetooth Settings…", color = colors.text, padding_right = 14, font = { size = 12.0 } },
   background = { color = colors.transparent, height = 24 },
-  click_script = [[open "x-apple.systempreferences:com.apple.BluetoothSettings"]],
+  click_script = [[sketchybar --set bluetooth popup.drawing=off && open "x-apple.systempreferences:com.apple.BluetoothSettings"]],
 })
 
 sbar.add("event", "bluetooth_changed")

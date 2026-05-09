@@ -66,7 +66,7 @@ local row_settings = sbar.add("item", "battery.row.settings", {
   icon = { string = "󰒓", color = colors.lavender, padding_left = 14, padding_right = 8 },
   label = { string = "Battery Settings…", color = colors.text, padding_right = 14, font = { size = 12.0 } },
   background = { color = colors.transparent, height = 24 },
-  click_script = [[open "x-apple.systempreferences:com.apple.preference.battery"]],
+  click_script = [[sketchybar --set battery popup.drawing=off && open "x-apple.systempreferences:com.apple.preference.battery"]],
 })
 
 local function pick_icon(pct, charging)
