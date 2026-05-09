@@ -109,6 +109,12 @@
         showAppExposeGestureEnabled = true;
       };
 
+      # Hide desktop widgets entirely (no weather/calendar/photos on desktop).
+      "com.apple.WindowManager" = {
+        StandardHideWidgets = 1;
+        StageManagerHideWidgets = 1;
+      };
+
       "com.caldis.Mos" = {
         optionsExist = "optionsExist";
         hideStatusItem = true;
@@ -147,9 +153,10 @@
       /usr/sbin/softwareupdate --install-rosetta --agree-to-license || true
     fi
 
-    # Wipe all desktop widgets (Sonoma+ chronod data) every switch.
+    # Wipe all desktop widgets + reload WindowManager so StandardHideWidgets applies.
     /usr/bin/sudo -u tada /usr/bin/defaults delete com.apple.chronod 2>/dev/null || true
     /usr/bin/sudo -u tada /usr/bin/killall chronod 2>/dev/null || true
     /usr/bin/sudo -u tada /usr/bin/killall WindowManager 2>/dev/null || true
+    /usr/bin/sudo -u tada /usr/bin/killall Dock 2>/dev/null || true
   '';
 }
