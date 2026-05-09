@@ -17,6 +17,13 @@
     reattach = true;
   };
 
+  # Allow tada to toggle Low Power Mode without password prompt
+  # (sketchybar's battery popup uses this; click-script runs non-interactively).
+  environment.etc."sudoers.d/lowpowermode" = {
+    text = "tada ALL=(root) NOPASSWD: /usr/bin/pmset -a lowpowermode *\n";
+    mode = "0440";
+  };
+
   environment.systemPackages = with pkgs; [
     git
     curl

@@ -50,7 +50,8 @@ local row_lowpower = sbar.add("item", "battery.row.lowpower", {
   icon = { string = "󰁹", color = colors.green, padding_left = 14, padding_right = 8 },
   label = { string = "Low Power Mode: —", color = colors.text, padding_right = 14, font = { size = 12.0 } },
   background = { color = colors.transparent, height = 24 },
-  click_script = [[open "x-apple.systempreferences:com.apple.preference.battery"]],
+  -- Toggle: read current state, flip it. NOPASSWD sudoers rule is in modules/darwin/default.nix.
+  click_script = [[bash -c 'cur=$(pmset -g | awk "/lowpowermode/ {print \$2}"); [ "$cur" = "1" ] && n=0 || n=1; sudo /usr/bin/pmset -a lowpowermode $n && sketchybar --trigger power_source_change']],
 })
 
 local row_energy = sbar.add("item", "battery.row.energy", {
