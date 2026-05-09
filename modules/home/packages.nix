@@ -30,6 +30,7 @@
     unzip
     sqlite
     tree-sitter
+    lua5_4    # sketchybar lua config interpreter
 
     # lang version manager
     mise
