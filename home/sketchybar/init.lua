@@ -10,6 +10,7 @@ require("items.front_app")
 require("items.window_title")
 require("items.clock")
 require("items.battery")
+require("items.brightness")
 require("items.volume")
 require("items.cpu")
 
