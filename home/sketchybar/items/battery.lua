@@ -1,6 +1,9 @@
 local sbar = require("sketchybar")
 local colors = require("colors")
+local popups = require("popups")
 
+-- Native-style battery: icon by level + charging bolt; click → popup with
+-- time-remaining, source, cycle count, condition; entry to Battery preferences.
 local battery = sbar.add("item", "battery", {
   position = "right",
   icon = { color = colors.green },
@@ -9,36 +12,115 @@ local battery = sbar.add("item", "battery", {
   background = { color = colors.surface0 },
   padding_left = 4,
   padding_right = 4,
+  popup = {
+    align = "center",
+    height = 30,
+    background = {
+      color = colors.mantle,
+      border_color = colors.surface2,
+      border_width = 1,
+      corner_radius = 9,
+    },
+  },
 })
 
-local function update()
-  sbar.exec("pmset -g batt", function(stdout)
-    local pct = stdout:match("(%d+)%%")
-    if not pct then return end
-    local n = tonumber(pct)
-    local charging = stdout:find("AC Power") ~= nil
+local row_status = sbar.add("item", "battery.row.status", {
+  position = "popup." .. battery.name,
+  icon = { string = "󱐋", color = colors.yellow, padding_left = 14, padding_right = 8 },
+  label = { string = "—", color = colors.text, padding_right = 14, font = { size = 12.0 } },
+  background = { color = colors.transparent, height = 24 },
+})
 
-    local icon, color
-    if charging then
-      icon = "󰂄"; color = colors.yellow
-    elseif n >= 80 then
-      icon = "󰁹"; color = colors.green
-    elseif n >= 60 then
-      icon = "󰂀"; color = colors.green
-    elseif n >= 40 then
-      icon = "󰁾"; color = colors.peach
-    elseif n >= 20 then
-      icon = "󰁻"; color = colors.peach
-    else
-      icon = "󰁺"; color = colors.red
-    end
+local row_time = sbar.add("item", "battery.row.time", {
+  position = "popup." .. battery.name,
+  icon = { string = "󰥔", color = colors.sky, padding_left = 14, padding_right = 8 },
+  label = { string = "—", color = colors.text, padding_right = 14, font = { size = 12.0 } },
+  background = { color = colors.transparent, height = 24 },
+})
 
-    battery:set({
-      icon = { string = icon, color = color },
-      label = { string = pct .. "%" },
-    })
-  end)
+local row_health = sbar.add("item", "battery.row.health", {
+  position = "popup." .. battery.name,
+  icon = { string = "󰣐", color = colors.red, padding_left = 14, padding_right = 8 },
+  label = { string = "—", color = colors.text, padding_right = 14, font = { size = 12.0 } },
+  background = { color = colors.transparent, height = 24 },
+})
+
+local row_settings = sbar.add("item", "battery.row.settings", {
+  position = "popup." .. battery.name,
+  icon = { string = "󰒓", color = colors.lavender, padding_left = 14, padding_right = 8 },
+  label = { string = "Battery Settings…", color = colors.text, padding_right = 14, font = { size = 12.0 } },
+  background = { color = colors.transparent, height = 24 },
+  click_script = [[open "x-apple.systempreferences:com.apple.preference.battery"]],
+})
+
+local function pick_icon(pct, charging)
+  if charging then return "󰂄" end
+  if pct >= 90 then return "󰁹" end
+  if pct >= 75 then return "󰂁" end
+  if pct >= 60 then return "󰂀" end
+  if pct >= 45 then return "󰁿" end
+  if pct >= 30 then return "󰁽" end
+  if pct >= 15 then return "󰁻" end
+  return "󰁺"
 end
 
-battery:subscribe({ "routine", "system_woke", "power_source_change", "forced" }, update)
-update()
+local function pick_color(pct, charging)
+  if charging then return colors.yellow end
+  if pct >= 60 then return colors.green end
+  if pct >= 25 then return colors.peach end
+  return colors.red
+end
+
+local function refresh()
+  sbar.exec("pmset -g batt", function(out)
+    out = out or ""
+    local pct = tonumber(out:match("(%d+)%%")) or 0
+    local on_ac = out:find("AC Power") ~= nil
+    local time = out:match("(%d+:%d+) remaining") or out:match("(%d+:%d+) until") or ""
+    local charged = out:find("charged") ~= nil
+
+    battery:set({
+      icon = { string = pick_icon(pct, on_ac and not charged), color = pick_color(pct, on_ac) },
+      label = { string = pct .. "%" },
+    })
+
+    local status_text
+    if charged then status_text = "Fully charged"
+    elseif on_ac then status_text = "Charging"
+    else status_text = "On battery" end
+    row_status:set({ label = { string = status_text } })
+
+    if time ~= "" then
+      row_time:set({ label = { string = (on_ac and "Until full: " or "Remaining: ") .. time } })
+    else
+      row_time:set({ label = { string = on_ac and "Calculating…" or "Calculating…" } })
+    end
+  end)
+
+  sbar.exec(
+    [[system_profiler SPPowerDataType | awk -F': *' '/Cycle Count/{c=$2} /Condition/{cond=$2} END{print c "|" cond}']],
+    function(out)
+      local cycles, cond = (out or ""):match("^([^|]*)|([^\n]*)")
+      cycles = (cycles or ""):gsub("%s+$", "")
+      cond = (cond or ""):gsub("%s+$", "")
+      local text = (#cond > 0 and cond or "?") .. (cycles ~= "" and ("  ·  " .. cycles .. " cycles") or "")
+      row_health:set({ label = { string = text } })
+    end
+  )
+end
+
+local function close_self() battery:set({ popup = { drawing = false } }) end
+popups.register("battery", close_self)
+
+battery:subscribe({ "routine", "system_woke", "power_source_change", "forced" }, refresh)
+battery:subscribe("mouse.clicked", function()
+  popups.close_all_except("battery")
+  refresh()
+  battery:set({ popup = { drawing = "toggle" } })
+end)
+battery:subscribe(
+  { "front_app_switched", "aerospace_workspace_change", "system_woke", "space_change" },
+  close_self
+)
+
+refresh()
