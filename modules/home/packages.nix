@@ -21,6 +21,8 @@
     gcc
     nodejs_22
     unzip
+    sqlite
+    tree-sitter
 
     # lang version manager
     mise

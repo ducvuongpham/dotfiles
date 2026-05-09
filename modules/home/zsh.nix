@@ -53,6 +53,11 @@
     # Extend PATH.
     path=(~/.local/bin $path)
 
+    # Load HM session variables (programs.zsh.enable = false, so we source manually).
+    hm_vars="/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
+    [ -f "$hm_vars" ] && . "$hm_vars"
+    unset hm_vars
+
     # Init z4h. Anything below this line is user config.
     z4h init || return
 
