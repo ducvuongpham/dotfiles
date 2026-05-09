@@ -131,6 +131,10 @@ local function refresh()
       icon = { color = (on and colors.peach or colors.subtext0) },
       label = { string = "Low Power Mode: " .. (on and "On" or "Off") },
     })
+    -- Tint the bar item yellow when LPM is on (matches macOS native behavior).
+    if on then
+      battery:set({ icon = { color = colors.yellow } })
+    end
   end)
 
   -- Apps using significant energy: any process > 20% CPU.
