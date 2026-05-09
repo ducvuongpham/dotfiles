@@ -50,7 +50,9 @@
     inner.vertical = 8
     outer.left = 8
     outer.bottom = 8
-    outer.top = 38   # sketchybar height 32 + 6 breathing
+    # Per-monitor: built-in is shorter (BetterDisplay notch-conceals already
+    # reserves the top strip). Externals keep the full 38 for sketchybar.
+    outer.top = [{ monitor."built-in" = 4 }, 38]
     outer.right = 8
 
     # main mode
