@@ -1,5 +1,6 @@
 local sbar = require("sketchybar")
 local colors = require("colors")
+local popups = require("popups")
 
 -- Per-display brightness via BetterDisplay CLI.
 --   Bar item: one per display, renders only on its own monitor, shows its own %.
@@ -119,24 +120,26 @@ local function refresh_all()
   end
 end
 
-local function close_all_popups()
+local function close_all_brightness_popups()
   for _, e in pairs(entries) do e.item:set({ popup = { drawing = false } }) end
 end
 
-for _, owner_entry in pairs(entries) do
+popups.register("brightness", close_all_brightness_popups)
+
+for uuid, owner_entry in pairs(entries) do
   owner_entry.item:subscribe({ "routine", "system_woke", "forced" }, refresh_all)
   owner_entry.item:subscribe("mouse.clicked", function()
-    -- close other displays' popups before opening this one
+    popups.close_all_except("brightness")
+    -- close other brightness popups (different display) before opening this one
     for u, e in pairs(entries) do
-      if u ~= owner_entry.item.name then e.item:set({ popup = { drawing = false } }) end
+      if u ~= uuid then e.item:set({ popup = { drawing = false } }) end
     end
     refresh_all()
     owner_entry.item:set({ popup = { drawing = "toggle" } })
   end)
-  -- auto-close on focus shift / workspace change / mouse leaving bar area
   owner_entry.item:subscribe(
-    { "mouse.exited.global", "front_app_switched", "aerospace_workspace_change", "system_woke" },
-    close_all_popups
+    { "front_app_switched", "aerospace_workspace_change", "system_woke", "space_change" },
+    close_all_brightness_popups
   )
 end
 

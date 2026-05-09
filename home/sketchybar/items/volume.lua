@@ -1,5 +1,6 @@
 local sbar = require("sketchybar")
 local colors = require("colors")
+local popups = require("popups")
 
 local function pick_icon(n, muted)
   if muted then return "󰝟" end
@@ -121,11 +122,17 @@ local function refresh_active(then_open)
   end)
 end
 
-volume:subscribe("mouse.clicked", function() refresh_active(true) end)
+local function close_self() volume:set({ popup = { drawing = false } }) end
+popups.register("volume", close_self)
+
+volume:subscribe("mouse.clicked", function()
+  popups.close_all_except("volume")
+  refresh_active(true)
+end)
 volume:subscribe("volume_outputs_changed", function() refresh_active(false) end)
 volume:subscribe(
-  { "mouse.exited.global", "front_app_switched", "aerospace_workspace_change", "system_woke" },
-  function() volume:set({ popup = { drawing = false } }) end
+  { "front_app_switched", "aerospace_workspace_change", "system_woke", "space_change" },
+  close_self
 )
 
 volume:subscribe("volume_change", function(env)
