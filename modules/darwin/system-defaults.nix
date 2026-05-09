@@ -19,7 +19,9 @@
       NSWindowResizeTime = 1.0e-3;
       "com.apple.keyboard.fnState" = true;
       "com.apple.mouse.tapBehavior" = 1;
-      "com.apple.swipescrolldirection" = false;
+      # Keep macOS "natural scroll" ON for trackpad. Mos reverses ONLY the mouse
+      # wheel so trackpad gestures stay natural.
+      "com.apple.swipescrolldirection" = true;
       "com.apple.trackpad.scaling" = 3.0;
     };
 
@@ -78,6 +80,28 @@
       };
       ".GlobalPreferences" = {
         "com.apple.mouse.scaling" = 3.0;
+      };
+      # Mos (mouse smoothing + reverse mouse-only scroll). Complex shortcut
+      # bindings (block/dash/toggle/applications/buttonBindings) are JSON-data
+      # blobs and stay user-managed in the app — Mos preserves them across
+      # switches.
+      "com.caldis.Mos" = {
+        optionsExist = "optionsExist";
+        hideStatusItem = true;
+        allowlist = false;
+        smooth = true;
+        smoothVertical = true;
+        smoothHorizontal = true;
+        smoothSimTrackpad = false;
+        reverse = true;
+        reverseVertical = true;
+        reverseHorizontal = true;
+        speed = 3;
+        step = 70;
+        duration = 2;
+        deadZone = 1;
+        updateCheckOnAppStart = false;
+        updateIncludingBetaVersion = false;
       };
       # Free up Ctrl-Space (and Ctrl-Opt-Space) by disabling input-source switching.
       # 60 = previous input source, 61 = next source in Input menu.

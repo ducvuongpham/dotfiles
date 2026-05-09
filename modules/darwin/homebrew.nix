@@ -29,6 +29,7 @@
       "clipy"
       "monitorcontrol"
       "keycastr"
+      "mos"
       "microsoft-office"
     ];
 

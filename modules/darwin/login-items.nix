@@ -17,4 +17,13 @@
       ProcessType = "Interactive";
     };
   };
+
+  launchd.user.agents.mos = {
+    command = "/Applications/Mos.app/Contents/MacOS/Mos";
+    serviceConfig = {
+      RunAtLoad = true;
+      KeepAlive = false;
+      ProcessType = "Interactive";
+    };
+  };
 }
