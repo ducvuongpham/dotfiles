@@ -8,29 +8,15 @@
       upgrade = true;
     };
 
-    taps = [
-      "nikitabobko/tap"
-    ];
+    taps = [ ];
 
     brews = [ ];
 
     casks = [
-      "google-chrome"
-      "brave-browser"
-      "zen"
-      "slack"
-      "dbeaver-community"
-      "nikitabobko/tap/aerospace"
-      # raycast: managed via nix (modules/darwin/default.nix)
-      # vscode managed via home-manager (modules/home/vscode.nix)
-      "telegram"
-      "tailscale-app"
-      # karabiner-elements: managed via nix (modules/darwin/default.nix)
-      "maccy"
-      "monitorcontrol"
-      "keycastr"
-      "mos"
-      "microsoft-office"
+      # Brew-only because not in nixpkgs or has Mac-specific entitlements:
+      "zen"                    # not in nixpkgs
+      "tailscale-app"          # NetworkExtension entitlements, GUI not in nixpkgs
+      "microsoft-office"       # proprietary, not in nixpkgs
     ];
 
     masApps = { };

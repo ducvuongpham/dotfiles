@@ -29,6 +29,16 @@
     vscode
     karabiner-elements
     raycast
+    google-chrome
+    brave
+    slack
+    telegram-desktop
+    dbeaver-bin
+    aerospace
+    maccy
+    monitorcontrol
+    keycastr
+    mos
   ];
 
   fonts.packages = with pkgs; [
