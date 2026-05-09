@@ -36,20 +36,6 @@
     8 = [3, 'secondary', 'built-in']
     9 = [3, 'secondary', 'built-in']
 
-    # Workspace -> monitor pinning. With external screen connected:
-    #   1-4 live on built-in display, 5-9 on the secondary.
-    # When external is unplugged, AeroSpace falls back to the built-in for all.
-    [workspace-to-monitor-force-assignment]
-    1 = 'built-in'
-    2 = 'built-in'
-    3 = 'built-in'
-    4 = 'built-in'
-    5 = 'secondary'
-    6 = 'secondary'
-    7 = 'secondary'
-    8 = 'secondary'
-    9 = 'secondary'
-
     [key-mapping]
     preset = 'qwerty'
 
