@@ -34,4 +34,24 @@
         -o "$icon_map"
     fi
   '';
+
+  # Compile a tiny Swift binary that prints the current input source ID using
+  # the public Carbon TISCopyCurrentKeyboardInputSource API — uncached, unlike
+  # `defaults read`. Used by sketchybar's language widget.
+  home.activation.buildInputSourceCli = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    bin="$HOME/.local/share/sketchybar_lua/inputsource"
+    if [ ! -x "$bin" ]; then
+      tmp="$(mktemp -d)"
+      cat > "$tmp/inputsource.swift" <<'EOF'
+import Carbon
+if let src = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue(),
+   let raw = TISGetInputSourceProperty(src, kTISPropertyInputSourceID) {
+    let id = Unmanaged<CFString>.fromOpaque(raw).takeUnretainedValue() as String
+    print(id)
+}
+EOF
+      /usr/bin/swiftc -O "$tmp/inputsource.swift" -o "$bin"
+      rm -rf "$tmp"
+    fi
+  '';
 }

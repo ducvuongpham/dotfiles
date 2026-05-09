@@ -22,9 +22,10 @@ local function short_label(id)
   else return id:match("[^.]+$") or "?" end
 end
 
+local INPUT_SRC = os.getenv("HOME") .. "/.local/share/sketchybar_lua/inputsource"
+
 lang:subscribe({ "routine", "system_woke", "forced" }, function()
-  -- keyboardSwitcher reads via Carbon TISCopyCurrentKeyboardInputSource (live, uncached).
-  sbar.exec("/opt/homebrew/bin/keyboardSwitcher get 2>/dev/null", function(out)
+  sbar.exec(INPUT_SRC .. " 2>/dev/null", function(out)
     lang:set({ label = { string = short_label((out or ""):gsub("%s+$", "")) } })
   end)
 end)

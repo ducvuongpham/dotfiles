@@ -73,7 +73,8 @@ local function refresh()
     sbar.exec(BU .. " --connected --format json", function(devs_out)
       local seen = {}
       local count = 0
-      for line in (devs_out or ""):gmatch("\"name\":%s*\"([^\"]+)\"") do
+      local s = (type(devs_out) == "string") and devs_out or ""
+      for line in s:gmatch("\"name\":%s*\"([^\"]+)\"") do
         seen[line] = true
         count = count + 1
         if not device_items[line] then
