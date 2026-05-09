@@ -9,8 +9,8 @@
     };
   };
 
-  launchd.user.agents.clipy = {
-    command = "/Applications/Clipy.app/Contents/MacOS/Clipy";
+  launchd.user.agents.maccy = {
+    command = "/Applications/Maccy.app/Contents/MacOS/Maccy";
     serviceConfig = {
       RunAtLoad = true;
       KeepAlive = false;

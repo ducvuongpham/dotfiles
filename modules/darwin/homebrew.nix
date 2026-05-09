@@ -26,7 +26,7 @@
       "telegram"
       "tailscale-app"
       "karabiner-elements"
-      "clipy"
+      "maccy"
       "monitorcontrol"
       "keycastr"
       "mos"
