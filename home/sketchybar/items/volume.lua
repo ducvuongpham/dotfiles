@@ -125,7 +125,9 @@ end
 local function close_self() volume:set({ popup = { drawing = false } }) end
 popups.register("volume", close_self)
 
+local FMM = os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor"
 volume:subscribe("mouse.clicked", function()
+  sbar.exec(FMM)
   popups.close_all_except("volume")
   refresh_active(true)
 end)

@@ -54,4 +54,30 @@ EOF
       rm -rf "$tmp"
     fi
   '';
+
+  # Compile a helper that finds the NSScreen under the mouse cursor and runs
+  # `aerospace focus-monitor <name>` for it. Sketchybar click_scripts call
+  # this so clicking the bar on monitor X focuses that monitor.
+  home.activation.buildFocusMouseMonitorCli = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    bin="$HOME/.local/share/sketchybar_lua/focus-mouse-monitor"
+    if [ ! -x "$bin" ]; then
+      tmp="$(mktemp -d)"
+      cat > "$tmp/focus-mouse-monitor.swift" <<'EOF'
+import AppKit
+import Foundation
+
+let mouse = NSEvent.mouseLocation
+let screen = NSScreen.screens.first(where: { $0.frame.contains(mouse) })
+if let name = screen?.localizedName {
+    let task = Process()
+    task.launchPath = "/opt/homebrew/bin/aerospace"
+    task.arguments = ["focus-monitor", name]
+    try? task.run()
+    task.waitUntilExit()
+}
+EOF
+      /usr/bin/swiftc -O "$tmp/focus-mouse-monitor.swift" -o "$bin"
+      rm -rf "$tmp"
+    fi
+  '';
 }

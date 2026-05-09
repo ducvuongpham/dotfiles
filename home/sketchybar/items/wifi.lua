@@ -79,7 +79,9 @@ local function close_self() wifi:set({ popup = { drawing = false } }) end
 popups.register("wifi", close_self)
 
 wifi:subscribe({ "routine", "system_woke", "forced", "wifi_changed", "wifi_change" }, refresh)
+local FMM = os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor"
 wifi:subscribe("mouse.clicked", function()
+  sbar.exec(FMM)
   popups.close_all_except("wifi")
   refresh()
   wifi:set({ popup = { drawing = "toggle" } })

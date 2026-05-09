@@ -9,7 +9,7 @@ local cpu = sbar.add("item", "cpu", {
   background = { color = colors.surface0 },
   padding_left = 4,
   padding_right = 4,
-  click_script = [[open -a "Activity Monitor"]],
+  click_script = [[$HOME/.local/share/sketchybar_lua/focus-mouse-monitor; open -a "Activity Monitor"]],
 })
 
 local ram = sbar.add("item", "ram", {
@@ -20,7 +20,7 @@ local ram = sbar.add("item", "ram", {
   background = { color = colors.surface0 },
   padding_left = 4,
   padding_right = 4,
-  click_script = [[open -a "Activity Monitor"]],
+  click_script = [[$HOME/.local/share/sketchybar_lua/focus-mouse-monitor; open -a "Activity Monitor"]],
 })
 
 cpu:subscribe({ "routine", "forced" }, function()

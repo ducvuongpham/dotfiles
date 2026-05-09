@@ -129,8 +129,8 @@ popups.register("brightness", close_all_brightness_popups)
 for uuid, owner_entry in pairs(entries) do
   owner_entry.item:subscribe({ "routine", "system_woke", "forced" }, refresh_all)
   owner_entry.item:subscribe("mouse.clicked", function()
+    sbar.exec(os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor")
     popups.close_all_except("brightness")
-    -- close other brightness popups (different display) before opening this one
     for u, e in pairs(entries) do
       if u ~= uuid then e.item:set({ popup = { drawing = false } }) end
     end
