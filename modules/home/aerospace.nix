@@ -61,9 +61,13 @@
     alt-shift-k = 'move up'
     alt-shift-l = 'move right'
 
-    # resize
+    # resize (smart = width or height depending on split direction)
     alt-minus = 'resize smart -50'
     alt-equal = 'resize smart +50'
+    alt-shift-minus = 'resize height -50'
+    alt-shift-equal = 'resize height +50'
+    alt-ctrl-minus  = 'resize width -50'
+    alt-ctrl-equal  = 'resize width +50'
 
     # layout
     alt-slash = 'layout tiles horizontal vertical'
