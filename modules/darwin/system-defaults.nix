@@ -160,7 +160,8 @@
   };
 
   system.activationScripts.postActivation.text = ''
-    mkdir -p "/Users/tada/Pictures/Screenshots"
+    /usr/bin/sudo -u tada /bin/mkdir -p "/Users/tada/Pictures/Screenshots"
+    /usr/sbin/chown tada:staff "/Users/tada/Pictures/Screenshots"
 
     # Install Rosetta 2 on Apple Silicon if not already present.
     if [ "$(/usr/bin/uname -m)" = "arm64" ] && ! /usr/bin/pgrep -q oahd; then
