@@ -76,6 +76,14 @@
       "com.apple.AdLib" = {
         allowApplePersonalizedAdvertising = false;
       };
+      # Free up Ctrl-Space (and Ctrl-Opt-Space) by disabling input-source switching.
+      # 60 = previous input source, 61 = next source in Input menu.
+      "com.apple.symbolichotkeys" = {
+        AppleSymbolicHotKeys = {
+          "60".enabled = false;
+          "61".enabled = false;
+        };
+      };
     };
   };
 

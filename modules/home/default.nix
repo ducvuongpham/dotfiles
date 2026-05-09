@@ -10,5 +10,6 @@
     ./neovim.nix
     ./vscode.nix
     ./tmux.nix
+    ./spotlight.nix
   ];
 }
