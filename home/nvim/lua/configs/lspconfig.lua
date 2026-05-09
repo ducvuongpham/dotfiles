@@ -82,9 +82,24 @@ vim.lsp.enable {
   "jsonls",
   "html",
   "eslint",
+  "nixd",
 }
 
 -- ── Per-server overrides (only what differs from nvim-lspconfig defaults) ──────
+
+vim.lsp.config("nixd", {
+  settings = {
+    nixd = {
+      formatting = { command = { "nixfmt" } },
+      options = {
+        nixos = { expr = '(builtins.getFlake "/Users/tada/dotfiles").darwinConfigurations.tada-mbp.options' },
+        home_manager = {
+          expr = '(builtins.getFlake "/Users/tada/dotfiles").darwinConfigurations.tada-mbp.options.home-manager.users.type.getSubOptions []',
+        },
+      },
+    },
+  },
+})
 
 vim.lsp.config("lua_ls", {
   settings = {
