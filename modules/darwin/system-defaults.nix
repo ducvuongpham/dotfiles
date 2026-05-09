@@ -3,6 +3,7 @@
   system.defaults = {
     NSGlobalDomain = {
       AppleInterfaceStyle = "Dark";
+      _HIHideMenuBar = true;  # native menu bar hidden — sketchybar replaces it
       AppleShowAllExtensions = true;
       AppleShowScrollBars = "WhenScrolling";
       InitialKeyRepeat = 10;

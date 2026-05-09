@@ -7,7 +7,14 @@
     # https://nikitabobko.github.io/AeroSpace/guide
 
     after-login-command = []
-    after-startup-command = []
+    after-startup-command = [
+      'exec-and-forget borders',
+      'exec-and-forget sketchybar',
+    ]
+    # Fire SKETCHYBAR event on workspace change so the bar updates highlight.
+    exec-on-workspace-change = ['/bin/bash', '-c',
+      'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+    ]
 
     start-at-login = true
 

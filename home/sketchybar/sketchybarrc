@@ -1,0 +1,6 @@
+#!/usr/bin/env lua
+
+-- Bootstrap SbarLua (downloaded once via postActivation).
+package.cpath = package.cpath .. ";" .. os.getenv("HOME") .. "/.local/share/sketchybar_lua/?.so"
+
+require("init")

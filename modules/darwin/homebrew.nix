@@ -8,11 +8,17 @@
       upgrade = true;
     };
 
-    taps = [ ];
+    taps = [
+      "felixkratz/formulae"
+    ];
 
-    brews = [ ];
+    brews = [
+      "borders"        # JankyBorders — colored window borders
+      "sketchybar"     # custom menu bar
+    ];
 
     casks = [
+      "font-sketchybar-app-font"  # icon font for sketchybar app icons
       # Brew-only because not in nixpkgs or has Mac-specific entitlements:
       "zen"                    # not in nixpkgs
       "brave-browser"          # auto-update via brew

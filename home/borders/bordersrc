@@ -1,0 +1,11 @@
+#!/bin/bash
+# JankyBorders config — catppuccin mocha
+# Run by `borders --config ~/.config/borders/bordersrc` or just `borders` (auto-finds).
+
+borders \
+  style=round \
+  width=4.0 \
+  hidpi=on \
+  active_color=0xffcba6f7 \
+  inactive_color=0xff45475a \
+  background_color=0x00000000
