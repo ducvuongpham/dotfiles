@@ -13,9 +13,11 @@
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    catppuccin.url = "github:catppuccin/nix";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, catppuccin, ... }@inputs:
     let
       mkHost = { hostname, username, system }:
         nix-darwin.lib.darwinSystem {
@@ -29,6 +31,7 @@
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "hm-backup";
               home-manager.extraSpecialArgs = { inherit inputs username; };
+              home-manager.sharedModules = [ catppuccin.homeModules.catppuccin ];
               home-manager.users.${username} = import ./home/${username}.nix;
             }
           ];

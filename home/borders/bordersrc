@@ -1,11 +1,11 @@
 #!/bin/bash
-# JankyBorders config — catppuccin mocha
+# JankyBorders config — catppuccin macchiato (with custom yellow accent)
 # Run by `borders --config ~/.config/borders/bordersrc` or just `borders` (auto-finds).
 
 borders \
   style=round \
   width=8.0 \
   hidpi=on \
-  active_color=0xffcba6f7 \
-  inactive_color=0xff45475a \
+  active_color=0xfffab387 \
+  inactive_color=0xff494d64 \
   background_color=0x00000000

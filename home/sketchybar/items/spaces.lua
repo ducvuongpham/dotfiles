@@ -3,7 +3,7 @@ local colors = require("colors")
 
 -- AeroSpace workspaces 1-9.
 -- Highlights:
---   focused        → mauve background, icon highlighted
+--   focused        → yellow background, icon highlighted
 --   visible-other  → surface2 (shown on another monitor)
 --   has-windows    → surface0 (off-screen but populated)
 --   empty          → drawing = false (hidden) unless it's focused
@@ -89,7 +89,7 @@ local function refresh(focused)
           local draw = has_apps or is_focused
 
           local color
-          if is_focused then color = colors.mauve
+          if is_focused then color = colors.yellow
           elseif is_visible then color = colors.surface2
           else color = colors.surface0 end
 

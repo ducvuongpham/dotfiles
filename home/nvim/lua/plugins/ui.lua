@@ -1,13 +1,13 @@
 -- ── Theme ─────────────────────────────────────────────────────────────────────
 require("catppuccin").setup {
-  flavour = "mocha",
+  flavour = "macchiato",
   highlight_overrides = {
-    mocha = function(c)
+    macchiato = function(c)
       return {
         Comment            = { style = { "italic" } },
         ["@comment"]       = { style = { "italic" } },
-        Visual             = { bg = "#45475a" },
-        TelescopeSelection = { bg = "#45475a" },
+        Visual             = { bg = "#494d64" },
+        TelescopeSelection = { bg = "#494d64" },
         -- Fold column: subtle arrow color like VSCode's gutter
         FoldColumn         = { fg = c.overlay1, bg = "NONE" },
         -- Folded line background: slightly highlighted like VSCode
@@ -29,7 +29,7 @@ end)
 -- ── Statusline ────────────────────────────────────────────────────────────────
 require("lualine").setup {
   options = {
-    theme = "catppuccin-mocha",
+    theme = "catppuccin-macchiato",
     disabled_filetypes = { statusline = { "dashboard", "alpha" } },
   },
 }

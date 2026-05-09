@@ -58,8 +58,7 @@
         "terminal.integrated.fontSize" = 13;
         "terminal.integrated.defaultProfile.osx" = "zsh";
 
-        "workbench.colorTheme" = "Default Dark Modern";
-        "workbench.iconTheme" = "vs-seti";
+        # workbench.colorTheme + iconTheme set by catppuccin/nix.
         "workbench.startupEditor" = "none";
 
         "git.autofetch" = true;
