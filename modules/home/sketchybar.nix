@@ -55,34 +55,6 @@ EOF
     fi
   '';
 
-  # aerospace-swipe (acsandmann, MIT) — installed via their install.sh; we
-  # write a tuned config separately so swipes feel responsive.
-  home.activation.installAerospaceSwipe = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    plist="$HOME/Library/LaunchAgents/com.acsandmann.swipe.plist"
-    if [ ! -f "$plist" ]; then
-      export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
-      ${pkgs.curl}/bin/curl -fsSL https://raw.githubusercontent.com/acsandmann/aerospace-swipe/main/install.sh | bash
-    fi
-    mkdir -p "$HOME/.config/aerospace-swipe"
-    cat > "$HOME/.config/aerospace-swipe/config.json" <<'JSON'
-    {
-      "haptic": true,
-      "natural_swipe": false,
-      "wrap_around": true,
-      "skip_empty": true,
-      "fingers": 3,
-      "distance_pct": 0.08,
-      "velocity_pct": 0.35,
-      "settle_factor": 0.20,
-      "min_step": 0.003,
-      "min_travel": 0.010,
-      "min_step_fast": 0.0,
-      "min_travel_fast": 0.005
-    }
-    JSON
-    /bin/launchctl kickstart -k "gui/$(id -u)/com.acsandmann.swipe" 2>/dev/null || true
-  '';
-
   # Compile a helper that finds the NSScreen under the mouse cursor and runs
   # `aerospace focus-monitor <name>` for it. Sketchybar click_scripts call
   # this so clicking the bar on monitor X focuses that monitor.
