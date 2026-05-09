@@ -16,4 +16,16 @@ function M.close_all()
   for _, fn in pairs(M.closers) do fn() end
 end
 
+-- Apps that, when becoming frontmost, should NOT trigger popup close — the
+-- user just clicked one of our "Open … Settings" links and we want them to
+-- come back to the popup state.
+local STAY_OPEN_FOR = {
+  ["System Settings"] = true,
+  ["System Preferences"] = true,
+}
+
+function M.is_stay_open_app(name)
+  return STAY_OPEN_FOR[name] == true
+end
+
 return M
