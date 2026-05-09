@@ -4,3 +4,10 @@ result-*
 .direnv/
 .envrc.local
 *.swp
+
+# tmux plugins populated by TPM at runtime
+home/tmux/plugins/
+
+# nvim plugin data lives in $XDG_DATA_HOME, not config — but exclude any stray
+# downloads if they ever land in config dir
+home/nvim/plugged/

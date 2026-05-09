@@ -1,39 +1,20 @@
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 {
-  programs.tmux = {
-    enable = true;
-    shortcut = "a";
-    baseIndex = 1;
-    keyMode = "vi";
-    mouse = true;
-    terminal = "screen-256color";
-    historyLimit = 100000;
-    escapeTime = 0;
-    clock24 = true;
+  # tmux binary; config managed via symlink to absorbed repo at ~/dotfiles/home/tmux.
+  home.packages = with pkgs; [ tmux ];
 
-    plugins = with pkgs.tmuxPlugins; [
-      sensible
-      yank
-      resurrect
-      continuum
-    ];
+  # Mutable symlink: ~/.config/tmux -> ~/dotfiles/home/tmux.
+  # Lets you edit tmux.conf in place; TPM writes plugins/ into the same dir
+  # (gitignored — see ~/dotfiles/.gitignore).
+  xdg.configFile."tmux".source = config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/dotfiles/home/tmux";
 
-    extraConfig = ''
-      set -g default-terminal "screen-256color"
-      set -ga terminal-overrides ",*256col*:Tc"
-
-      # vim-like pane nav
-      bind h select-pane -L
-      bind j select-pane -D
-      bind k select-pane -U
-      bind l select-pane -R
-
-      # split panes using current dir
-      bind '"' split-window -v -c "#{pane_current_path}"
-      bind % split-window -h -c "#{pane_current_path}"
-
-      # reload config
-      bind r source-file ~/.config/tmux/tmux.conf \; display "reloaded"
-    '';
-  };
+  # Bootstrap TPM (Tmux Plugin Manager) on first run. Plugins installed via
+  # `prefix + I` inside tmux. Plugin dirs are gitignored.
+  home.activation.cloneTPM = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -d "$HOME/dotfiles/home/tmux/plugins/tpm" ]; then
+      ${pkgs.git}/bin/git clone --depth=1 https://github.com/tmux-plugins/tpm \
+        "$HOME/dotfiles/home/tmux/plugins/tpm"
+    fi
+  '';
 }
