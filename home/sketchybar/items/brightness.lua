@@ -1,9 +1,10 @@
 local sbar = require("sketchybar")
 local colors = require("colors")
 
--- Per-display brightness via BetterDisplay CLI. The bar item for each display
--- only renders on that display (sketchybar `display = N`), so each monitor
--- shows its own brightness independently.
+-- Per-display brightness via BetterDisplay CLI.
+--   Bar item: one per display, renders only on its own monitor, shows its own %.
+--   Popup:    each bar item's popup contains sliders for ALL displays so you
+--             can adjust any display from any monitor's bar item.
 local BDCLI = "/opt/homebrew/bin/betterdisplaycli"
 
 local function list_displays()
@@ -22,37 +23,18 @@ local function list_displays()
       table.insert(list, { uuid = uuid, displayID = tonumber(dispID), name = name })
     end
   end
-  -- sort by displayID so order is stable / matches macOS arrangement
   table.sort(list, function(a, b) return a.displayID < b.displayID end)
   return list
 end
 
 local displays = list_displays()
 
-for i, d in ipairs(displays) do
-  local key = "brightness." .. d.uuid:gsub("%W", "_")
-  local item = sbar.add("item", key, {
-    position = "right",
-    display = i,                       -- only render on this monitor
-    icon = { string = "󰃟", color = colors.yellow },
-    label = { color = colors.text },
-    background = { color = colors.surface0 },
-    padding_left = 4,
-    padding_right = 4,
-    popup = {
-      align = "center",
-      height = 32,
-      background = {
-        color = colors.mantle,
-        border_color = colors.surface2,
-        border_width = 1,
-        corner_radius = 9,
-      },
-    },
-  })
+-- Map: uuid → { item, sliders = { [target_uuid] = slider } }
+local entries = {}
 
-  local slider = sbar.add("slider", key .. ".slider", 220, {
-    position = "popup." .. item.name,
+local function make_slider(parent_name, target)
+  return sbar.add("slider", parent_name .. ".s." .. target.uuid:gsub("%W", "_"), 220, {
+    position = "popup." .. parent_name,
     background = { drawing = false },
     slider = {
       highlight_color = colors.peach,
@@ -61,10 +43,10 @@ for i, d in ipairs(displays) do
     },
     click_script = string.format(
       [[%s set --UUID=%s --brightness="$(echo "scale=2; $PERCENTAGE/100" | bc)"]],
-      BDCLI, d.uuid
+      BDCLI, target.uuid
     ),
     label = {
-      string = d.name,
+      string = target.name,
       color = colors.subtext0,
       font = { size = 11.0 },
       max_chars = 30,
@@ -81,27 +63,71 @@ for i, d in ipairs(displays) do
     padding_left = 4,
     padding_right = 12,
   })
+end
 
-  local function refresh()
-    sbar.exec(string.format("%s get --UUID=%s --brightness", BDCLI, d.uuid), function(out)
+for i, d in ipairs(displays) do
+  local key = "brightness." .. d.uuid:gsub("%W", "_")
+  local item = sbar.add("item", key, {
+    position = "right",
+    display = i,
+    icon = { string = "󰃟", color = colors.yellow },
+    label = { color = colors.text },
+    background = { color = colors.surface0 },
+    padding_left = 4,
+    padding_right = 4,
+    popup = {
+      align = "center",
+      height = 32,
+      background = {
+        color = colors.mantle,
+        border_color = colors.surface2,
+        border_width = 1,
+        corner_radius = 9,
+      },
+    },
+  })
+  entries[d.uuid] = { item = item, sliders = {} }
+end
+
+-- For every (popup_owner, target_display) pair, add a slider in the owner's popup.
+for _, owner in ipairs(displays) do
+  local owner_entry = entries[owner.uuid]
+  for _, target in ipairs(displays) do
+    owner_entry.sliders[target.uuid] = make_slider(owner_entry.item.name, target)
+  end
+end
+
+local function refresh_all()
+  for _, target in ipairs(displays) do
+    sbar.exec(string.format("%s get --UUID=%s --brightness", BDCLI, target.uuid), function(out)
       local frac = (out or ""):match("([%d%.]+)")
       local n = math.floor((tonumber(frac) or 0) * 100 + 0.5)
-      item:set({ label = { string = n .. "%" } })
-      slider:set({
-        label = { string = d.name .. "  " .. n .. "%" },
-        slider = { percentage = n },
-      })
+      -- Bar item label = own %.
+      local own = entries[target.uuid]
+      if own then own.item:set({ label = { string = n .. "%" } }) end
+      -- Each popup's slider for this target gets updated.
+      for _, owner_entry in pairs(entries) do
+        local s = owner_entry.sliders[target.uuid]
+        if s then
+          s:set({
+            label = { string = target.name .. "  " .. n .. "%" },
+            slider = { percentage = n },
+          })
+        end
+      end
     end)
   end
-
-  item:subscribe({ "routine", "system_woke", "forced" }, refresh)
-  item:subscribe("mouse.clicked", function()
-    refresh()
-    item:set({ popup = { drawing = "toggle" } })
-  end)
-  item:subscribe("mouse.exited.global", function()
-    item:set({ popup = { drawing = false } })
-  end)
-
-  refresh()
 end
+
+for _, owner_entry in pairs(entries) do
+  owner_entry.item:subscribe({ "routine", "system_woke", "forced" }, refresh_all)
+  owner_entry.item:subscribe("mouse.clicked", function()
+    refresh_all()
+    owner_entry.item:set({ popup = { drawing = "toggle" } })
+  end)
+  owner_entry.item:subscribe("mouse.exited.global", function()
+    owner_entry.item:set({ popup = { drawing = false } })
+  end)
+end
+
+refresh_all()
