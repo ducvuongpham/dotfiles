@@ -115,6 +115,21 @@
         StageManagerHideWidgets = 1;
       };
 
+      # Maccy clipboard manager.
+      # Hotkey is encoded data — written via postActivation defaults command below.
+      "org.p0deje.Maccy" = {
+        searchMode = "fuzzy";
+        showInStatusBar = true;
+        showFooter = false;
+        pasteByDefault = true;
+        showSearch = true;
+        showApplicationIcons = true;
+        clearOnQuit = false;
+        historySize = 200;
+        ignoreOnlyNextEvent = false;
+        clipboardCheckInterval = 0.5;
+      };
+
       "com.caldis.Mos" = {
         optionsExist = "optionsExist";
         hideStatusItem = true;
@@ -158,5 +173,11 @@
     /usr/bin/sudo -u tada /usr/bin/killall chronod 2>/dev/null || true
     /usr/bin/sudo -u tada /usr/bin/killall WindowManager 2>/dev/null || true
     /usr/bin/sudo -u tada /usr/bin/killall Dock 2>/dev/null || true
+
+    # Maccy popup hotkey = Cmd+Shift+V (carbonModifiers=768, carbonKeyCode=9).
+    # KeyboardShortcuts lib stores this as JSON-encoded String under
+    # `KeyboardShortcuts_popup`. defaults write -string sets the right type.
+    /usr/bin/sudo -u tada /usr/bin/defaults write org.p0deje.Maccy KeyboardShortcuts_popup -string '{"carbonModifiers":768,"carbonKeyCode":9}'
+    /usr/bin/sudo -u tada /usr/bin/killall Maccy 2>/dev/null || true
   '';
 }
