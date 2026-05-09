@@ -61,6 +61,19 @@
     # Init z4h. Anything below this line is user config.
     z4h init || return
 
+    # vi-mode: Esc → normal mode, i/a/etc. → insert mode (vim semantics on the
+    # command line). KEYTIMEOUT=1 makes Esc register in 10ms instead of 400.
+    bindkey -v
+    export KEYTIMEOUT=1
+    # Keep useful emacs-style binds in insert mode.
+    bindkey -M viins '^R' z4h-fzf-history
+    bindkey -M viins '^A' beginning-of-line
+    bindkey -M viins '^E' end-of-line
+    # Substring-matching history nav: type any fragment, ^P/^N walks entries
+    # that contain it anywhere (z4h's local-history substring widgets).
+    bindkey -M viins '^P' z4h-up-substring-local
+    bindkey -M viins '^N' z4h-down-substring-local
+
     # Aliases
     alias ls='eza --icons=auto'
     alias ll='eza -lah --icons=auto --git'
@@ -72,8 +85,15 @@
     alias lg='lazygit'
     alias v='nvim'
 
-    # zoxide as cd
-    eval "$(zoxide init zsh --cmd cd)"
+    # zoxide — frecency-ranked dir jumps. `cd` stays the shell builtin.
+    #   z <fragment>      jump to best match
+    #   z <fragment><Tab> tab-complete frecent matches
+    #   zi                interactive fzf picker
+    #   z -               previous dir
+    export _ZO_RESOLVE_SYMLINKS=1
+    export _ZO_EXCLUDE_DIRS="/nix:/nix/*:/private:/private/*"
+    export _ZO_FZF_OPTS="--height=40% --reverse --border --preview 'eza --tree --color=always --icons=auto --level=2 {2}' --preview-window=right:50%:wrap"
+    eval "$(zoxide init zsh)"
 
     # mise (lang version manager)
     eval "$(mise activate zsh)"

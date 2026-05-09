@@ -47,9 +47,15 @@
     # misc
     wget
     curl
-    coreutils
-    gnused
-    gnutar
+
+    # Rust-implemented uutils (https://github.com/uutils) take the standard
+    # names. Replaces GNU coreutils/sed/tar; skips gawk (uutils-awk not ready).
+    # Skipped: uutils-acl/login/procps/util-linux (Linux-only).
+    uutils-coreutils-noprefix  # includes hostname — uutils-hostname conflicts
+    uutils-diffutils
+    uutils-findutils
+    uutils-sed
+    uutils-tar
     gawk
   ];
 }

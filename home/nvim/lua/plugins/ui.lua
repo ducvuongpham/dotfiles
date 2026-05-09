@@ -6,8 +6,9 @@ require("catppuccin").setup {
       return {
         Comment            = { style = { "italic" } },
         ["@comment"]       = { style = { "italic" } },
-        Visual             = { bg = "#494d64" },
-        TelescopeSelection = { bg = "#494d64" },
+        -- Stronger contrast for selection: brighter macchiato sapphire-tinted bg.
+        Visual             = { bg = "#4a6f9a", fg = c.text },
+        TelescopeSelection = { bg = "#4a6f9a" },
         -- Fold column: subtle arrow color like VSCode's gutter
         FoldColumn         = { fg = c.overlay1, bg = "NONE" },
         -- Folded line background: slightly highlighted like VSCode
@@ -25,6 +26,15 @@ vim.cmd.colorscheme "catppuccin"
 pcall(function()
   require("base46").load_all_highlights()
 end)
+
+-- base46 overrides catppuccin's highlight_overrides for some groups (notably
+-- Visual). Re-apply our overrides AFTER base46 so they actually take effect.
+local function apply_overrides()
+  vim.api.nvim_set_hl(0, "Visual",             { bg = "#494d64" })
+  vim.api.nvim_set_hl(0, "TelescopeSelection", { bg = "#494d64" })
+end
+apply_overrides()
+vim.api.nvim_create_autocmd("ColorScheme", { callback = apply_overrides })
 
 -- ── Statusline ────────────────────────────────────────────────────────────────
 require("lualine").setup {

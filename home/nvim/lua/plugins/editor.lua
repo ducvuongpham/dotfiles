@@ -114,6 +114,19 @@ vim.api.nvim_create_autocmd("VimEnter", {
         selection_caret = " ",
         entry_prefix = " ",
         sorting_strategy = "ascending",
+        -- ripgrep args used by live_grep / grep_string. --hidden includes
+        -- dotfiles; --glob '!**/.git/*' keeps .git internals out.
+        vimgrep_arguments = {
+          "rg",
+          "--color=never",
+          "--no-heading",
+          "--with-filename",
+          "--line-number",
+          "--column",
+          "--smart-case",
+          "--hidden",
+          "--glob", "!**/.git/*",
+        },
         layout_config = {
           horizontal = { prompt_position = "top", preview_width = 0.55 },
           width = 0.87,
