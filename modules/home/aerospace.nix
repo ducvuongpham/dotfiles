@@ -51,7 +51,7 @@
     inner.vertical = 8
     outer.left = 8
     outer.bottom = 8
-    outer.top = 38   # bar height 36 + 2px breathing room
+    outer.top = 38   # sketchybar height 32 + 6 breathing
     outer.right = 8
 
     # main mode

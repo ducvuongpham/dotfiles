@@ -3,7 +3,7 @@ local colors = require("colors")
 
 -- BetterDisplay's CLI handles internal + external brightness reliably on
 -- Apple Silicon. Install via brew cask `betterdisplay`.
-local BDCLI = "/Applications/BetterDisplay.app/Contents/MacOS/BetterDisplayCLI"
+local BDCLI = "/opt/homebrew/bin/betterdisplaycli"
 
 local brightness = sbar.add("item", "brightness", {
   position = "right",
