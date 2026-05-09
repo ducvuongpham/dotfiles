@@ -61,7 +61,7 @@
           ];
         };
         virtual_hid_keyboard = {
-          keyboard_type_v2 = "ansi";
+          keyboard_type_v2 = "jis";
         };
       }
     ];
