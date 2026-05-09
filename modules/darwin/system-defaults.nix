@@ -185,5 +185,10 @@
     # `KeyboardShortcuts_popup`. defaults write -string sets the right type.
     /usr/bin/sudo -u tada /usr/bin/defaults write org.p0deje.Maccy KeyboardShortcuts_popup -string '{"carbonModifiers":768,"carbonKeyCode":9}'
     /usr/bin/sudo -u tada /usr/bin/killall Maccy 2>/dev/null || true
+
+    # Make sure borders + sketchybar are registered with launchd as brew services
+    # so they auto-start at login independently of AeroSpace.
+    /usr/bin/sudo -u tada /opt/homebrew/bin/brew services start borders 2>/dev/null || true
+    /usr/bin/sudo -u tada /opt/homebrew/bin/brew services start sketchybar 2>/dev/null || true
   '';
 }
