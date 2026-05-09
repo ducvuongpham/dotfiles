@@ -32,7 +32,7 @@
     google-chrome
     brave
     slack
-    telegram-desktop
+    # telegram-desktop on darwin source-builds (~45 min) — using brew instead
     dbeaver-bin
     aerospace
     maccy

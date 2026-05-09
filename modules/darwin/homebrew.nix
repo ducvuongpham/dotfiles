@@ -17,6 +17,7 @@
       "zen"                    # not in nixpkgs
       "tailscale-app"          # NetworkExtension entitlements, GUI not in nixpkgs
       "microsoft-office"       # proprietary, not in nixpkgs
+      "telegram"               # nixpkgs builds from source (~45 min) — too slow
     ];
 
     masApps = { };
