@@ -1,5 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
+  # ~/.p10k.zsh — symlinked out of dotfiles so edits via `p10k configure`
+  # persist + appended catppuccin overrides stay tracked.
+  home.file.".p10k.zsh".source = config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/dotfiles/home/zsh/p10k.zsh";
+
   # zsh4humans bootstraps itself on first shell launch (clones to ~/.cache/zsh4humans).
   # We just write a .zshrc following the official z4h pattern + our extras.
   home.file.".zshrc".text = ''

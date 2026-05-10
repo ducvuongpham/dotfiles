@@ -1,0 +1,21 @@
+[tools]
+claude = "latest"
+node = "20"
+xcodes = "latest"
+
+[settings]
+# Read idiomatic per-language version files (.nvmrc, .python-version, etc.)
+# in addition to .mise.toml and .tool-versions.
+idiomatic_version_file_enable_tools = [
+  "node",      # .nvmrc, .node-version
+  "python",   # .python-version
+  "ruby",     # .ruby-version
+  "go",       # .go-version
+  "rust",     # rust-toolchain[.toml]
+  "java",     # .java-version
+  "elixir",   # .exenv-version
+  "erlang",   # .erlang-version
+  "crystal",  # .crystal-version
+  "terraform",# .terraform-version
+  "dotnet",   # global.json
+]
