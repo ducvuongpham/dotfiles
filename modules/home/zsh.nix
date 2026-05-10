@@ -107,7 +107,7 @@
     zstyle ':completion:*' menu no
     source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
     zstyle ':fzf-tab:*' fzf-flags --height=40% --no-preview --border=none --layout=default
-    zstyle ':fzf-tab:*' fzf-min-height 5
+    zstyle ':fzf-tab:*' fzf-min-height 1
     zstyle ':fzf-tab:*' switch-group ',' '.'
     zstyle ':fzf-tab:*' show-group brief
     zstyle ':completion:*' group-name ""
