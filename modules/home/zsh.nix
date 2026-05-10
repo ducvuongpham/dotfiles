@@ -113,6 +113,10 @@
     zstyle ':completion:*' group-name ""
     zstyle ':completion:*:descriptions' format '[%d]'
 
+    # Default editor — many tools exec this directly (git commit, lazygit, etc.)
+    export EDITOR=nvim
+    export VISUAL=nvim
+
     # Aliases
     alias ls='eza --icons=auto'
     alias ll='eza -lah --icons=auto --git'
@@ -122,24 +126,55 @@
     alias less='bat'
     alias g='git'
     alias lg='lazygit'
-    alias v='nvim'
     alias neofetch='fastfetch'
 
-    # ── Find: nvim-style file/word/all pickers (fd + rg + fzf + bat) ────────
-    #   ff [pattern]   find file (respect .gitignore), open in $EDITOR
-    #   fw [query]     live-grep through repo, open at matched line
-    #   fa [pattern]   like ff but include hidden + ignored files
+    # ── v: smart editor wrapper ─────────────────────────────────────────────
+    #   v <file>      → opens nvim cwd'd at the nearest git ancestor
+    #                    (file's parent if no git repo) with the file focused
+    #   v <dir>       → launches yazi in that directory
+    #   v             → bare nvim
+    v() {
+      if [ $# -eq 0 ]; then
+        nvim
+        return
+      fi
+      local target="$1"
+      local abs="''${target:A}"        # zsh: absolute, resolves symlinks
+      if [ -d "$abs" ]; then
+        yazi "$abs"
+        return
+      fi
+      local dir="''${abs:h}"
+      local root="$(cd "$dir" 2>/dev/null && git rev-parse --show-toplevel 2>/dev/null)"
+      [ -z "$root" ] && root="$dir"
+      (cd "$root" && nvim "$abs")
+    }
+
+    # ── Find: nvim-style file/word/dir pickers (fd + rg + fzf + bat) ────────
+    #   ff [pattern]   find file/dir (respect .gitignore) → v opens it
+    #   fa [pattern]   like ff but include hidden + ignored
+    #   fw [query]     live-grep through repo → opens nvim at git root + line
     ff() {
-      local f
-      f="$(fd --type f --hidden --exclude .git "$@" 2>/dev/null \
-        | fzf --preview 'bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}')"
-      [ -n "$f" ] && ''${EDITOR:-nvim} "$f"
+      local picked
+      picked="$(fd --type f --type d --hidden --exclude .git "$@" 2>/dev/null \
+        | fzf --preview '
+            if [ -d {} ]; then
+              eza --tree --color=always --icons=auto --level=2 {} 2>/dev/null
+            else
+              bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}
+            fi')"
+      [ -n "$picked" ] && v "$picked"
     }
     fa() {
-      local f
-      f="$(fd --type f --hidden --no-ignore --exclude .git "$@" 2>/dev/null \
-        | fzf --preview 'bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}')"
-      [ -n "$f" ] && ''${EDITOR:-nvim} "$f"
+      local picked
+      picked="$(fd --type f --type d --hidden --no-ignore --exclude .git "$@" 2>/dev/null \
+        | fzf --preview '
+            if [ -d {} ]; then
+              eza --tree --color=always --icons=auto --level=2 {} 2>/dev/null
+            else
+              bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}
+            fi')"
+      [ -n "$picked" ] && v "$picked"
     }
     fw() {
       local query="''${*:-.}"
@@ -152,7 +187,11 @@
       local file="''${picked%%:*}"
       local rest="''${picked#*:}"
       local line="''${rest%%:*}"
-      ''${EDITOR:-nvim} "+$line" "$file"
+      local abs="''${file:A}"
+      local dir="''${abs:h}"
+      local root="$(cd "$dir" 2>/dev/null && git rev-parse --show-toplevel 2>/dev/null)"
+      [ -z "$root" ] && root="$PWD"
+      (cd "$root" && nvim "+$line" "$abs")
     }
 
     # zoxide — frecency-ranked dir jumps. `cd` stays the shell builtin.
