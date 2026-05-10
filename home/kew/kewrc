@@ -184,6 +184,5 @@ bind = mouseRight, playPause
 bind = mouseWheelDown, scrollDown
 bind = mouseWheelUp, scrollUp
 bind = q, quit
-bind = Esc, quit
 bind = Unknown, EVENT_NONE
 
