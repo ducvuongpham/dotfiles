@@ -12,15 +12,6 @@
     };
   };
 
-  launchd.user.agents.monitorcontrol = {
-    serviceConfig = {
-      ProgramArguments = [ "/Applications/Nix Apps/MonitorControl.app/Contents/MacOS/MonitorControl" ];
-      RunAtLoad = true;
-      KeepAlive = false;
-      ProcessType = "Interactive";
-    };
-  };
-
   launchd.user.agents.mos = {
     serviceConfig = {
       ProgramArguments = [ "/Applications/Nix Apps/Mos.app/Contents/MacOS/Mos" ];

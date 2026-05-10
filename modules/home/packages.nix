@@ -17,6 +17,8 @@
     btop
     atuin             # shell history search/sync
     android-tools     # adb / fastboot
+    yt-dlp            # video downloader (YouTube + many other sites)
+    vivid             # generates LS_COLORS for theming `ls`, completion menus
 
     # yazi runtime previewers
     ffmpeg

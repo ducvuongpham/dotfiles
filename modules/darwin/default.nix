@@ -46,7 +46,7 @@
     dbeaver-bin
     # aerospace: managed via brew (nix systemPackages rsync kills the running daemon every switch)
     maccy
-    monitorcontrol
+    # monitorcontrol removed: BetterDisplay handles external brightness via DDC + brightness key forwarding
     keycastr
     mos
   ];

@@ -15,6 +15,7 @@
     ./borders.nix
     ./browser-font.nix
     ./services.nix
+    ./eza.nix
     # spotlight.nix renamed to apps.nix conceptually — keeping path same.
     ./spotlight.nix
   ];

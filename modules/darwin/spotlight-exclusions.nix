@@ -10,7 +10,6 @@
     HIDDEN_APPS=(
       "/Applications/Nix Apps/Maccy.app"
       "/Applications/Nix Apps/Mos.app"
-      "/Applications/Nix Apps/MonitorControl.app"
       "/Applications/Nix Apps/KeyCastr.app"
     )
     /usr/bin/defaults write /Library/Preferences/com.apple.spotlight Exclusions -array "''${HIDDEN_APPS[@]}"

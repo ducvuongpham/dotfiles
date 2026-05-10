@@ -61,6 +61,23 @@
     # Init z4h. Anything below this line is user config.
     z4h init || return
 
+    # ── Catppuccin macchiato theming for zsh ───────────────────────────
+    # Install catppuccin theme for fast-syntax-highlighting (z4h's syntax
+    # highlighter) on first run, then apply it.
+    if [ ! -d "$HOME/.cache/catppuccin-zsh-fsh" ]; then
+      git clone --depth=1 -q https://github.com/catppuccin/zsh-fsh.git "$HOME/.cache/catppuccin-zsh-fsh" 2>/dev/null || true
+    fi
+    if (( $+functions[fast-theme] )); then
+      fast-theme "$HOME/.cache/catppuccin-zsh-fsh/themes/catppuccin-macchiato.ini" >/dev/null 2>&1 || true
+    fi
+    # Autosuggest color — macchiato overlay0 (subtle gray, distinct from typed text).
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#6e738d'
+
+    # LS_COLORS — catppuccin-macchiato via vivid (used by ls/eza completion + zsh menus).
+    if command -v vivid >/dev/null 2>&1; then
+      export LS_COLORS="$(vivid generate catppuccin-macchiato 2>/dev/null)"
+    fi
+
     # vi-mode: Esc → normal mode, i/a/etc. → insert mode (vim semantics on the
     # command line). KEYTIMEOUT=1 makes Esc register in 10ms instead of 400.
     bindkey -v
