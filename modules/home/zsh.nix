@@ -113,14 +113,37 @@
     zstyle ':completion:*' group-name ""
     zstyle ':completion:*:descriptions' format '[%d]'
 
-    # nix-zsh-completions' _nix_attr_paths looks up <nixpkgs> in the legacy
-    # ~/.cache/nix/tarballs/ cache that Determinate Nix never populates
-    # (modern Nix uses tarball-cache-v2 + flake fetcher cache). The mismatch
-    # makes `nix-shell -p <TAB>` print "[Eval failed, can't complete (an URL
-    # might not be cached)]" and the bare `nix-shell -p` quoted to that error
-    # instead of opening a sub-shell. Stub the function so completion falls
-    # back to plain word completion (you type the package name yourself).
-    _nix_attr_paths() { return 0; }
+    # nix-zsh-completions' _nix_attr_paths uses the legacy ~/.cache/nix/
+    # tarballs cache that Determinate Nix never populates → tab-completion
+    # of `nix-shell -p` prints "[Eval failed, can't complete (an URL might
+    # not be cached)]". Replace it with a flake-aware completer that
+    # enumerates nixpkgs through the modern store path, caches the package
+    # list to ~/.cache/nix-pkg-names, and refreshes once a day.
+    _nix_attr_paths() {
+      local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
+      local age=999999
+      if [[ -f $cache ]]; then
+        age=$(( $(date +%s) - $(date -r "$cache" +%s 2>/dev/null || echo 0) ))
+      fi
+      if (( age > 86400 )) || [[ ! -s $cache ]]; then
+        _message 'building nixpkgs package list (one-time, ~30s)…'
+        local store
+        store=$(nix flake prefetch --json \
+          'https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/%2A.tar.gz' \
+          2>/dev/null | jq -r '.storePath' 2>/dev/null)
+        if [[ -z $store || ! -d $store ]]; then
+          _message 'nixpkgs prefetch failed'
+          return 1
+        fi
+        nix-env -qaP -f "$store" 2>/dev/null \
+          | awk '{print $1}' \
+          | sed 's/^nixpkgs\.//' > "$cache.tmp" \
+          && mv "$cache.tmp" "$cache"
+      fi
+      local -a pkgs
+      pkgs=("''${(@f)$(<$cache)}")
+      _wanted packages expl 'nix package' compadd -a pkgs
+    }
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
