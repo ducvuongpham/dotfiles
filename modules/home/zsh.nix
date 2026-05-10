@@ -113,6 +113,15 @@
     zstyle ':completion:*' group-name ""
     zstyle ':completion:*:descriptions' format '[%d]'
 
+    # nix-zsh-completions' _nix_attr_paths looks up <nixpkgs> in the legacy
+    # ~/.cache/nix/tarballs/ cache that Determinate Nix never populates
+    # (modern Nix uses tarball-cache-v2 + flake fetcher cache). The mismatch
+    # makes `nix-shell -p <TAB>` print "[Eval failed, can't complete (an URL
+    # might not be cached)]" and the bare `nix-shell -p` quoted to that error
+    # instead of opening a sub-shell. Stub the function so completion falls
+    # back to plain word completion (you type the package name yourself).
+    _nix_attr_paths() { return 0; }
+
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
     export VISUAL=nvim
