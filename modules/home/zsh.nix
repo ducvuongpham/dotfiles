@@ -225,23 +225,24 @@
     }
 
     _my_nix() {
+      # words[1]=nix; words[2]=subcommand; words[CURRENT]=word being typed.
       local sub=''${words[2]:-}
+      if (( CURRENT == 2 )); then
+        local -a subs=(run shell build develop profile flake search store registry repl eval)
+        _wanted subcommands expl 'nix subcommand' compadd -a subs
+        return
+      fi
       case $sub in
-        run|shell|build|develop|profile)
-          _arguments \
-            '1:subcommand:(run shell build develop profile flake search store registry repl eval)' \
-            '*:target:_my_nix_flake_target'
+        run|shell|build|develop)
+          _my_nix_flake_target
           ;;
         search)
-          _arguments \
-            '1:subcommand:(run shell build develop profile flake search store registry repl eval)' \
-            '2:flake:(nixpkgs)' \
-            '*::query:'
+          if (( CURRENT == 3 )); then
+            _wanted flakes expl 'flake' compadd nixpkgs
+          fi
           ;;
         *)
-          _arguments \
-            '1:subcommand:(run shell build develop profile flake search store registry repl eval)' \
-            '*::arg:_files'
+          _files
           ;;
       esac
     }
