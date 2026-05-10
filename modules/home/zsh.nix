@@ -210,8 +210,6 @@
       local pre=$PREFIX
       (( ''${#pre} >= 2 )) || return 1
       (( $+commands[$pre] )) && return 1
-      # Only fire in command position: words[CURRENT-1] is empty (start of
-      # cmdline) or one of the shell separators.
       local prev=''${words[CURRENT-1]:-}
       case $prev in
         ""|"|"|";"|"&&"|"||"|"&") ;;
@@ -224,7 +222,11 @@
       matches=("''${(@M)all:#''${pre}*}")
       (( ''${#matches} > 0 )) || return 1
       local -a suggestions=("''${matches[@]/#/nix run nixpkgs#}")
-      compadd -U -Q -- "''${suggestions[@]}"
+      # Force menu/fzf mode so the first TAB pops fzf instead of inserting
+      # the common prefix `nix run nixpkgs#cow`.
+      compstate[insert]=menu
+      _wanted nix-run-fallback expl 'nix run candidate' \
+        compadd -U -Q -- "''${suggestions[@]}"
       return 0
     }
     zstyle ':completion:*' completer _my_nix_run_completer _complete
