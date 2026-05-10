@@ -218,13 +218,18 @@
             if (( ''${#matches} > 0 )); then
               LBUFFER="nix run nixpkgs#$first"
               CURSOR=''${#LBUFFER}
+              # Push another TAB into the key buffer so zsh re-enters tab
+              # completion on the now-rewritten line and the fzf popup fires
+              # without the user having to press TAB twice.
+              zle -U $'\t'
+              return 0
             fi
           fi
         fi
       fi
-      # Call fzf-tab's widget if available so the popup fires; fall back to
-      # the raw zsh completer otherwise.
-      if zle -l | grep -qx 'fzf-tab-complete'; then
+      # Default: defer to whatever was bound to TAB before we hijacked it
+      # (fzf-tab-complete when fzf-tab is loaded, otherwise expand-or-complete).
+      if (( $+widgets[fzf-tab-complete] )); then
         zle fzf-tab-complete
       else
         zle expand-or-complete
