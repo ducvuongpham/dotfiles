@@ -1769,45 +1769,45 @@ typeset -g POWERLEVEL9K_NNN_FOREGROUND='#a5adcb'
 typeset -gA __mise_icon=(
   # Devicons (nf-dev-*) — language logos. Codepoints from
   # https://www.nerdfonts.com/cheat-sheet (verified against glyphnames.json).
-  node        $''   # dev-nodejs
+  node        $'󰎙'   # dev-nodejs
   bun         $''   # dev-bun
   deno        $''   # dev-denojs
-  python      $''   # dev-python
-  ruby        $''   # dev-ruby
-  go          $''   # dev-go
-  rust        $''   # dev-rust
-  java        $''   # dev-java
-  elixir      $''   # dev-elixir
+  python      $'󰌠'   # dev-python
+  ruby        $'󰴭'   # dev-ruby
+  go          $'󰟓'   # md-language_go
+  rust        $'󱘗'   # dev-rust
+  java        $'󰬷'   # dev-java
+  elixir      $''   # dev-elixir
   erlang      $''   # dev-erlang
-  crystal     $''   # dev-crystal
-  haskell     $''   # dev-haskell
-  clojure     $''   # dev-clojure
-  scala       $''   # dev-scala
-  perl        $''   # dev-perl
-  php         $''   # dev-php
-  ocaml       $''   # dev-ocaml
-  kotlin      $''   # dev-kotlin
-  swift       $''   # dev-swift
-  lua         $''   # dev-lua
-  julia       $''   # dev-julia
-  nim         $''   # dev-nim
-  zig         $''   # dev-zig
-  dart        $''   # dev-dart
+  crystal     $''   # dev-crystal
+  haskell     $'󰲒'   # dev-haskell
+  clojure     $''   # dev-clojure
+  scala       $''   # dev-scala
+  perl        $''   # dev-perl
+  php         $'󰌟'   # md-language_php
+  ocaml       $''   # dev-ocaml
+  kotlin      $'󱈙'   # dev-kotlin
+  swift       $'󰛥'   # dev-swift
+  lua         $'󰢱'   # dev-lua
+  julia       $''   # dev-julia
+  nim         $''   # dev-nim
+  zig         $''   # dev-zig
+  dart        $''   # dev-dart
   flutter     $''   # dev-flutter
-  csharp      $''   # dev-csharp
-  dotnet      $''   # dev-csharp (no separate dotnet glyph)
-  terraform   $''   # dev-terraform
+  csharp      $'󰌛'   # dev-csharp
+  dotnet      $'󰌛'   # dev-csharp (no separate dotnet glyph)
+  terraform   $''   # dev-terraform
   kubectl     $''   # dev-kubernetes
   helm        $''   # dev-helm
-  docker      $''   # dev-docker
-  gradle      $''   # dev-gradle
-  maven       $''   # dev-maven
+  docker      $''   # dev-docker
+  gradle      $''   # dev-gradle
+  maven       $''   # dev-maven
   ansible     $''   # dev-ansible
   bash        $''   # dev-bash
-  powershell  $''   # dev-powershell
+  powershell  $''   # dev-powershell
   claude      $''   # fa-robot
-  xcodes      $''   # fa-apple
-  fortran     $''   # dev-fortran
+  xcodes      $''   # fa-apple
+  fortran     $'󱈚'   # dev-fortran
   groovy      $''   # dev-groovy
   # Tools without a matching nf-dev glyph (gleam, mojo, odin, roc,
   # racket, vlang, etc.) fall through and render as "name version".
