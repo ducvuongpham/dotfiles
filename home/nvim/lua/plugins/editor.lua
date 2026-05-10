@@ -20,7 +20,7 @@ require("snacks").setup {
   -- noice.nvim routes :messages / errors / lsp messages here.
   notifier = {
     enabled = true,
-    timeout = 3000,
+    timeout = 2000,
     style = "fancy",
     top_down = false,
     -- Wider toasts + wrapping so long errors aren't ellipsised. Up to 80% of
