@@ -1,5 +1,6 @@
 local sbar = require("sketchybar")
 local colors = require("colors")
+local popups = require("popups")
 
 -- Current input source. macOS exposes the active layout id via:
 --   defaults read com.apple.HIToolbox AppleCurrentKeyboardLayoutInputSourceID
@@ -12,8 +13,14 @@ local lang = sbar.add("item", "language", {
   padding_left = 4,
   padding_right = 4,
   update_freq = 2,
-  click_script = [[$HOME/.local/share/sketchybar_lua/focus-mouse-monitor]],
 })
+
+local FMM = os.getenv("HOME") .. "/.local/share/sketchybar_lua/focus-mouse-monitor"
+lang:subscribe("mouse.clicked", function()
+  sbar.exec(FMM, function()
+    popups.close_all_except("nothing")
+  end)
+end)
 
 local function short_label(id)
   if not id or id == "" then return "?" end
