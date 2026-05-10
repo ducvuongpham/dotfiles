@@ -18,6 +18,7 @@
     ./eza.nix
     ./mise.nix
     ./claude.nix
+    ./fastfetch.nix
     # spotlight.nix renamed to apps.nix conceptually — keeping path same.
     ./spotlight.nix
   ];

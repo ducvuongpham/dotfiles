@@ -106,6 +106,37 @@
     alias g='git'
     alias lg='lazygit'
     alias v='nvim'
+    alias neofetch='fastfetch'
+
+    # ── Find: nvim-style file/word/all pickers (fd + rg + fzf + bat) ────────
+    #   ff [pattern]   find file (respect .gitignore), open in $EDITOR
+    #   fw [query]     live-grep through repo, open at matched line
+    #   fa [pattern]   like ff but include hidden + ignored files
+    ff() {
+      local f
+      f="$(fd --type f --hidden --exclude .git "$@" 2>/dev/null \
+        | fzf --preview 'bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}')"
+      [ -n "$f" ] && ''${EDITOR:-nvim} "$f"
+    }
+    fa() {
+      local f
+      f="$(fd --type f --hidden --no-ignore --exclude .git "$@" 2>/dev/null \
+        | fzf --preview 'bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}')"
+      [ -n "$f" ] && ''${EDITOR:-nvim} "$f"
+    }
+    fw() {
+      local query="''${*:-.}"
+      local picked
+      picked="$(rg --line-number --no-heading --color=never --hidden -g '!.git' "$query" 2>/dev/null \
+        | fzf --delimiter=: \
+            --preview 'bat --color=always --highlight-line {2} --style=numbers,changes {1}' \
+            --preview-window 'right,60%,+{2}-/2')"
+      [ -z "$picked" ] && return
+      local file="''${picked%%:*}"
+      local rest="''${picked#*:}"
+      local line="''${rest%%:*}"
+      ''${EDITOR:-nvim} "+$line" "$file"
+    }
 
     # zoxide — frecency-ranked dir jumps. `cd` stays the shell builtin.
     #   z <fragment>      jump to best match

@@ -33,6 +33,8 @@
       "nikitabobko/tap/aerospace"  # nix rsync of /Applications/Nix Apps killed the running daemon every switch
       "vlc"                    # not in nixpkgs darwin (Linux-only build)
       "figma"                  # proprietary, not in nixpkgs
+      "hoppscotch"             # API client (open-source Postman alternative); not in nixpkgs
+      "bluesnooze"             # auto-disable Bluetooth on sleep; not in nixpkgs
     ];
 
     masApps = { };
