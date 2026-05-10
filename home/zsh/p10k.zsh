@@ -1726,6 +1726,10 @@ typeset -g POWERLEVEL9K_DIR_SHORTENED_FOREGROUND='#a5adcb'                      
 typeset -g POWERLEVEL9K_DIR_ANCHOR_FOREGROUND='#7dc4e4'                                       # sapphire
 typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND='#a6da95'         # green
 typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_{VIINS,VICMD,VIVIS,VIOWR}_FOREGROUND='#ed8796'      # red
+# Vi NORMAL-mode prompt char (❮) → macchiato yellow regardless of last-cmd
+# status, so the mode change is visually distinct from insert mode.
+typeset -g POWERLEVEL9K_PROMPT_CHAR_OK_VICMD_FOREGROUND='#eed49f'
+typeset -g POWERLEVEL9K_PROMPT_CHAR_ERROR_VICMD_FOREGROUND='#eed49f'
 typeset -g POWERLEVEL9K_VCS_CLEAN_FOREGROUND='#a6da95'
 typeset -g POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='#7dc4e4'
 typeset -g POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='#eed49f'                                     # yellow
