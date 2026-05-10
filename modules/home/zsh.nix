@@ -235,7 +235,7 @@
         compadd -U -Q -- "''${suggestions[@]}"
       return 0
     }
-    zstyle ':completion:*' completer _my_nix_run_completer _complete
+    zstyle ':completion:*' completer _complete _my_nix_run_completer
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
