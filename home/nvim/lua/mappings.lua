@@ -56,6 +56,9 @@ map("n", "<leader>fk", "<cmd>Telescope help_tags<CR>", { desc = "Help tags" })
 map("n", "<leader>ma", "<cmd>Telescope marks<CR>", { desc = "Find marks" })
 map("n", "<leader>cm", "<cmd>Telescope git_commits<CR>", { desc = "Git commits" })
 map("n", "<leader>gt", "<cmd>Telescope git_status<CR>", { desc = "Git status" })
+map("n", "<leader>fc", "<cmd>Telescope command_history<CR>", { desc = "Cmdline history (fzf)" })
+map("n", "<leader>f/", "<cmd>Telescope search_history<CR>", { desc = "Search history (fzf)" })
+map("n", "<leader>fC", "<cmd>Telescope commands<CR>", { desc = "All commands" })
 
 -- ── Auto-session ──────────────────────────────────────────────────────────────
 map("n", "<leader>fs", function()
