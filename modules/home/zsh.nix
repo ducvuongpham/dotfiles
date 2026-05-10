@@ -217,6 +217,7 @@
             matches=("''${(@M)all:#''${first}*}")
             if (( ''${#matches} > 0 )); then
               LBUFFER="nix run nixpkgs#$first"
+              CURSOR=''${#LBUFFER}
             fi
           fi
         fi
