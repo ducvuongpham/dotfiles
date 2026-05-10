@@ -133,15 +133,33 @@
     #                    (file's parent if no git repo) with the file focused
     #   v <dir>       → launches yazi in that directory
     #   v             → bare nvim
+    # Decide whether a path is "text-like" enough to open in nvim. Anything
+    # else (images / video / audio / pdf / sqlite / archives) goes through
+    # macOS `open` so it lands in the right app (Preview / mpv / DBeaver / …).
+    _is_textish() {
+      local mime
+      mime=$(file --mime-type -b "$1" 2>/dev/null)
+      case "$mime" in
+        text/*) return 0 ;;
+        application/json|application/xml|application/x-shellscript|application/javascript|application/x-sh|application/toml|application/x-perl|application/x-python|application/x-ruby) return 0 ;;
+        application/x-empty) return 0 ;;
+        inode/x-empty) return 0 ;;
+      esac
+      return 1
+    }
     v() {
       if [ $# -eq 0 ]; then
         nvim
         return
       fi
       local target="$1"
-      local abs="''${target:A}"        # zsh: absolute, resolves symlinks
+      local abs="''${target:A}"
       if [ -d "$abs" ]; then
         yazi "$abs"
+        return
+      fi
+      if ! _is_textish "$abs"; then
+        open "$abs"
         return
       fi
       local dir="''${abs:h}"
@@ -154,32 +172,60 @@
     #   ff [pattern]   find file/dir (respect .gitignore) → v opens it
     #   fa [pattern]   like ff but include hidden + ignored
     #   fw [query]     live-grep through repo → opens nvim at git root + line
+    # Smart preview: dirs → eza tree, images → chafa ASCII, audio/video →
+    # ffprobe summary, pdf → pdftotext, sqlite → schema, fallback → bat.
+    _smart_preview='
+      f={}
+      if [ -d "$f" ]; then
+        eza --tree --color=always --icons=auto --level=2 "$f" 2>/dev/null
+        exit
+      fi
+      mime=$(file --mime-type -b "$f")
+      case "$mime" in
+        image/*) chafa -f sixel -s 80x40 --animate=off "$f" 2>/dev/null \
+                   || chafa --size=80x40 "$f" 2>/dev/null ;;
+        video/*|audio/*) ffprobe -v error -show_format -show_streams "$f" 2>/dev/null | head -40 ;;
+        application/pdf) pdftotext "$f" - 2>/dev/null | head -200 ;;
+        application/x-sqlite3|application/vnd.sqlite3) sqlite3 "$f" .schema 2>/dev/null | head -80 ;;
+        application/zip|application/x-tar|application/gzip|application/x-bzip2|application/x-xz|application/x-7z-compressed)
+          file "$f" ; echo ; tar tf "$f" 2>/dev/null | head -50 ;;
+        *) bat --color=always --style=numbers --line-range=:200 "$f" 2>/dev/null || cat "$f" ;;
+      esac
+    '
+    # If the LAST arg is a directory, peel it off as the search root —
+    #   ff <pattern>          search current dir for <pattern>
+    #   ff <folder>           list everything in <folder>
+    #   ff <pattern> <folder> search <folder> for <pattern>
+    _peel_root() {
+      _peel_root_root="."
+      _peel_root_args=("$@")
+      if (( $#_peel_root_args >= 1 )) && [ -d "$_peel_root_args[-1]" ]; then
+        _peel_root_root="$_peel_root_args[-1]"
+        # zsh slice un-quoted so each element stays separate (quotes would
+        # join them into one string).
+        _peel_root_args=($_peel_root_args[1,-2])
+      fi
+    }
     ff() {
+      _peel_root "$@"
       local picked
-      picked="$(fd --type f --type d --hidden --exclude .git "$@" 2>/dev/null \
-        | fzf --preview '
-            if [ -d {} ]; then
-              eza --tree --color=always --icons=auto --level=2 {} 2>/dev/null
-            else
-              bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}
-            fi')"
+      picked="$(fd --type f --type d --hidden --exclude .git "$_peel_root_args[@]" . "$_peel_root_root" 2>/dev/null \
+        | fzf --preview "$_smart_preview")"
       [ -n "$picked" ] && v "$picked"
     }
     fa() {
+      _peel_root "$@"
       local picked
-      picked="$(fd --type f --type d --hidden --no-ignore --exclude .git "$@" 2>/dev/null \
-        | fzf --preview '
-            if [ -d {} ]; then
-              eza --tree --color=always --icons=auto --level=2 {} 2>/dev/null
-            else
-              bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}
-            fi')"
+      picked="$(fd --type f --type d --hidden --no-ignore --exclude .git "$_peel_root_args[@]" . "$_peel_root_root" 2>/dev/null \
+        | fzf --preview "$_smart_preview")"
       [ -n "$picked" ] && v "$picked"
     }
     fw() {
-      local query="''${*:-.}"
+      _peel_root "$@"
+      local query="''${_peel_root_args[*]:-.}"
       local picked
-      picked="$(rg --line-number --no-heading --color=never --hidden -g '!.git' "$query" 2>/dev/null \
+      picked="$(rg --line-number --no-heading --color=never --hidden -g '!.git' \
+        "$query" "$_peel_root_root" 2>/dev/null \
         | fzf --delimiter=: \
             --preview 'bat --color=always --highlight-line {2} --style=numbers,changes {1}' \
             --preview-window 'right,60%,+{2}-/2')"
