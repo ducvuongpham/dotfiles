@@ -16,7 +16,6 @@ require("items.wifi")
 require("items.brightness")
 require("items.volume")
 require("items.cpu")
-require("items.recording_padding")
 
 sbar.end_config()
 sbar.event_loop()
