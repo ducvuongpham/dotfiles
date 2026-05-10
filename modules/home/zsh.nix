@@ -201,43 +201,33 @@
     # NIX_GET_COMPLETIONS — Determinate's _nix function uses that and already
     # handles `nix run he<TAB>` correctly. No custom override needed.
 
-    # Smart TAB: if the first word isn't a command on PATH but matches the
-    # cached nixpkgs package list, rewrite the buffer to
-    # `nix run nixpkgs#<word>` before completing. Fzf-tab then picks up the
-    # native `nix` completer and lets you fuzzy-pick the package.
-    _my_nix_run_expand() {
-      # only fire while typing the first word (no spaces yet)
-      if [[ "$LBUFFER" != *' '* ]] && (( ''${#LBUFFER} >= 2 )); then
-        local first=$LBUFFER
-        if (( ! $+commands[$first] )); then
-          local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
-          if [[ -f $cache ]]; then
-            local -a all matches
-            all=("''${(@f)$(<$cache)}")
-            matches=("''${(@M)all:#''${first}*}")
-            if (( ''${#matches} > 0 )); then
-              LBUFFER="nix run nixpkgs#$first"
-              CURSOR=''${#LBUFFER}
-              # Push another TAB into the key buffer so zsh re-enters tab
-              # completion on the now-rewritten line and the fzf popup fires
-              # without the user having to press TAB twice.
-              zle -U $'\t'
-              return 0
-            fi
-          fi
-        fi
-      fi
-      # Default: defer to whatever was bound to TAB before we hijacked it
-      # (fzf-tab-complete when fzf-tab is loaded, otherwise expand-or-complete).
-      if (( $+widgets[fzf-tab-complete] )); then
-        zle fzf-tab-complete
-      else
-        zle expand-or-complete
-      fi
+    # Smart TAB fallback: when the word being completed sits in command
+    # position (first word OR after | ; && || &) and isn't a command on PATH
+    # but matches the cached nixpkgs package list, offer
+    # `nix run nixpkgs#<match>` candidates. Registered as a zsh completer so
+    # it runs on a single TAB and feeds matches through fzf-tab naturally.
+    _my_nix_run_completer() {
+      local pre=$PREFIX
+      (( ''${#pre} >= 2 )) || return 1
+      (( $+commands[$pre] )) && return 1
+      # Only fire in command position: words[CURRENT-1] is empty (start of
+      # cmdline) or one of the shell separators.
+      local prev=''${words[CURRENT-1]:-}
+      case $prev in
+        ""|"|"|";"|"&&"|"||"|"&") ;;
+        *) return 1 ;;
+      esac
+      local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
+      [[ -f $cache ]] || return 1
+      local -a all matches
+      all=("''${(@f)$(<$cache)}")
+      matches=("''${(@M)all:#''${pre}*}")
+      (( ''${#matches} > 0 )) || return 1
+      local -a suggestions=("''${matches[@]/#/nix run nixpkgs#}")
+      compadd -U -Q -- "''${suggestions[@]}"
+      return 0
     }
-    zle -N _my_nix_run_expand
-    bindkey -M viins '^I' _my_nix_run_expand
-    bindkey -M emacs '^I' _my_nix_run_expand
+    zstyle ':completion:*' completer _complete _my_nix_run_completer
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
