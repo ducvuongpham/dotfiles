@@ -9,7 +9,10 @@
     after-login-command = []
     # borders + sketchybar are managed by `brew services` (launchd) so they
     # start independently and survive AeroSpace restarts. No need to launch here.
-    after-startup-command = []
+    # Reload config a few seconds after startup — at login AeroSpace can race
+    # display detection and workspace-to-monitor pinning ends up wrong; the
+    # reload re-applies it once monitors are stable.
+    after-startup-command = ['exec-and-forget sh -c "sleep 5 && /opt/homebrew/bin/aerospace reload-config"']
     # Fire SKETCHYBAR event on workspace change so the bar updates highlight.
     exec-on-workspace-change = ['/bin/bash', '-c',
       'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
