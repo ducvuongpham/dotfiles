@@ -4,18 +4,31 @@ node = "20"
 xcodes = "latest"
 
 [settings]
-# Read idiomatic per-language version files (.nvmrc, .python-version, etc.)
-# in addition to .mise.toml and .tool-versions.
+# Read idiomatic per-language version files in addition to mise.toml /
+# .tool-versions. `["all"]` is documented but not honored by mise 2026.5.3,
+# so the full list from
+# https://mise.jdx.dev/configuration.html#idiomatic-version-files
+# is enumerated explicitly.
 idiomatic_version_file_enable_tools = [
-  "node",      # .nvmrc, .node-version
-  "python",   # .python-version
-  "ruby",     # .ruby-version
-  "go",       # .go-version
-  "rust",     # rust-toolchain[.toml]
-  "java",     # .java-version
-  "elixir",   # .exenv-version
-  "erlang",   # .erlang-version
-  "crystal",  # .crystal-version
-  "terraform",# .terraform-version
-  "dotnet",   # global.json
+  "atmos",
+  "bun",
+  "crystal",
+  "deno",
+  "dotnet",
+  "elixir",
+  "go",
+  "java",
+  "node",
+  "npm",
+  "opentofu",
+  "packer",
+  "perl",
+  "pnpm",
+  "python",
+  "ruby",
+  "rust",
+  "terraform",
+  "terragrunt",
+  "terramate",
+  "yarn",
 ]

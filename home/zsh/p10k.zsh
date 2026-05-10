@@ -1767,60 +1767,153 @@ typeset -g POWERLEVEL9K_NNN_FOREGROUND='#a5adcb'
 # Hidden unless a .mise.toml / .tool-versions / mise.toml exists in $PWD or
 # any ancestor.
 typeset -gA __mise_icon=(
-  node       '󰎙'
-  bun        ''
-  deno       ''
-  python     '󰌠'
-  go         '󰟓'
-  rust       '󱘗'
-  ruby       '󰴭'
-  java       '󰬷'
-  elixir     '󰟼'
-  erlang     ''
-  crystal    ''
-  dotnet     '󰪮'
-  terraform  '󱁢'
-  kubectl    '󱃾'
-  claude     '󰚩'
-  xcodes     ''
+  # Devicons (nf-dev-*) — language logos. Codepoints from
+  # https://www.nerdfonts.com/cheat-sheet (verified against glyphnames.json).
+  node        $''   # dev-nodejs
+  bun         $''   # dev-bun
+  deno        $''   # dev-denojs
+  python      $''   # dev-python
+  ruby        $''   # dev-ruby
+  go          $''   # dev-go
+  rust        $''   # dev-rust
+  java        $''   # dev-java
+  elixir      $''   # dev-elixir
+  erlang      $''   # dev-erlang
+  crystal     $''   # dev-crystal
+  haskell     $''   # dev-haskell
+  clojure     $''   # dev-clojure
+  scala       $''   # dev-scala
+  perl        $''   # dev-perl
+  php         $''   # dev-php
+  ocaml       $''   # dev-ocaml
+  kotlin      $''   # dev-kotlin
+  swift       $''   # dev-swift
+  lua         $''   # dev-lua
+  julia       $''   # dev-julia
+  nim         $''   # dev-nim
+  zig         $''   # dev-zig
+  dart        $''   # dev-dart
+  flutter     $''   # dev-flutter
+  csharp      $''   # dev-csharp
+  dotnet      $''   # dev-csharp (no separate dotnet glyph)
+  terraform   $''   # dev-terraform
+  kubectl     $''   # dev-kubernetes
+  helm        $''   # dev-helm
+  docker      $''   # dev-docker
+  gradle      $''   # dev-gradle
+  maven       $''   # dev-maven
+  ansible     $''   # dev-ansible
+  bash        $''   # dev-bash
+  powershell  $''   # dev-powershell
+  claude      $''   # fa-robot
+  xcodes      $''   # fa-apple
+  fortran     $''   # dev-fortran
+  groovy      $''   # dev-groovy
+  # Tools without a matching nf-dev glyph (gleam, mojo, odin, roc,
+  # racket, vlang, etc.) fall through and render as "name version".
 )
 typeset -gA __mise_color=(
-  node       '#a6da95'   # green
-  bun        '#cad3f5'
-  deno       '#a6da95'
-  python     '#eed49f'   # yellow
-  go         '#7dc4e4'   # sapphire
-  rust       '#f5a97f'   # peach
-  ruby       '#ed8796'   # red
-  java       '#f5a97f'
-  elixir     '#c6a0f6'   # mauve
-  erlang     '#ed8796'
-  crystal    '#cad3f5'
-  dotnet     '#c6a0f6'
-  terraform  '#c6a0f6'
-  kubectl    '#7dc4e4'
-  claude     '#c6a0f6'
-  xcodes     '#7dc4e4'
+  # macchiato palette — pick the swatch closest to each language's branding.
+  node        '#a6da95'   # green
+  bun         '#eed49f'   # bun's branding is cream/beige → yellow
+  deno        '#cad3f5'   # text (deno's logo is monochrome)
+  python      '#eed49f'   # yellow + blue dual; pick yellow
+  ruby        '#ed8796'   # red
+  go          '#7dc4e4'   # sapphire (go cyan)
+  rust        '#f5a97f'   # peach (rust orange)
+  java        '#f5a97f'   # peach
+  elixir      '#c6a0f6'   # mauve
+  erlang      '#ed8796'   # red
+  crystal     '#cad3f5'   # text (crystal logo is monochrome)
+  haskell     '#c6a0f6'   # mauve
+  clojure     '#a6da95'   # green
+  scala       '#ed8796'   # red
+  perl        '#7dc4e4'   # sapphire
+  php         '#c6a0f6'   # mauve
+  ocaml       '#f5a97f'   # peach
+  kotlin      '#c6a0f6'   # mauve
+  swift       '#f5a97f'   # peach
+  lua         '#7dc4e4'   # sapphire
+  julia       '#c6a0f6'   # mauve
+  nim         '#eed49f'   # yellow
+  zig         '#f5a97f'   # peach
+  dart        '#7dc4e4'   # sapphire
+  flutter     '#7dc4e4'   # sapphire
+  csharp      '#c6a0f6'   # mauve
+  dotnet      '#c6a0f6'   # mauve
+  terraform   '#c6a0f6'   # mauve
+  kubectl     '#7dc4e4'   # sapphire
+  helm        '#7dc4e4'   # sapphire
+  docker      '#7dc4e4'   # sapphire
+  gradle      '#a6da95'   # green
+  maven       '#ed8796'   # red
+  ansible     '#ed8796'   # red
+  bash        '#a6da95'   # green
+  powershell  '#7dc4e4'   # sapphire
+  claude      '#c6a0f6'   # mauve
+  xcodes      '#cad3f5'   # text (apple is monochrome here)
+  fortran     '#c6a0f6'   # mauve
+  groovy      '#7dc4e4'   # sapphire
 )
 
 function prompt_mise() {
-  (( $+commands[mise] )) || return
-  local d="$PWD"
-  while [[ "$d" != "/" ]]; do
-    [[ -e "$d/.mise.toml" || -e "$d/.tool-versions" || -e "$d/mise.toml" ]] && break
-    d="${d:h}"
-  done
-  [[ "$d" == "/" ]] && return
+  (( $+commands[mise] && $+commands[jq] )) || return
 
-  local line tool ver icon fg
-  while IFS= read -r line; do
-    tool="${${(s: :)line}[1]}"
-    ver="${${(s: :)line}[2]}"
+  local global_path="$HOME/.config/mise/config.toml"
+  local json
+  json="$(mise ls --current --json 2>/dev/null)" || return
+  [[ -z "$json" || "$json" == "{}" || "$json" == "[]" ]] && return
+
+  # Parse mise's JSON: { "<tool>": [{ "version": ..., "source": { "path": ...}, "active": true } ] }
+  # Emit "tool\tversion\tsource_path" for active entries, sorted by tool name.
+  local -a entries
+  entries=( ${(f)"$(print -r -- "$json" | jq -r --arg gp "$global_path" '
+    to_entries
+    | sort_by(.key)[]
+    | .key as $tool
+    | (.value | map(select(.active == true))[0]) as $a
+    | select($a != null)
+    | "\($tool)\t\($a.version)\t\($a.source.path // "")"
+  ' 2>/dev/null)"} )
+
+  # Bucket: locals (source != global), globals (source == global or empty).
+  local -a locals globals
+  local entry tool ver src
+  for entry in $entries; do
+    tool="${entry%%$'\t'*}"
+    local rest="${entry#*$'\t'}"
+    ver="${rest%%$'\t'*}"
+    src="${rest#*$'\t'}"
     [[ -z "$tool" || -z "$ver" ]] && continue
-    icon="${__mise_icon[$tool]:-󰒔}"
-    fg="${__mise_color[$tool]:-#7dc4e4}"
-    p10k segment -s "$tool" -t "$icon $ver" -f "$fg"
-  done < <(mise current 2>/dev/null)
+    if [[ -n "$src" && "$src" != "$global_path" ]]; then
+      locals+=("$tool $ver")
+    else
+      globals+=("$tool $ver")
+    fi
+  done
+
+  # Show locals if any; otherwise show all globals.
+  local -a to_show
+  if (( ${#locals} > 0 )); then
+    to_show=("${locals[@]}")
+  else
+    to_show=("${globals[@]}")
+  fi
+  (( ${#to_show} == 0 )) && return
+
+  local seg t v icon fg display
+  for seg in $to_show; do
+    t="${seg%% *}"
+    v="${seg#* }"
+    icon="${__mise_icon[$t]}"
+    fg="${__mise_color[$t]:-#cad3f5}"
+    if [[ -n "$icon" ]]; then
+      display="$icon $v"
+    else
+      display="$t $v"
+    fi
+    p10k segment -s "$t" -t "$display" -f "$fg"
+  done
 }
 # (No need for global MISE_FOREGROUND / VISUAL_IDENTIFIER overrides — each
 # `p10k segment` call sets its own -f and -i.)
