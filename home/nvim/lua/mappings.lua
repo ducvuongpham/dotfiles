@@ -180,7 +180,11 @@ map("n", "dx", function()
 end, { desc = "Show diagnostic at cursor" })
 
 -- ── Notifications / messages (noice + snacks) ────────────────────────────────
-map("n", "<leader>nh", "<cmd>Noice history<CR>", { desc = "Notify history" })
+map("n", "<leader>nh", "<cmd>Noice history<CR>", { desc = "Notify history (noice)" })
+map("n", "<leader>nH", function()
+  require("snacks").notifier.show_history()
+end, { desc = "Notify history (snacks, full text)" })
+map("n", "<leader>ne", "<cmd>Noice errors<CR>", { desc = "Errors only" })
 map("n", "<leader>nl", "<cmd>Noice last<CR>", { desc = "Notify last message" })
 map("n", "<leader>nd", function()
   require("snacks").notifier.hide()

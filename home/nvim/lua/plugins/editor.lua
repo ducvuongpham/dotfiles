@@ -20,9 +20,16 @@ require("snacks").setup {
   -- noice.nvim routes :messages / errors / lsp messages here.
   notifier = {
     enabled = true,
-    timeout = 3000,
-    style = "compact",
+    timeout = 5000,
+    -- "fancy" preserves multi-line content; "compact" was clipping long errors.
+    style = "fancy",
     top_down = false,
+    -- Keep errors on screen until manually dismissed (<leader>nd). Warnings
+    -- linger 10s; info/debug fade per `timeout` above.
+    keep = function(notif)
+      return notif.level == "error"
+    end,
+    level = vim.log.levels.TRACE,
   },
 }
 
