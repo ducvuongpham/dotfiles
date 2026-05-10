@@ -18,6 +18,16 @@
     atuin             # shell history search/sync
     android-tools     # adb / fastboot
     yt-dlp            # video downloader (YouTube + many other sites)
+    uv                # fast Python package/project manager (used by koe server)
+
+    # koe overlay (Tauri v2): Rust toolchain + tauri CLI. Build with
+    # `cargo tauri build` from ~/code/koe/overlay/. libiconv is required
+    # for nix-rustc to link against on darwin (the SDK's .tbd alone isn't
+    # discoverable through nix's cc-wrapper).
+    rustc
+    cargo
+    cargo-tauri
+    libiconv
     kew               # terminal music player (vim-keys via config)
     vivid             # generates LS_COLORS for theming `ls`, completion menus
     claude-code       # Anthropic's CLI (was managed by mise; nix is more declarative)

@@ -5,6 +5,7 @@
     ./homebrew.nix
     ./login-items.nix
     ./spotlight-exclusions.nix
+    ./disable-file-indexing.nix
   ];
 
   # Determinate Nix manages the daemon itself — keep nix-darwin off the daemon.

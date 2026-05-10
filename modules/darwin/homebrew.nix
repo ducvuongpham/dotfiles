@@ -35,6 +35,7 @@
       "figma"                  # proprietary, not in nixpkgs
       "hoppscotch"             # API client (open-source Postman alternative); not in nixpkgs
       "bluesnooze"             # auto-disable Bluetooth on sleep; not in nixpkgs
+      "blackhole-2ch"          # virtual audio device — capture system audio for whisper-stream
     ];
 
     masApps = { };
