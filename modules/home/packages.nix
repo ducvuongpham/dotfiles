@@ -21,6 +21,7 @@
     vivid             # generates LS_COLORS for theming `ls`, completion menus
     claude-code       # Anthropic's CLI (was managed by mise; nix is more declarative)
     fastfetch         # neofetch-style system info on shell start (`ff`)
+    zsh-fzf-tab       # interactive fzf-popup completion menu (sourced from .zshrc)
 
     # yazi runtime previewers
     ffmpeg

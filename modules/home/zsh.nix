@@ -35,6 +35,10 @@
     zstyle ':z4h:direnv'                            enable                 yes
     zstyle ':z4h:direnv:success'                    notify                 yes
 
+    # fzf-tab is installed via nix (modules/home/packages.nix) and sourced
+    # from its store path after z4h init below — z4h's plugin loader uses
+    # its own tar invocation that breaks against uutils-tar 0.0.1.
+
     # Enable ('yes') or disable ('no') automatic teleportation of z to
     # a directory of the most-recently-visited subdirectory.
     zstyle ':z4h:cd-down'                           recurse-dirs           yes
@@ -52,7 +56,8 @@
       fi
     fi
 
-    # Install or update core z4h plugins.
+    # Install or update core z4h plugins (fzf-tab is loaded via the
+    # ':z4h:fzf-tab channel stable' zstyle above — z4h handles install).
     z4h install ohmyzsh/ohmyzsh || return
 
     # Extend PATH.
@@ -95,6 +100,18 @@
     # that contain it anywhere (z4h's local-history substring widgets).
     bindkey -M viins '^P' z4h-up-substring-local
     bindkey -M viins '^N' z4h-down-substring-local
+
+    # Source fzf-tab from the nix-store-installed package (avoids z4h's
+    # downloader, which uses tar flags incompatible with uutils-tar).
+    zmodload zsh/complist
+    zstyle ':completion:*' menu no
+    source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
+    zstyle ':fzf-tab:*' fzf-flags --height=40% --no-preview --border=none --layout=default
+    zstyle ':fzf-tab:*' fzf-min-height 5
+    zstyle ':fzf-tab:*' switch-group ',' '.'
+    zstyle ':fzf-tab:*' show-group brief
+    zstyle ':completion:*' group-name ""
+    zstyle ':completion:*:descriptions' format '[%d]'
 
     # Aliases
     alias ls='eza --icons=auto'
