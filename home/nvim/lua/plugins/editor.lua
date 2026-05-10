@@ -20,8 +20,7 @@ require("snacks").setup {
   -- noice.nvim routes :messages / errors / lsp messages here.
   notifier = {
     enabled = true,
-    timeout = 5000,
-    -- "fancy" preserves multi-line content; "compact" was clipping long errors.
+    timeout = 3000,
     style = "fancy",
     top_down = false,
     -- Wider toasts + wrapping so long errors aren't ellipsised. Up to 80% of
@@ -29,11 +28,6 @@ require("snacks").setup {
     width = { min = 40, max = 0.8 },
     height = { min = 1, max = 0.6 },
     margin = { top = 0, right = 1, bottom = 0 },
-    -- Keep errors on screen until manually dismissed (<leader>nd). Warnings
-    -- linger 10s; info/debug fade per `timeout` above.
-    keep = function(notif)
-      return notif.level == "error"
-    end,
     level = vim.log.levels.TRACE,
   },
   -- Default styles for popup-like windows: enable wrap so even non-toast
