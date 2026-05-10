@@ -117,6 +117,16 @@
     export EDITOR=nvim
     export VISUAL=nvim
 
+    # History — 100k entries, dedup aggressively.
+    HISTSIZE=100000
+    SAVEHIST=100000
+    setopt HIST_IGNORE_ALL_DUPS    # if a new entry duplicates an older one, drop the older
+    setopt HIST_IGNORE_SPACE       # commands starting with a space aren't recorded
+    setopt HIST_FIND_NO_DUPS       # don't show dups while searching history
+    setopt HIST_SAVE_NO_DUPS       # don't write dups to the history file
+    setopt HIST_REDUCE_BLANKS      # collapse runs of whitespace before saving
+    setopt SHARE_HISTORY           # incrementally share history between sessions
+
     # Aliases
     alias ls='eza --icons=auto'
     alias ll='eza -lah --icons=auto --git'
@@ -255,6 +265,15 @@
 
     # atuin (shell history search). Hooks Up-Arrow + Ctrl-R.
     eval "$(atuin init zsh)"
+    # Disable atuin in vi NORMAL mode — atuin binds ^R / Up / k / j in vicmd
+    # too, which fights vim-style history navigation. Restore vi defaults.
+    bindkey -M vicmd '^R'   redo
+    bindkey -M vicmd '^[[A' up-line-or-history
+    bindkey -M vicmd '^[OA' up-line-or-history
+    bindkey -M vicmd '^[[B' down-line-or-history
+    bindkey -M vicmd '^[OB' down-line-or-history
+    bindkey -M vicmd 'k'    up-line-or-history
+    bindkey -M vicmd 'j'    down-line-or-history
 
     # direnv (z4h has its own integration via zstyle above; this is a fallback)
     if ! type _direnv_hook >/dev/null 2>&1; then
