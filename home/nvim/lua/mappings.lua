@@ -175,3 +175,11 @@ map("n", "dx", function()
     scope = "line",
   })
 end, { desc = "Show diagnostic at cursor" })
+
+-- ── Notifications / messages (noice + snacks) ────────────────────────────────
+map("n", "<leader>nh", "<cmd>Noice history<CR>", { desc = "Notify history" })
+map("n", "<leader>nl", "<cmd>Noice last<CR>", { desc = "Notify last message" })
+map("n", "<leader>nd", function()
+  require("snacks").notifier.hide()
+end, { desc = "Dismiss all notifications" })
+map("n", "<leader>nm", "<cmd>Noice telescope<CR>", { desc = "Search messages" })

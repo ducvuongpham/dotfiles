@@ -36,6 +36,50 @@ end
 apply_overrides()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = apply_overrides })
 
+-- ── Noice (cmdline popup + message routing) ─────────────────────────────────
+-- Floating cmdline replaces the bottom statusline cmdline. Messages, errors,
+-- and LSP popups route to snacks.notifier (see editor.lua) for toast-style UX.
+require("noice").setup {
+  cmdline = {
+    enabled = true,
+    view = "cmdline_popup",
+  },
+  messages = {
+    enabled = true,
+    view = "notify",
+    view_error = "notify",
+    view_warn = "notify",
+    view_history = "messages",
+    view_search = "virtualtext",
+  },
+  popupmenu = {
+    enabled = true,
+    backend = "nui",
+  },
+  lsp = {
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+    progress = { enabled = false }, -- fidget.nvim handles LSP progress
+    hover = { enabled = true, silent = true },
+    signature = { enabled = true },
+  },
+  presets = {
+    bottom_search = false,
+    command_palette = true,
+    long_message_to_split = true,
+    inc_rename = false,
+    lsp_doc_border = true,
+  },
+  routes = {
+    -- Skip "written" / "no lines in buffer" noise.
+    { filter = { event = "msg_show", kind = "", find = "written" }, opts = { skip = true } },
+    { filter = { event = "msg_show", find = "No lines in buffer" }, opts = { skip = true } },
+  },
+}
+
 -- ── Statusline ────────────────────────────────────────────────────────────────
 require("lualine").setup {
   options = {

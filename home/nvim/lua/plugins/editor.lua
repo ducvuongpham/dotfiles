@@ -16,6 +16,14 @@ require("snacks").setup {
       end)
     end,
   },
+  -- Toast notifications: replaces vim.notify with a stacked, dismissable popup.
+  -- noice.nvim routes :messages / errors / lsp messages here.
+  notifier = {
+    enabled = true,
+    timeout = 3000,
+    style = "compact",
+    top_down = false,
+  },
 }
 
 -- ── Dressing (eager — overrides vim.ui before any prompts appear) ─────────────

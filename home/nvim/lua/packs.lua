@@ -25,6 +25,7 @@ vim.pack.add({
   { src = "https://github.com/utilyre/barbecue.nvim" },
   { src = "https://github.com/NvChad/base46" },
   { src = "https://github.com/NvChad/ui" },
+  { src = "https://github.com/folke/noice.nvim" },
 
   -- Editor
   { src = "https://github.com/folke/which-key.nvim" },
