@@ -118,14 +118,14 @@
     # of `nix-shell -p` prints "[Eval failed, can't complete (an URL might
     # not be cached)]". Override the whole _nix-shell completion with one
     # backed by a cached package list that's refreshed once a day.
-    _my_nix_pkg_names() {
+    # Build/refresh the cached nixpkgs package list on demand.
+    _my_nix_refresh_cache() {
       local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
       local age=999999
       if [[ -f $cache ]]; then
         age=$(( $(date +%s) - $(date -r "$cache" +%s 2>/dev/null || echo 0) ))
       fi
       if (( age > 86400 )) || [[ ! -s $cache ]]; then
-        _message 'building nixpkgs package list (one-time, ~30s)…'
         local store
         store=$(nix flake prefetch --json \
           'https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/%2A.tar.gz' \
@@ -136,10 +136,41 @@
           | sed 's/^nixpkgs\.//' > "$cache.tmp" \
           && mv "$cache.tmp" "$cache"
       fi
-      local -a pkgs
-      pkgs=("''${(@f)$(<$cache)}")
-      _wanted packages expl 'nix package' compadd -a pkgs
+      print -- "$cache"
     }
+
+    # Live-search fallback when the cache misses. Hits `nix search` (network) and
+    # caches the result so the next tab is instant. Only fires for prefixes
+    # >= 2 chars to avoid pulling tens of thousands of results.
+    _my_nix_live_search() {
+      local prefix=$1
+      [[ ''${#prefix} -lt 2 ]] && return 1
+      _message "searching nixpkgs for ''${prefix}…"
+      local json
+      json=$(nix search --json nixpkgs "^''${prefix}" 2>/dev/null) || return 1
+      [[ -z $json || $json == "{}" ]] && return 1
+      print -- "$json" | jq -r 'keys[] | sub("^legacyPackages\\.[^.]+\\."; "")'
+    }
+
+    # `nix-shell -p <TAB>` and `-A <TAB>` package completer. Cache first, live
+    # search fallback if cache yields no matches for what the user has typed.
+    _my_nix_pkg_names() {
+      local cache
+      cache=$(_my_nix_refresh_cache) || { _message 'nixpkgs prefetch failed'; return 1; }
+      local -a pkgs matches
+      pkgs=("''${(@f)$(<$cache)}")
+      local pre=''${PREFIX:-}
+      matches=("''${(@M)pkgs:#''${pre}*}")
+      if (( ''${#matches} == 0 )); then
+        local -a live
+        live=("''${(@f)$(_my_nix_live_search "$pre")}")
+        if (( ''${#live} > 0 )); then
+          matches=($live)
+        fi
+      fi
+      _wanted packages expl 'nix package' compadd -a matches
+    }
+
     _my_nix_shell() {
       local -a opts=(
         '--command[Run command instead of starting interactive shell]:Command:_command_names'
@@ -165,6 +196,56 @@
       _arguments -s "''${opts[@]}" "''${args[@]}"
     }
     compdef _my_nix_shell nix-shell
+
+    # `nix run|shell|build [nixpkgs#]<pkg>` — supports both bare `hello` (auto
+    # prefixed nixpkgs#) and explicit `nixpkgs#hello`.
+    _my_nix_flake_target() {
+      local cache
+      cache=$(_my_nix_refresh_cache) || return 1
+      local pre=''${PREFIX:-}
+      local flake_prefix="" attr_pre=$pre
+      if [[ $pre == *#* ]]; then
+        flake_prefix="''${pre%%#*}#"
+        attr_pre="''${pre#*#}"
+      fi
+      local -a pkgs matches
+      pkgs=("''${(@f)$(<$cache)}")
+      matches=("''${(@M)pkgs:#''${attr_pre}*}")
+      if (( ''${#matches} == 0 )); then
+        matches=("''${(@f)$(_my_nix_live_search "$attr_pre")}")
+      fi
+      if [[ -n $flake_prefix ]]; then
+        matches=("''${matches[@]/#/$flake_prefix}")
+      else
+        # bare prefix: also offer `nixpkgs#name` so users can pick the explicit form
+        local -a prefixed=("''${matches[@]/#/nixpkgs#}")
+        matches=("''${matches[@]}" "''${prefixed[@]}")
+      fi
+      _wanted targets expl 'flake target' compadd -a matches
+    }
+
+    _my_nix() {
+      local sub=''${words[2]:-}
+      case $sub in
+        run|shell|build|develop|profile)
+          _arguments \
+            '1:subcommand:(run shell build develop profile flake search store registry repl eval)' \
+            '*:target:_my_nix_flake_target'
+          ;;
+        search)
+          _arguments \
+            '1:subcommand:(run shell build develop profile flake search store registry repl eval)' \
+            '2:flake:(nixpkgs)' \
+            '*::query:'
+          ;;
+        *)
+          _arguments \
+            '1:subcommand:(run shell build develop profile flake search store registry repl eval)' \
+            '*::arg:_files'
+          ;;
+      esac
+    }
+    compdef _my_nix nix
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
