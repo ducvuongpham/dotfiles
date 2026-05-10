@@ -197,56 +197,9 @@
     }
     compdef _my_nix_shell nix-shell
 
-    # `nix run|shell|build [nixpkgs#]<pkg>` — supports both bare `hello` (auto
-    # prefixed nixpkgs#) and explicit `nixpkgs#hello`.
-    _my_nix_flake_target() {
-      local cache
-      cache=$(_my_nix_refresh_cache) || return 1
-      local pre=''${PREFIX:-}
-      local flake_prefix="" attr_pre=$pre
-      if [[ $pre == *#* ]]; then
-        flake_prefix="''${pre%%#*}#"
-        attr_pre="''${pre#*#}"
-      fi
-      local -a pkgs matches
-      pkgs=("''${(@f)$(<$cache)}")
-      matches=("''${(@M)pkgs:#''${attr_pre}*}")
-      if (( ''${#matches} == 0 )); then
-        matches=("''${(@f)$(_my_nix_live_search "$attr_pre")}")
-      fi
-      if [[ -n $flake_prefix ]]; then
-        matches=("''${matches[@]/#/$flake_prefix}")
-      else
-        # bare prefix: also offer `nixpkgs#name` so users can pick the explicit form
-        local -a prefixed=("''${matches[@]/#/nixpkgs#}")
-        matches=("''${matches[@]}" "''${prefixed[@]}")
-      fi
-      _wanted targets expl 'flake target' compadd -a matches
-    }
-
-    _my_nix() {
-      # words[1]=nix; words[2]=subcommand; words[CURRENT]=word being typed.
-      local sub=''${words[2]:-}
-      if (( CURRENT == 2 )); then
-        local -a subs=(run shell build develop profile flake search store registry repl eval)
-        _wanted subcommands expl 'nix subcommand' compadd -a subs
-        return
-      fi
-      case $sub in
-        run|shell|build|develop)
-          _my_nix_flake_target
-          ;;
-        search)
-          if (( CURRENT == 3 )); then
-            _wanted flakes expl 'flake' compadd nixpkgs
-          fi
-          ;;
-        *)
-          _files
-          ;;
-      esac
-    }
-    compdef _my_nix nix
+    # The `nix` command (modern flake CLI) ships its own completion via
+    # NIX_GET_COMPLETIONS — Determinate's _nix function uses that and already
+    # handles `nix run he<TAB>` correctly. No custom override needed.
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
