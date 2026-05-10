@@ -67,12 +67,15 @@
     [mode.main.binding]
     # focus pane / monitor — chain a sketchybar trigger so window_title /
     # front_app refresh even when focus moves between two windows of the
-    # same app (front_app_switched doesn't fire in that case).
-    alt-h = ['focus left',  'exec-and-forget sketchybar --trigger aerospace_focus_change']
-    alt-l = ['focus right', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
-    # focus monitor (alt-j: built-in / internal, alt-k: external / secondary)
-    alt-j = ['focus-monitor main',      'exec-and-forget sketchybar --trigger aerospace_focus_change']
-    alt-k = ['focus-monitor secondary', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
+    # same app (front_app_switched doesn't fire in that case). The
+    # --boundaries-action wraps focus around the workspace edges.
+    alt-h = ['focus --boundaries-action wrap-around-the-workspace left',  'exec-and-forget sketchybar --trigger aerospace_focus_change']
+    alt-l = ['focus --boundaries-action wrap-around-the-workspace right', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
+    # focus monitor with wrap (cycles through all displays). With N monitors,
+    # alt-j cycles backward (prev) and alt-k cycles forward (next), wrapping
+    # around 1 → 2 → 3 → 1.
+    alt-j = ['focus-monitor --wrap-around prev', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
+    alt-k = ['focus-monitor --wrap-around next', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
 
     # move
     alt-shift-h = 'move left'
