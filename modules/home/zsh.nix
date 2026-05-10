@@ -201,15 +201,14 @@
     # NIX_GET_COMPLETIONS — Determinate's _nix function uses that and already
     # handles `nix run he<TAB>` correctly. No custom override needed.
 
-    # Smart TAB fallback: when the word being completed sits in command
-    # position (first word OR after | ; && || &) and isn't a command on PATH
-    # but matches the cached nixpkgs package list, offer
-    # `nix run nixpkgs#<match>` candidates. Registered as a zsh completer so
-    # it runs on a single TAB and feeds matches through fzf-tab naturally.
+    # Always-on supplementary completer for command position: adds
+    # `nix run 'nixpkgs#<match>'` candidates alongside whatever _complete
+    # finds, so the fzf-tab popup mixes real commands/aliases/funcs with
+    # nixpkgs candidates in a single menu. Returns 1 so zsh keeps the
+    # completer chain going (stopping early would suppress _complete).
     _my_nix_run_completer() {
       local pre=$PREFIX
       (( ''${#pre} >= 2 )) || return 1
-      (( $+commands[$pre] )) && return 1
       local prev=''${words[CURRENT-1]:-}
       case $prev in
         ""|"|"|";"|"&&"|"||"|"&") ;;
@@ -233,9 +232,9 @@
       compstate[insert]=menu
       _wanted nix-run-fallback expl 'nix run candidate' \
         compadd -U -Q -- "''${suggestions[@]}"
-      return 0
+      return 1
     }
-    zstyle ':completion:*' completer _complete _my_nix_run_completer
+    zstyle ':completion:*' completer _my_nix_run_completer _complete
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
