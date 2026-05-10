@@ -155,8 +155,10 @@ local function refresh()
   end)
 
   -- Apps using significant energy: any process > 20% CPU.
+  -- Use `ps` instead of `top` — top errors with "permissions are incorrect"
+  -- without sudo on macOS (libtop sample needs setgid). ps works always.
   sbar.exec(
-    [[top -l 1 -n 5 -o cpu -stats "command,cpu" 2>/dev/null | awk 'NR>12 && $2+0 > 20 {gsub(/^ +/, ""); print $1 " (" $2 "%)"}' | head -3]],
+    [[ps -axo pcpu=,comm= | awk '$1+0 > 20 {n=split($2,a,"/"); name=a[n]; printf "%s (%.0f%%)\n", name, $1}' | sort -t'(' -k2 -nr | head -3]],
     function(out)
       local lines = {}
       for line in (out or ""):gmatch("[^\r\n]+") do table.insert(lines, line) end
