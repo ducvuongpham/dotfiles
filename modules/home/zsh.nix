@@ -236,6 +236,22 @@
     }
     zstyle ':completion:*' completer _my_nix_run_completer _complete
 
+    # Command-not-found: if zsh can't find a binary but it exists in the
+    # nixpkgs cache, transparently re-run the line as
+    # `nix run 'nixpkgs#<cmd>' -- <args>`.
+    command_not_found_handler() {
+      local cmd=$1
+      shift
+      local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
+      if [[ -f $cache ]] && grep -qxF "$cmd" "$cache"; then
+        print -u2 "→ nix run 'nixpkgs#$cmd' -- $*"
+        nix run "nixpkgs#$cmd" -- "$@"
+        return $?
+      fi
+      print -u2 "zsh: command not found: $cmd"
+      return 127
+    }
+
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
     export VISUAL=nvim
