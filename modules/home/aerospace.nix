@@ -13,14 +13,19 @@
     # display detection and workspace-to-monitor pinning ends up wrong; the
     # reload re-applies it once monitors are stable.
     after-startup-command = ['exec-and-forget sh -c "sleep 5 && /opt/homebrew/bin/aerospace reload-config"']
-    # Fire SKETCHYBAR event on workspace change so the bar updates highlight.
+    # On workspace change: flatten any leftover single-child containers
+    # (closed-window debris) AND fire the sketchybar event for the bar.
     exec-on-workspace-change = ['/bin/bash', '-c',
-      'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+      '/opt/homebrew/bin/aerospace flatten-workspace-tree 2>/dev/null; sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
     ]
 
     start-at-login = true
 
-    enable-normalization-flatten-containers = true
+    # Disabled so `split opposite` (used by alt-enter for dwindle/Fibonacci
+    # tiling) is preserved across normalization. Trade-off: closing a window
+    # may leave single-child containers; run `aerospace flatten-workspace-tree`
+    # if nesting gets deep.
+    enable-normalization-flatten-containers = false
     enable-normalization-opposite-orientation-for-nested-containers = true
 
     accordion-padding = 30
@@ -86,6 +91,17 @@
     # layout
     alt-slash = 'layout tiles horizontal vertical'
     alt-comma = 'layout accordion horizontal vertical'
+
+    # Smart split (Fibonacci / dwindle): wrap the focused window in a new
+    # sub-container with orientation opposite to its parent, then spawn a
+    # fresh Alacritty. The new window joins as sibling of the focused one
+    # in that new container — so each alt-enter spirals inward, splitting
+    # perpendicular to the prior split.
+    alt-enter = ['split opposite', 'exec-and-forget /usr/bin/open -na Alacritty']
+
+    # Manual cleanup: flatten the current workspace (collapses any
+    # single-child containers left behind by closed windows).
+    alt-shift-slash = 'flatten-workspace-tree'
 
     # workspaces
     alt-1 = 'workspace 1'
