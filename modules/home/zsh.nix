@@ -131,9 +131,19 @@
           'https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/%2A.tar.gz' \
           2>/dev/null | jq -r '.storePath' 2>/dev/null)
         [[ -z $store || ! -d $store ]] && return 1
-        nix-env -qaP -f "$store" 2>/dev/null \
-          | awk '{print $1}' \
-          | sed 's/^nixpkgs\.//' > "$cache.tmp" \
+        # Filter out Linux-only packages — meta.platforms is either unset
+        # (= all systems) or must contain the current host system. Otherwise
+        # `nix run nixpkgs#<linux-only>` blows up with eval errors at runtime.
+        local system="$(uname -m | sed 's/arm64/aarch64/')-darwin"
+        nix-env -qaP -f "$store" --json --meta 2>/dev/null \
+          | jq -r --arg sys "$system" '
+              to_entries
+              | map(select(
+                  (.value.meta.platforms // null) == null
+                  or (.value.meta.platforms | index($sys))
+                ))
+              | .[] | .key | sub("^nixpkgs\\."; "")' \
+          > "$cache.tmp" \
           && mv "$cache.tmp" "$cache"
       fi
       print -- "$cache"
