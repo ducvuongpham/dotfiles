@@ -19,6 +19,7 @@
     android-tools     # adb / fastboot
     yt-dlp            # video downloader (YouTube + many other sites)
     vivid             # generates LS_COLORS for theming `ls`, completion menus
+    claude-code       # Anthropic's CLI (was managed by mise; nix is more declarative)
 
     # yazi runtime previewers
     ffmpeg

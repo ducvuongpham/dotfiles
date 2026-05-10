@@ -17,6 +17,7 @@
     ./services.nix
     ./eza.nix
     ./mise.nix
+    ./claude.nix
     # spotlight.nix renamed to apps.nix conceptually — keeping path same.
     ./spotlight.nix
   ];
