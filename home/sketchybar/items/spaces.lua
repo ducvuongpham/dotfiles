@@ -92,8 +92,11 @@ local function refresh(focused)
           local is_visible = visible[ws] or false
           local has_apps = #apps > 0
 
-          -- empty + not focused = hide entirely
-          local draw = has_apps or is_focused
+          -- empty + not focused/visible = hide. An empty workspace that's
+          -- still the visible one on its monitor (e.g. external monitor
+          -- with no apps yet) keeps drawing so the user can tell which
+          -- workspace number that monitor is on.
+          local draw = has_apps or is_focused or is_visible
 
           local color
           if is_focused then color = colors.yellow
