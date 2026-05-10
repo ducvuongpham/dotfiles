@@ -71,15 +71,22 @@ local function refresh(focused)
     for i = 1, 9 do
       local ws = tostring(i)
 
-      -- List apps in this workspace; one per line.
+      -- List apps in this workspace; one icon per window. Sort by
+      -- window-id (numeric, stable) so the order doesn't shuffle as
+      -- focus moves between windows.
       sbar.exec(
-        "aerospace list-windows --workspace " .. ws .. " --format '%{app-name}'",
+        "aerospace list-windows --workspace " .. ws .. " --format '%{window-id} %{app-name}'",
         function(apps_out)
-          local apps = {}
-          for app in (apps_out or ""):gmatch("[^\r\n]+") do
-            local trimmed = app:match("^%s*(.-)%s*$")
-            if trimmed ~= "" then table.insert(apps, trimmed) end
+          local entries = {}
+          for line in (apps_out or ""):gmatch("[^\r\n]+") do
+            local id, name = line:match("^%s*(%d+)%s+(.+)%s*$")
+            if id and name then
+              table.insert(entries, { id = tonumber(id), name = name })
+            end
           end
+          table.sort(entries, function(a, b) return a.id < b.id end)
+          local apps = {}
+          for _, e in ipairs(entries) do table.insert(apps, e.name) end
 
           local is_focused = (ws == focused)
           local is_visible = visible[ws] or false
