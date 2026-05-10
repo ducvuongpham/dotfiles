@@ -116,10 +116,9 @@
     # nix-zsh-completions' _nix_attr_paths uses the legacy ~/.cache/nix/
     # tarballs cache that Determinate Nix never populates → tab-completion
     # of `nix-shell -p` prints "[Eval failed, can't complete (an URL might
-    # not be cached)]". Replace it with a flake-aware completer that
-    # enumerates nixpkgs through the modern store path, caches the package
-    # list to ~/.cache/nix-pkg-names, and refreshes once a day.
-    _nix_attr_paths() {
+    # not be cached)]". Override the whole _nix-shell completion with one
+    # backed by a cached package list that's refreshed once a day.
+    _my_nix_pkg_names() {
       local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
       local age=999999
       if [[ -f $cache ]]; then
@@ -131,10 +130,7 @@
         store=$(nix flake prefetch --json \
           'https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/%2A.tar.gz' \
           2>/dev/null | jq -r '.storePath' 2>/dev/null)
-        if [[ -z $store || ! -d $store ]]; then
-          _message 'nixpkgs prefetch failed'
-          return 1
-        fi
+        [[ -z $store || ! -d $store ]] && return 1
         nix-env -qaP -f "$store" 2>/dev/null \
           | awk '{print $1}' \
           | sed 's/^nixpkgs\.//' > "$cache.tmp" \
@@ -144,6 +140,31 @@
       pkgs=("''${(@f)$(<$cache)}")
       _wanted packages expl 'nix package' compadd -a pkgs
     }
+    _my_nix_shell() {
+      local -a opts=(
+        '--command[Run command instead of starting interactive shell]:Command:_command_names'
+        '--run[Run command non-interactively]:Command:_command_names'
+        '--pure[Clear environment]'
+        '*'{--packages,-p}'[run with packages from <nixpkgs>]:package:_my_nix_pkg_names'
+        '*'{--attr,-A}'[build shell for attr]:attr:_my_nix_pkg_names'
+        '-I[Add nix-path entry]:path:'
+        '-i[Specify interpreter]:interpreter:_command_names'
+      )
+      local -a args=()
+      local word need_pkg=0
+      for word in "''${words[@]}"; do
+        case "$word" in
+          --packages|-p) need_pkg=1 ;;
+        esac
+      done
+      if (( need_pkg )); then
+        args=('*:package:_my_nix_pkg_names')
+      else
+        args=('*:path:_files')
+      fi
+      _arguments -s "''${opts[@]}" "''${args[@]}"
+    }
+    compdef _my_nix_shell nix-shell
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
