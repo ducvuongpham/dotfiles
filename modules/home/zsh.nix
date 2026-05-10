@@ -201,6 +201,30 @@
     # NIX_GET_COMPLETIONS — Determinate's _nix function uses that and already
     # handles `nix run he<TAB>` correctly. No custom override needed.
 
+    # Smart TAB: if the first word isn't a command on PATH but matches the
+    # cached nixpkgs package list, rewrite the buffer to
+    # `nix run nixpkgs#<word>` before completing. Fzf-tab then picks up the
+    # native `nix` completer and lets you fuzzy-pick the package.
+    _my_nix_run_expand() {
+      # only fire while typing the first word (no spaces yet)
+      if [[ "$LBUFFER" != *' '* ]] && (( ''${#LBUFFER} >= 2 )); then
+        local first=$LBUFFER
+        if (( ! $+commands[$first] )); then
+          local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
+          if [[ -f $cache ]]; then
+            local -a matches
+            matches=("''${(@M)$(<$cache):#''${first}*}")
+            if (( ''${#matches} > 0 )); then
+              LBUFFER="nix run nixpkgs#$first"
+            fi
+          fi
+        fi
+      fi
+      zle expand-or-complete
+    }
+    zle -N _my_nix_run_expand
+    bindkey -M viins '^I' _my_nix_run_expand
+
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
     export VISUAL=nvim
