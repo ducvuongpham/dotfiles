@@ -60,13 +60,14 @@
 
     # main mode
     [mode.main.binding]
-    # focus pane
-    alt-h = 'focus left'
-    alt-l = 'focus right'
-
+    # focus pane / monitor — chain a sketchybar trigger so window_title /
+    # front_app refresh even when focus moves between two windows of the
+    # same app (front_app_switched doesn't fire in that case).
+    alt-h = ['focus left',  'exec-and-forget sketchybar --trigger aerospace_focus_change']
+    alt-l = ['focus right', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
     # focus monitor (alt-j: built-in / internal, alt-k: external / secondary)
-    alt-j = 'focus-monitor main'
-    alt-k = 'focus-monitor secondary'
+    alt-j = ['focus-monitor main',      'exec-and-forget sketchybar --trigger aerospace_focus_change']
+    alt-k = ['focus-monitor secondary', 'exec-and-forget sketchybar --trigger aerospace_focus_change']
 
     # move
     alt-shift-h = 'move left'
