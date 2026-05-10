@@ -220,10 +220,17 @@
           fi
         fi
       fi
-      zle expand-or-complete
+      # Call fzf-tab's widget if available so the popup fires; fall back to
+      # the raw zsh completer otherwise.
+      if zle -l | grep -qx 'fzf-tab-complete'; then
+        zle fzf-tab-complete
+      else
+        zle expand-or-complete
+      fi
     }
     zle -N _my_nix_run_expand
     bindkey -M viins '^I' _my_nix_run_expand
+    bindkey -M emacs '^I' _my_nix_run_expand
 
     # Default editor — many tools exec this directly (git commit, lazygit, etc.)
     export EDITOR=nvim
