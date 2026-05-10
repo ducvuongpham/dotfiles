@@ -60,11 +60,13 @@
 
     # main mode
     [mode.main.binding]
-    # focus
+    # focus pane
     alt-h = 'focus left'
-    alt-j = 'focus down'
-    alt-k = 'focus up'
     alt-l = 'focus right'
+
+    # focus monitor (alt-j: built-in / internal, alt-k: external / secondary)
+    alt-j = 'focus-monitor main'
+    alt-k = 'focus-monitor secondary'
 
     # move
     alt-shift-h = 'move left'
