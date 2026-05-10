@@ -221,7 +221,13 @@
       all=("''${(@f)$(<$cache)}")
       matches=("''${(@M)all:#''${pre}*}")
       (( ''${#matches} > 0 )) || return 1
-      local -a suggestions=("''${matches[@]/#/nix run nixpkgs#}")
+      # Single-quote the flake ref — `#` triggers zsh extended_glob otherwise
+      # ("zsh: no matches found: nixpkgs#cowsay" when running the command).
+      local -a suggestions
+      local m
+      for m in "''${matches[@]}"; do
+        suggestions+=("nix run 'nixpkgs#$m'")
+      done
       # Force menu/fzf mode so the first TAB pops fzf instead of inserting
       # the common prefix `nix run nixpkgs#cow`.
       compstate[insert]=menu
