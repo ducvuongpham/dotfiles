@@ -19,6 +19,8 @@
     ./mise.nix
     ./claude.nix
     ./fastfetch.nix
+    ./kew.nix
+    ./brew-bin-shims.nix
     # spotlight.nix renamed to apps.nix conceptually — keeping path same.
     ./spotlight.nix
   ];
