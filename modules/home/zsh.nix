@@ -212,8 +212,9 @@
         if (( ! $+commands[$first] )); then
           local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
           if [[ -f $cache ]]; then
-            local -a matches
-            matches=("''${(@M)$(<$cache):#''${first}*}")
+            local -a all matches
+            all=("''${(@f)$(<$cache)}")
+            matches=("''${(@M)all:#''${first}*}")
             if (( ''${#matches} > 0 )); then
               LBUFFER="nix run nixpkgs#$first"
             fi
