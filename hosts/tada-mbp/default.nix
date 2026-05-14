@@ -1,11 +1,11 @@
-{ pkgs, hostname, username, ... }:
+{ pkgs, hostname, username, system, ... }:
 {
   imports = [
     ../../modules/darwin
   ];
 
   networking.hostName = hostname;
-  networking.computerName = "tada-mbp";
+  networking.computerName = hostname;
   networking.localHostName = hostname;
 
   system.primaryUser = username;
@@ -15,7 +15,7 @@
     home = "/Users/${username}";
   };
 
-  nixpkgs.hostPlatform = "aarch64-darwin";
+  nixpkgs.hostPlatform = system;
   nixpkgs.config.allowUnfree = true;
 
   system.stateVersion = 6;

@@ -43,6 +43,21 @@ nix run nix-darwin -- switch --flake .#tada-mbp
 
 After the first switch, `darwin-rebuild` and `home-manager` are on PATH.
 
+## Adding a new machine
+
+Hosts are auto-discovered from `hosts/`. To add a new machine:
+
+```bash
+cp -r hosts/tada-mbp hosts/<new-hostname>
+# edit hosts/<new-hostname>/meta.nix if system/username differ
+#   system   = "aarch64-darwin" | "x86_64-darwin"
+#   username = "tada" | ...
+scutil --set LocalHostName <new-hostname>
+darwin-rebuild switch --flake ~/dotfiles#<new-hostname>
+```
+
+`flake.nix` needs no edits — it reads `hosts/` at evaluation time.
+
 ## Daily rebuild
 
 Using [nh](https://github.com/viperML/nh) (installed by this flake):
