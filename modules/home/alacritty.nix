@@ -35,6 +35,9 @@
 
       keyboard.bindings = [
         { key = "N"; mods = "Command"; action = "CreateNewWindow"; }
+        # Disable macOS default Cmd-T new tab — Alacritty's tab story is poor;
+        # use AeroSpace workspaces / tmux windows instead.
+        { key = "T"; mods = "Command"; chars = "CreateNewWindow"; }
       ];
     };
   };
