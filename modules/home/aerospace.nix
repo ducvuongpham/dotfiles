@@ -1,7 +1,12 @@
-{ ... }:
+{ config, ... }:
 {
   # AeroSpace installed via brew cask (modules/darwin/homebrew.nix).
   # Config file is read from ~/.aerospace.toml or ~/.config/aerospace/aerospace.toml.
+
+  # Mutable symlink for helper scripts so edits apply without home-manager rebuild.
+  home.file.".config/aerospace/scripts".source = config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/dotfiles/home/aerospace/scripts";
+
   home.file.".config/aerospace/aerospace.toml".text = ''
     # AeroSpace tiling window manager config
     # https://nikitabobko.github.io/AeroSpace/guide
@@ -95,12 +100,14 @@
     alt-slash = 'layout tiles horizontal vertical'
     alt-comma = 'layout accordion horizontal vertical'
 
-    # Smart split (Fibonacci / dwindle): wrap the focused window in a new
-    # sub-container with orientation opposite to its parent, then spawn a
-    # fresh Alacritty. The new window joins as sibling of the focused one
-    # in that new container — so each alt-enter spirals inward, splitting
-    # perpendicular to the prior split.
-    alt-enter = ['split opposite', 'exec-and-forget /usr/bin/open -na Alacritty']
+    # i3-style zoom: toggle focused window to cover the workspace.
+    alt-f = 'fullscreen'
+
+    # Smart split + spawn. Delegated to a script so we can branch:
+    #   1 window in workspace → force `tiles horizontal` so the new Alacritty
+    #     always lands side-by-side, regardless of last split orientation.
+    #   >1 windows → `split opposite` (Fibonacci dwindle, spirals inward).
+    alt-enter = 'exec-and-forget ~/.config/aerospace/scripts/smart-split-spawn.sh'
 
     # Manual cleanup: flatten the current workspace (collapses any
     # single-child containers left behind by closed windows).
