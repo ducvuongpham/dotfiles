@@ -36,9 +36,28 @@
             }
           ];
         };
+
+      mkHome = { username, system }:
+        home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.${system};
+          extraSpecialArgs = { inherit inputs username; };
+          modules = [
+            ./home/${username}.nix
+            catppuccin.homeModules.catppuccin
+          ];
+        };
     in {
       darwinConfigurations."tada-mbp" = mkHost {
         hostname = "tada-mbp";
+        username = "tada";
+        system = "aarch64-darwin";
+      };
+
+      # Standalone home-manager output so `nh home switch` / `home-manager switch`
+      # can target the user profile without going through nix-darwin.
+      # NB: the darwinConfiguration above still embeds home-manager — both paths
+      # produce equivalent results; pick whichever fits the rebuild scope.
+      homeConfigurations."tada" = mkHome {
         username = "tada";
         system = "aarch64-darwin";
       };
