@@ -7,7 +7,11 @@
       "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch *)",
       "Bash(git stash *)",
       "Bash(git reset *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "WebSearch",
+      "WebFetch(domain:fnox.jdx.dev)",
+      "WebFetch(domain:github.com)",
+      "Bash(git push *)"
     ]
   }
 }
