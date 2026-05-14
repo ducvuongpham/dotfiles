@@ -15,10 +15,13 @@
     tree
     htop
     btop
+    dua               # disk usage analyzer (ncdu replacement; `dua i` for TUI)
     atuin             # shell history search/sync
     android-tools     # adb / fastboot
+    awscli2           # AWS CLI v2; creds live in ~/.aws/ (never in nix)
     yt-dlp            # video downloader (YouTube + many other sites)
     uv                # fast Python package/project manager
+    portaudio         # native dep of pyaudio (RealtimeSTT)
     kew               # terminal music player (vim-keys via config)
     vivid             # generates LS_COLORS for theming `ls`, completion menus
     claude-code       # Anthropic's CLI (was managed by mise; nix is more declarative)

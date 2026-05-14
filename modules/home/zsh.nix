@@ -286,6 +286,7 @@
     alias g='git'
     alias lg='lazygit'
     alias neofetch='fastfetch'
+    alias ncdu='dua i'
 
     # ── v: smart editor wrapper ─────────────────────────────────────────────
     #   v <file>      → opens nvim cwd'd at the nearest git ancestor
