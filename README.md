@@ -91,26 +91,51 @@ After the first switch:
 - Grant the macOS TCC permissions in the next section, otherwise SketchyBar,
   Karabiner, AeroSpace will misbehave silently.
 
-## Manual steps not in nix
+## System permissions (post-switch checklist)
 
-macOS gates several APIs behind TCC (privacy permission prompts). nix
-cannot grant these — you must approve them once after the first switch.
-Until you do, the bits below misbehave silently.
+macOS gates several APIs behind TCC (privacy permission prompts) and
+driver-extension approval flows. nix cannot grant these — you must approve
+them once after the first switch. Until you do, the bits below misbehave
+silently (no error, just nothing happens).
 
-| What                          | Where to grant                                                | Symptom if missing                                                              |
-| ----------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| SketchyBar bar widgets        | System Settings → Privacy & Security → **Screen Recording**   | Bar items array stays empty; `--query default_menu_items` returns a perm error  |
-| SketchyBar brightness widget  | (same as above)                                               | Per-display UUID resolution fails                                               |
-| Karabiner-Elements key remap  | System Settings → Privacy & Security → **Input Monitoring** + driverkit extension approval | Caps-lock → esc/ctrl mapping doesn't fire; keyboard type wrong |
-| Terminal full-disk operations | System Settings → Privacy & Security → **Full Disk Access**   | `brew bundle` complains it can't remove some cask files during cleanup          |
-| Accessibility (AeroSpace etc.)| System Settings → Privacy & Security → **Accessibility**      | Window focus / move commands silently no-op                                     |
+Open **System Settings → Privacy & Security** and walk down the list:
 
-After granting, restart the affected service:
+| Panel                              | App / target                          | Why it's needed                                                                 |
+| ---------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------- |
+| **Screen Recording**               | SketchyBar                            | Reads menu-bar items, display info (brightness widget needs per-display UUIDs)  |
+| **Input Monitoring**               | Karabiner-Elements, Karabiner-EventViewer | Captures key events for caps-lock → esc/ctrl remap                          |
+| **Input Monitoring**               | KeyCastr                              | Shows pressed keys on screen during presentations/screen-share                  |
+| **Accessibility**                  | AeroSpace                             | Window focus / move / workspace switching                                       |
+| **Accessibility**                  | Maccy                                 | Listens for the global Cmd-Shift-V hotkey                                       |
+| **Accessibility**                  | Mos                                   | Scrolls under non-Apple mice (system extension hook)                            |
+| **Accessibility**                  | Raycast                               | Window management, system commands                                              |
+| **Full Disk Access**               | Your terminal (Alacritty / Terminal)  | `brew bundle`'s `zap` step removes files outside `/opt/homebrew`                |
+| **Local Network**                  | Telegram, Brave, Microsoft Edge       | Bonjour / LAN discovery — granted on first launch via popup                     |
+| **Notifications**                  | Telegram, etc.                        | Granted on first launch                                                         |
+| **Login Items & Extensions** → **Background Items** | Karabiner_DriverKit_VirtualHIDDevice, BetterDisplay driver | Driver extensions need to be **Allowed** here AND under "System software from…" at the bottom of the panel |
+| **Login Items**                    | (Optional) AeroSpace, sketchybar, borders, Karabiner-Elements, Maccy | If you want them to launch at login. Most are already wired via launchd / brew services in `modules/darwin/`. |
+
+After granting Screen Recording / Input Monitoring / Accessibility, restart
+the affected services so they re-read the permission:
 
 ```bash
 brew services restart sketchybar borders
-# Karabiner-Elements: open the app once so it loads the new permission
+killall aerospace; aerospace &        # or just log out / in
+open -a "Karabiner-Elements"          # opens the GUI; loads new perms
 ```
+
+A few extras that aren't TCC but still need a one-time tap:
+
+- **Touch ID for sudo** — `modules/darwin/default.nix` sets
+  `security.pam.services.sudo_local.touchIdAuth = true`. macOS may require
+  a logout/reboot before Touch ID actually prompts. Test with `sudo -k; sudo true`.
+- **DriverKit extensions (Karabiner, BlackHole, BetterDisplay)** — after
+  install, macOS shows a banner "System software from <vendor> requires
+  approval" in **Privacy & Security**. Approve once, then reboot for the
+  extension to load.
+- **Karabiner profile** — after granting permissions, launch
+  Karabiner-Elements once and confirm the "Default" profile is active. The
+  profile JSON is at `~/.config/karabiner/karabiner.json` (nix-managed).
 
 ### Things nix does manage but require state outside the repo
 
