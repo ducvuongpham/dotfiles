@@ -19,6 +19,7 @@
     ./mise.nix
     ./claude.nix
     ./ccstatusline.nix
+    ./raycast.nix
     ./fastfetch.nix
     ./kew.nix
     ./brew-bin-shims.nix
