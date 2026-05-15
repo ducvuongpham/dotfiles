@@ -182,10 +182,34 @@
     zmodload zsh/complist
     zstyle ':completion:*' menu no
     source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
-    zstyle ':fzf-tab:*' fzf-flags --height=40% --no-preview --border=none --layout=default
+    zstyle ':fzf-tab:*' fzf-flags --height=60% --border=none --layout=default --preview-window=right:55%:wrap
     zstyle ':fzf-tab:*' fzf-min-height 1
     zstyle ':fzf-tab:*' switch-group ',' '.'
     zstyle ':fzf-tab:*' show-group brief
+
+    # ── fzf-tab previews ────────────────────────────────────────────────────
+    # Path previews (dir → eza tree; file → bat) cover cd, ls, cat, vim, …
+    # Per-context overrides below add richer previews (proc info for kill,
+    # git log for checkout/diff, ssh hosts).
+    _ft_path_preview='
+      f=$realpath
+      [ -z "$f" ] && f=$word
+      if [ -d "$f" ]; then
+        eza --tree --color=always --icons=auto --level=2 "$f" 2>/dev/null
+      elif [ -f "$f" ]; then
+        bat --color=always --style=numbers --line-range=:200 "$f" 2>/dev/null \
+          || cat "$f" 2>/dev/null
+      else
+        echo "$word"
+      fi
+    '
+    zstyle ':fzf-tab:complete:*' fzf-preview "$_ft_path_preview"
+    zstyle ':fzf-tab:complete:kill:argument-rest' fzf-preview '/bin/ps -p $word -o pid,user,etime,command 2>/dev/null'
+    zstyle ':fzf-tab:complete:(git-checkout|git-switch|git-rebase|git-merge|git-show|git-log|git-diff):argument-rest' fzf-preview 'git log --color=always --oneline --decorate -n 30 $word 2>/dev/null'
+    zstyle ':fzf-tab:complete:ssh:argument-rest' fzf-preview 'awk -v h=$word "BEGIN{IGNORECASE=1} /^[Hh]ost / && (\$2==h || \$2~h){p=1} p && /^[[:space:]]*$/{exit} p" ~/.ssh/config 2>/dev/null'
+    zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word 2>/dev/null'
+    # Environment-variable expansion: show the value before completing.
+    zstyle ':fzf-tab:complete:-parameter-:*' fzf-preview 'echo ''${(P)word}'
     zstyle ':completion:*' group-name ""
     zstyle ':completion:*:descriptions' format '[%d]'
 
@@ -495,6 +519,21 @@
     export _ZO_RESOLVE_SYMLINKS=1
     export _ZO_EXCLUDE_DIRS="/nix:/nix/*:/private:/private/*"
     export _ZO_FZF_OPTS="--height=40% --reverse --border --preview 'eza --tree --color=always --icons=auto --level=2 {2}' --preview-window=right:50%:wrap"
+
+    # FZF_DEFAULT_OPTS — base flags for every bare `fzf` invocation (raw
+    # pipes, ad-hoc selectors). Smart preview: dirs → eza tree, files → bat.
+    # Custom pickers (ff/fa/fw) override --preview with $_smart_preview for
+    # the richer image/audio/pdf/sqlite preview; this base covers everything
+    # else.
+    export FZF_DEFAULT_OPTS="--height=60% --layout=reverse --border --preview-window=right:55%:wrap --preview '
+      if [ -d {} ]; then
+        eza --tree --color=always --icons=auto --level=2 {} 2>/dev/null
+      elif [ -f {} ]; then
+        bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {} 2>/dev/null
+      else
+        echo {}
+      fi
+    '"
     eval "$(zoxide init zsh)"
 
     # mise (lang version manager)
