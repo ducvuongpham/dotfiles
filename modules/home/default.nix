@@ -18,6 +18,7 @@
     ./eza.nix
     ./mise.nix
     ./claude.nix
+    ./ccstatusline.nix
     ./fastfetch.nix
     ./kew.nix
     ./brew-bin-shims.nix

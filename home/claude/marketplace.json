@@ -1,0 +1,16 @@
+{
+  "name": "tada-skills",
+  "owner": { "name": "tada" },
+  "plugins": [
+    {
+      "name": "mattpocock-skills",
+      "description": "Matt Pocock's skill collection (engineering, productivity, misc).",
+      "source": { "source": "github", "repo": "mattpocock/skills", "ref": "main" }
+    },
+    {
+      "name": "devops-skills",
+      "description": "DevOps generators + validators (Terraform, k8s, AWS, …).",
+      "source": { "source": "github", "repo": "akin-ozer/cc-devops-skills", "ref": "main" }
+    }
+  ]
+}

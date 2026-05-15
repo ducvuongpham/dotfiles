@@ -2,6 +2,9 @@
 # claude moved to nix (modules/home/packages.nix) — version pinned via flake.lock.
 node = "20"
 xcodes = "latest"
+# ccstatusline: claude code status line renderer. Wired into
+# ~/.claude/settings.json via statusLine.command = "ccstatusline".
+"npm:ccstatusline" = "2.2.18"
 
 [settings]
 # Read idiomatic per-language version files in addition to mise.toml /

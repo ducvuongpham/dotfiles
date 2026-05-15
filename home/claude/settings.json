@@ -1,3 +1,20 @@
 {
-  "theme": "dark"
+  "theme": "dark",
+  "statusLine": {
+    "type": "command",
+    "command": "ccstatusline"
+  },
+  "extraKnownMarketplaces": {
+    "tada-skills": {
+      "source": {
+        "source": "file",
+        "path": "/Users/tada/dotfiles/home/claude/marketplace.json"
+      },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "mattpocock-skills@tada-skills": true,
+    "devops-skills@tada-skills": true
+  }
 }
