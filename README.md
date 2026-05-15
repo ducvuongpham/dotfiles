@@ -33,23 +33,63 @@ rebuild to apply.
 
 ## Bootstrap
 
+### Pre-flight
+
+Things to know *before* the first `darwin-rebuild`:
+
+- **Hostname must match `hosts/<name>/`.** Set it first or `darwin-rebuild`
+  can't find the matching configuration:
+  ```bash
+  sudo scutil --set HostName       <hostname>
+  sudo scutil --set LocalHostName  <hostname>
+  sudo scutil --set ComputerName   <hostname>
+  ```
+- **SSH signing key.** `modules/home/git.nix` enables `commit.gpgsign` against
+  `~/.ssh/id_ed25519.pub`. Without the key the first git commit fails with
+  `Couldn't load public key`. Generate it before switching:
+  ```bash
+  ssh-keygen -t ed25519 -C "<your-email>"   # accept default path, set passphrase
+  ```
+  Then add the public key to GitHub as a **Signing Key** (Settings → SSH and
+  GPG keys). The `gitAllowedSigners` activation writes
+  `~/.config/git/allowed_signers` on every switch — if the file is empty after
+  the first switch, the key didn't exist yet; just rebuild.
+- **Repo clone path.** Prefer `~/dotfiles`. If you clone to `~/.dotfiles`
+  instead, the `dotfilesShim` activation in `modules/home/zsh.nix` creates a
+  `~/dotfiles → ~/.dotfiles` symlink so legacy refs (p10k.zsh path, tmux
+  plugin path, `drs`/`nhs`/`nhh` aliases) keep resolving. Cloning to a third
+  location won't work without editing those refs.
+- **zsh `#` glob.** zsh expands `#` so the bare flake ref errors with
+  `no matches found`. Use `noglob`, escape (`\#`), or quote the path:
+  ```bash
+  noglob nix run nix-darwin -- switch --flake .#<hostname>
+  ```
+
+### Steps
+
 ```bash
 # 1. install Determinate Nix (or any nix with flakes)
 curl -fsSL https://install.determinate.systems/nix | sh -s -- install
 
-# 2. clone — preferred path is ~/dotfiles. If you must clone elsewhere
-#    (e.g. ~/.dotfiles), modules/home/zsh.nix activation creates a
-#    ~/dotfiles → <clone-path> shim so legacy refs in this repo resolve.
+# 2. clone (see pre-flight note above re: path)
 git clone git@git.tada.io.vn:tada/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# 3. first build (replace tada-mbp with your host)
-#    NOTE: zsh chokes on the `#`, so prefix with noglob (or use \#).
-noglob nix run nix-darwin -- switch --flake .#tada-mbp
+# 3. (optional) generate ed25519 signing key (see pre-flight note)
+ssh-keygen -t ed25519 -C "<your-email>"
+
+# 4. first build (replace <hostname> with your `scutil --get LocalHostName`)
+noglob sudo nix run nix-darwin -- switch --flake .#<hostname>
 ```
 
-After the first switch, `darwin-rebuild` and `home-manager` are on PATH,
-and the `drs`/`nhs`/`nhh` aliases work hostname-aware.
+After the first switch:
+- `darwin-rebuild`, `home-manager`, `nh` are on PATH.
+- `drs` / `nhs` / `nhh` aliases work hostname-aware.
+- A `.zshrc.hm-backup` / `.zshenv.hm-backup` may sit next to the new symlinked
+  copies — that's home-manager moving your existing files aside. Delete when
+  you're sure the new config is what you want.
+- Grant the macOS TCC permissions in the next section, otherwise SketchyBar,
+  Karabiner, AeroSpace will misbehave silently.
 
 ## Manual steps not in nix
 
