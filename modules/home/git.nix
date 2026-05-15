@@ -71,13 +71,16 @@
   programs.lazygit = {
     enable = true;
     settings = {
+      # Custom pager (per lazygit docs: https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Pagers.md).
       # delta's --features can only enable settings; it can't disable
-      # side-by-side once [delta] has it on. So pass --no-gitconfig and
-      # re-specify the desired settings inline so lazygit's narrow pane
-      # gets single-column rendering.
-      git.paging = {
-        colorArg = "always";
-        pager = "delta --paging=never --no-gitconfig --line-numbers --navigate --syntax-theme 'Catppuccin Macchiato'";
+      # side-by-side once [delta] has it on. Pass --no-gitconfig and
+      # re-specify settings inline so lazygit's narrow pane stays single-column.
+      # --hyperlinks lets clicking line numbers open the file in $EDITOR.
+      git = {
+        paging.colorArg = "always";
+        pagers = [{
+          pager = "delta --paging=never --no-gitconfig --line-numbers --navigate --hyperlinks --hyperlinks-file-link-format=lazygit-edit://{path}:{line} --syntax-theme 'Catppuccin Macchiato'";
+        }];
       };
 
       # Catppuccin Macchiato (sapphire accent, matching system). catppuccin/nix
