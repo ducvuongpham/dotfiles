@@ -60,6 +60,7 @@ EOF
   # this so clicking the bar on monitor X focuses that monitor.
   home.activation.buildFocusMouseMonitorCli = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     bin="$HOME/.local/share/sketchybar_lua/focus-mouse-monitor"
+    mkdir -p "$HOME/.local/share/sketchybar_lua"
     if [ ! -x "$bin" ]; then
       tmp="$(mktemp -d)"
       cat > "$tmp/focus-mouse-monitor.swift" <<'EOF'
