@@ -2,15 +2,42 @@
 {
   # ~/dotfiles compatibility shim. Legacy refs (this file's p10k.zsh path,
   # alias drs/nhs/nhh below, modules/home/tmux.nix activation, etc.) hardcode
-  # `~/dotfiles`. If the repo is cloned somewhere else (e.g. ~/.dotfiles), this
-  # creates a symlink so those refs still resolve. If ~/dotfiles already exists
-  # (tada-mbp clones directly to ~/dotfiles), this is a no-op — we *cannot*
+  # `~/dotfiles`. If the repo is cloned somewhere else (e.g. ~/.dotfiles), we
+  # create a symlink so those refs still resolve. If ~/dotfiles is already a
+  # real repo (tada-mbp clones directly), we leave it alone — we *cannot*
   # use `home.file."dotfiles"` because home-manager would back up the real
-  # repo directory to ~/dotfiles.hm-backup. Must run before linkGeneration so
-  # the path resolves when other modules' mkOutOfStoreSymlinks try to follow it.
+  # repo directory to ~/dotfiles.hm-backup.
+  #
+  # Also self-heal: a previous version of this module used `home.file` and was
+  # later removed, which left ~/dotfiles as an empty stub directory after a
+  # subsequent activation. Detect that (no flake.nix and ~/.dotfiles is the
+  # real repo) and replace with the correct symlink.
+  #
+  # Runs before linkGeneration so the path resolves when other modules'
+  # mkOutOfStoreSymlinks try to follow it.
+  # `bat` caches syntax/theme bundles keyed by binary version. After a
+  # nixpkgs bump, the cache is incompatible and bat prints a noisy error
+  # on every invocation until you `bat cache --clear`. Clear on every
+  # activation — the cache rebuilds lazily on first use, so this is cheap.
+  home.activation.batCacheClear = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    if [ -d "''${XDG_CACHE_HOME:-$HOME/.cache}/bat" ]; then
+      ${pkgs.coreutils}/bin/rm -rf -- "''${XDG_CACHE_HOME:-$HOME/.cache}/bat"
+    fi
+  '';
+
   home.activation.dotfilesShim = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
-    if [ ! -e "$HOME/dotfiles" ] && [ -d "$HOME/.dotfiles" ]; then
-      ${pkgs.coreutils}/bin/ln -s "$HOME/.dotfiles" "$HOME/dotfiles"
+    DOT="$HOME/dotfiles"
+    REAL="$HOME/.dotfiles"
+    if [ -L "$DOT" ]; then
+      :  # already a symlink, leave it
+    elif [ -d "$DOT" ] && [ -f "$DOT/flake.nix" ]; then
+      :  # real repo directory (e.g. tada-mbp clones directly), leave it
+    elif [ -e "$DOT" ] && [ -d "$REAL" ] && [ -f "$REAL/flake.nix" ]; then
+      # stub / leftover — replace with correct symlink
+      ${pkgs.coreutils}/bin/rm -rf -- "$DOT"
+      ${pkgs.coreutils}/bin/ln -s "$REAL" "$DOT"
+    elif [ ! -e "$DOT" ] && [ -d "$REAL" ] && [ -f "$REAL/flake.nix" ]; then
+      ${pkgs.coreutils}/bin/ln -s "$REAL" "$DOT"
     fi
   '';
 
