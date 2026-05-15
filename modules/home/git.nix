@@ -92,11 +92,11 @@
     };
   };
 
-  # Standalone delta config file used by lazygit only — same catppuccin
-  # palette as the global gitconfig but WITHOUT side-by-side, so lazygit's
-  # narrow pane renders single-column. Delta's --features mechanism can't
-  # turn off side-by-side once it's on in [delta], so we go via --no-gitconfig
-  # --config <this-file>, giving delta an isolated config to read.
+  # Standalone delta config used by lazygit only — same catppuccin palette
+  # as the global gitconfig but WITHOUT side-by-side, so lazygit's narrow
+  # pane renders single-column. Delta is invoked with --config to load this
+  # file as its gitconfig (NOT combined with --no-gitconfig — that flag
+  # disables --config too).
   home.file.".config/delta/lazygit.gitconfig".text = ''
     [delta]
       line-numbers = true
@@ -133,7 +133,7 @@
       # we go via --no-gitconfig + --config instead of relying on features.
       git.pagers = [{
         colorArg = "always";
-        pager = "delta --paging=never --no-gitconfig --config ${config.home.homeDirectory}/.config/delta/lazygit.gitconfig --hyperlinks --hyperlinks-file-link-format=lazygit-edit://{path}:{line}";
+        pager = "delta --paging=never --config ${config.home.homeDirectory}/.config/delta/lazygit.gitconfig --hyperlinks --hyperlinks-file-link-format=lazygit-edit://{path}:{line}";
       }];
 
       # Catppuccin Macchiato (sapphire accent, matching system). catppuccin/nix
