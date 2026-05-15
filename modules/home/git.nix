@@ -92,20 +92,48 @@
     };
   };
 
+  # Standalone delta config file used by lazygit only — same catppuccin
+  # palette as the global gitconfig but WITHOUT side-by-side, so lazygit's
+  # narrow pane renders single-column. Delta's --features mechanism can't
+  # turn off side-by-side once it's on in [delta], so we go via --no-gitconfig
+  # --config <this-file>, giving delta an isolated config to read.
+  home.file.".config/delta/lazygit.gitconfig".text = ''
+    [delta]
+      line-numbers = true
+      navigate = true
+      features = catppuccin-macchiato
+    [delta "catppuccin-macchiato"]
+      blame-palette = "#24273a #1e2030 #181926 #363a4f #494d64"
+      commit-decoration-style = "#6e738d" bold box ul
+      dark = true
+      file-decoration-style = "#6e738d"
+      file-style = "#cad3f5"
+      hunk-header-decoration-style = "#6e738d" box ul
+      hunk-header-file-style = bold
+      hunk-header-line-number-style = bold "#a5adcb"
+      hunk-header-style = file line-number syntax
+      line-numbers-left-style = "#6e738d"
+      line-numbers-minus-style = bold "#ed8796"
+      line-numbers-plus-style = bold "#a6da95"
+      line-numbers-right-style = "#6e738d"
+      line-numbers-zero-style = "#6e738d"
+      minus-emph-style = bold syntax "#6a485a"
+      minus-style = syntax "#4c3a4c"
+      plus-emph-style = bold syntax "#51655a"
+      plus-style = syntax "#3e4b4c"
+      map-styles = bold purple => syntax "#5c517c", bold blue => syntax "#47557b", bold cyan => syntax "#4a6475", bold yellow => syntax "#6a635d"
+      syntax-theme = Catppuccin Macchiato
+  '';
+
   programs.lazygit = {
     enable = true;
     settings = {
-      # Custom pager (per lazygit docs: https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Pagers.md).
-      # delta's --features can only enable settings; it can't disable
-      # side-by-side once [delta] has it on. Pass --no-gitconfig and
-      # re-specify settings inline so lazygit's narrow pane stays single-column.
-      # --hyperlinks lets clicking line numbers open the file in $EDITOR.
-      # Drop --no-gitconfig so delta picks up the catppuccin-macchiato feature
-      # defined in git.nix. Side-by-side stays on; lazygit's pane is narrow but
-      # delta wraps cleanly.
+      # Single-column delta with catppuccin-macchiato theme — see the
+      # home.file."config/delta/lazygit.gitconfig" above for the reason
+      # we go via --no-gitconfig + --config instead of relying on features.
       git.pagers = [{
         colorArg = "always";
-        pager = "delta --paging=never --hyperlinks --hyperlinks-file-link-format=lazygit-edit://{path}:{line}";
+        pager = "delta --paging=never --no-gitconfig --config ${config.home.homeDirectory}/.config/delta/lazygit.gitconfig --hyperlinks --hyperlinks-file-link-format=lazygit-edit://{path}:{line}";
       }];
 
       # Catppuccin Macchiato (sapphire accent, matching system). catppuccin/nix
