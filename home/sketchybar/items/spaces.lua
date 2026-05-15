@@ -131,8 +131,23 @@ end
 items[1]:subscribe("aerospace_workspace_change", function(env)
   refresh(env.FOCUSED_WORKSPACE)
 end)
-items[1]:subscribe({ "front_app_switched", "system_woke", "forced", "window_focus", "space_windows_change" }, function()
+items[1]:subscribe({
+  "front_app_switched",
+  "system_woke",
+  "display_change",    -- monitor reconnect / arrangement change
+  "display_wake",      -- screen turning back on
+  "forced",
+  "window_focus",
+  "space_windows_change",
+  "routine",           -- periodic safety net (update_freq below)
+}, function()
   refresh_query()
 end)
+
+-- Safety-net poll. After sleep/wake the system_woke/display_wake events
+-- sometimes fire before AeroSpace has reconnected, leaving the indicator
+-- stuck on its pre-sleep state. A 5s routine tick catches anything the
+-- event subscriptions miss without meaningful overhead.
+items[1]:set({ update_freq = 5 })
 
 refresh_query()
