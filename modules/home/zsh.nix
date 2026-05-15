@@ -333,10 +333,11 @@
     alias neofetch='fastfetch'
     alias ncdu='dua i'
 
-    # Rebuild shortcuts — flake at ~/dotfiles, host=tada-mbp.
-    alias drs='sudo darwin-rebuild switch --flake ~/dotfiles#tada-mbp'
-    alias nhs='nh darwin switch ~/dotfiles -H tada-mbp'   # full system via nh
-    alias nhh='nh home switch ~/dotfiles'                  # home-manager only via nh
+    # Rebuild shortcuts — flake at ~/dotfiles, host = $(hostname -s).
+    # Use noglob/quoted form so zsh doesn't expand `#`.
+    alias drs='noglob sudo darwin-rebuild switch --flake ~/dotfiles#'"$(hostname -s)"
+    alias nhs='nh darwin switch ~/dotfiles -H '"$(hostname -s)"  # full system via nh
+    alias nhh='nh home switch ~/dotfiles'                          # home-manager only via nh
 
     # ── v: smart editor wrapper ─────────────────────────────────────────────
     #   v <file>      → opens nvim cwd'd at the nearest git ancestor
