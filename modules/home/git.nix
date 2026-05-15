@@ -28,6 +28,12 @@
         line-numbers = true;
         syntax-theme = "Catppuccin Macchiato";
       };
+      # Narrow-pane variant used by lazygit (delta has no --no-side-by-side flag).
+      "delta \"lazygit\"" = {
+        side-by-side = false;
+        line-numbers = true;
+        syntax-theme = "Catppuccin Macchiato";
+      };
       merge.conflictstyle = "zdiff3";
       diff.colorMoved = "default";
 
@@ -76,7 +82,7 @@
       # keep delta single-column inside the smaller pane.
       git.paging = {
         colorArg = "always";
-        pager = "delta --paging=never --side-by-side=false --line-numbers";
+        pager = "delta --paging=never --features=lazygit";
       };
     };
   };
