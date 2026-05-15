@@ -137,6 +137,35 @@
         updateCheckOnAppStart = false;
         updateIncludingBetaVersion = false;
       };
+      # Menu bar (Control Center module visibility). _HIHideMenuBar above
+      # auto-hides the native bar — these decide what shows up when you
+      # reveal it. Strict mode: pin only Battery/Clock/NowPlaying/CC icon;
+      # everything else explicitly hidden so click-pinning in the UI gets
+      # yanked back on next rebuild.
+      "com.apple.controlcenter" = {
+        # visible (pinned to menu bar)
+        "NSStatusItem VisibleCC Battery" = 1;
+        "NSStatusItem VisibleCC BentoBox-0" = 1;   # Control Center icon itself
+        "NSStatusItem VisibleCC Clock" = 1;
+        "NSStatusItem VisibleCC NowPlaying" = 1;
+        # hidden (still accessible inside Control Center popover)
+        "NSStatusItem VisibleCC WiFi" = 0;
+        "NSStatusItem VisibleCC Bluetooth" = 0;
+        "NSStatusItem VisibleCC AirDrop" = 0;
+        "NSStatusItem VisibleCC FocusModes" = 0;
+        "NSStatusItem VisibleCC StageManager" = 0;
+        "NSStatusItem VisibleCC ScreenMirroring" = 0;
+        "NSStatusItem VisibleCC Display" = 0;
+        "NSStatusItem VisibleCC Sound" = 0;
+        "NSStatusItem VisibleCC AccessibilityShortcuts" = 0;
+        "NSStatusItem VisibleCC UserSwitcher" = 0;
+        "NSStatusItem VisibleCC MusicRecognition" = 0;
+        "NSStatusItem VisibleCC KeyboardBrightness" = 0;
+        "NSStatusItem VisibleCC VoiceControl" = 0;
+        "NSStatusItem VisibleCC VPN" = 0;
+        "NSStatusItem VisibleCC FastUserSwitching" = 0;
+      };
+
       # Free up Ctrl-Space (and Ctrl-Opt-Space) by disabling input-source switching.
       # 60 = previous input source, 61 = next source in Input menu.
       "com.apple.symbolichotkeys" = {
@@ -167,6 +196,8 @@
     /usr/bin/sudo -u ${username} /usr/bin/killall chronod 2>/dev/null || true
     /usr/bin/sudo -u ${username} /usr/bin/killall WindowManager 2>/dev/null || true
     /usr/bin/sudo -u ${username} /usr/bin/killall Dock 2>/dev/null || true
+    # Re-read com.apple.controlcenter so menu bar visibility changes take effect.
+    /usr/bin/sudo -u ${username} /usr/bin/killall ControlCenter 2>/dev/null || true
 
     # Maccy is sandboxed — write prefs to its container domain.
     MACCY_DOMAIN="/Users/${username}/Library/Containers/org.p0deje.Maccy/Data/Library/Preferences/org.p0deje.Maccy"
