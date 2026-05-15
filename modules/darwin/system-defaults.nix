@@ -1,4 +1,4 @@
-{ ... }:
+{ username, ... }:
 {
   system.defaults = {
     NSGlobalDomain = {
@@ -116,20 +116,8 @@
         StageManagerHideWidgets = 1;
       };
 
-      # Maccy clipboard manager.
-      # Hotkey is encoded data — written via postActivation defaults command below.
-      "org.p0deje.Maccy" = {
-        searchMode = "fuzzy";
-        showInStatusBar = true;
-        showFooter = false;
-        pasteByDefault = true;
-        showSearch = true;
-        showApplicationIcons = true;
-        clearOnQuit = false;
-        historySize = 200;
-        ignoreOnlyNextEvent = false;
-        clipboardCheckInterval = 0.5;
-      };
+      # Maccy: sandboxed (App Store / Nix), so prefs live in
+      # ~/Library/Containers/org.p0deje.Maccy/…  — written via postActivation below.
 
       "com.caldis.Mos" = {
         optionsExist = "optionsExist";
@@ -165,8 +153,8 @@
   };
 
   system.activationScripts.postActivation.text = ''
-    /usr/bin/sudo -u tada /bin/mkdir -p "/Users/tada/Pictures/Screenshots"
-    /usr/sbin/chown tada:staff "/Users/tada/Pictures/Screenshots"
+    /usr/bin/sudo -u ${username} /bin/mkdir -p "/Users/${username}/Pictures/Screenshots"
+    /usr/sbin/chown ${username}:staff "/Users/${username}/Pictures/Screenshots"
 
     # Install Rosetta 2 on Apple Silicon if not already present.
     if [ "$(/usr/bin/uname -m)" = "arm64" ] && ! /usr/bin/pgrep -q oahd; then
@@ -175,20 +163,30 @@
     fi
 
     # Wipe all desktop widgets + reload WindowManager so StandardHideWidgets applies.
-    /usr/bin/sudo -u tada /usr/bin/defaults delete com.apple.chronod 2>/dev/null || true
-    /usr/bin/sudo -u tada /usr/bin/killall chronod 2>/dev/null || true
-    /usr/bin/sudo -u tada /usr/bin/killall WindowManager 2>/dev/null || true
-    /usr/bin/sudo -u tada /usr/bin/killall Dock 2>/dev/null || true
+    /usr/bin/sudo -u ${username} /usr/bin/defaults delete com.apple.chronod 2>/dev/null || true
+    /usr/bin/sudo -u ${username} /usr/bin/killall chronod 2>/dev/null || true
+    /usr/bin/sudo -u ${username} /usr/bin/killall WindowManager 2>/dev/null || true
+    /usr/bin/sudo -u ${username} /usr/bin/killall Dock 2>/dev/null || true
 
-    # Maccy popup hotkey = Cmd+Shift+V (carbonModifiers=768, carbonKeyCode=9).
-    # KeyboardShortcuts lib stores this as JSON-encoded String under
-    # `KeyboardShortcuts_popup`. defaults write -string sets the right type.
-    /usr/bin/sudo -u tada /usr/bin/defaults write org.p0deje.Maccy KeyboardShortcuts_popup -string '{"carbonModifiers":768,"carbonKeyCode":9}'
-    /usr/bin/sudo -u tada /usr/bin/killall Maccy 2>/dev/null || true
+    # Maccy is sandboxed — write prefs to its container domain.
+    MACCY_DOMAIN="/Users/${username}/Library/Containers/org.p0deje.Maccy/Data/Library/Preferences/org.p0deje.Maccy"
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" searchMode -string "fuzzy"
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" showInStatusBar -bool true
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" showFooter -bool false
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" pasteByDefault -bool true
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" showSearch -bool true
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" showApplicationIcons -bool true
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" clearOnQuit -bool false
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" historySize -int 200
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" ignoreOnlyNextEvent -bool false
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" clipboardCheckInterval -float 0.5
+    # Popup hotkey = Cmd+Shift+V (carbonModifiers=768, carbonKeyCode=9).
+    /usr/bin/sudo -u ${username} /usr/bin/defaults write "$MACCY_DOMAIN" KeyboardShortcuts_popup -string '{"carbonModifiers":768,"carbonKeyCode":9}'
+    /usr/bin/sudo -u ${username} /usr/bin/killall Maccy 2>/dev/null || true
 
     # Make sure borders + sketchybar are registered with launchd as brew services
     # so they auto-start at login independently of AeroSpace.
-    /usr/bin/sudo -u tada /opt/homebrew/bin/brew services start borders 2>/dev/null || true
-    /usr/bin/sudo -u tada /opt/homebrew/bin/brew services start sketchybar 2>/dev/null || true
+    /usr/bin/sudo -u ${username} /opt/homebrew/bin/brew services start borders 2>/dev/null || true
+    /usr/bin/sudo -u ${username} /opt/homebrew/bin/brew services start sketchybar 2>/dev/null || true
   '';
 }

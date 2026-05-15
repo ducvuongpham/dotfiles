@@ -19,6 +19,7 @@
     atuin             # shell history search/sync
     android-tools     # adb / fastboot
     awscli2           # AWS CLI v2; creds live in ~/.aws/ (never in nix)
+    ecspresso         # ECS deployment tool
     yt-dlp            # video downloader (YouTube + many other sites)
     uv                # fast Python package/project manager
     portaudio         # native dep of pyaudio (RealtimeSTT)
