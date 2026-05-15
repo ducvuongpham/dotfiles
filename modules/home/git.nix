@@ -18,6 +18,19 @@
       fetch.prune = true;
       core.editor = "nvim";
 
+      # delta — syntax-highlighted diff pager (binary in packages.nix).
+      # Used by plain `git diff`, `git log -p`, and lazygit (see below).
+      core.pager = "delta";
+      interactive.diffFilter = "delta --color-only";
+      delta = {
+        navigate = true;          # n/N to move between diff sections
+        side-by-side = true;
+        line-numbers = true;
+        syntax-theme = "Catppuccin Macchiato";
+      };
+      merge.conflictstyle = "zdiff3";
+      diff.colorMoved = "default";
+
       # ssh signing (ed25519 key generated)
       gpg.format = "ssh";
       "gpg \"ssh\"".allowedSignersFile = "~/.config/git/allowed_signers";
@@ -55,7 +68,18 @@
     };
   };
 
-  programs.lazygit.enable = true;
+  programs.lazygit = {
+    enable = true;
+    settings = {
+      # Route lazygit's diff/log panes through delta. Lazygit handles its
+      # own pane layout, so we override side-by-side from the git config to
+      # keep delta single-column inside the smaller pane.
+      git.paging = {
+        colorArg = "always";
+        pager = "delta --paging=never --side-by-side=false --line-numbers";
+      };
+    };
+  };
 
   programs.direnv = {
     enable = true;

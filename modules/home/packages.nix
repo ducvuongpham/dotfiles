@@ -12,6 +12,8 @@
     yq
     gh
     lazygit
+    delta             # syntax-highlighted git diff pager (configured in git.nix + lazygit.nix)
+    peco              # interactive line filter (alternative to fzf for scripts)
     tree
     htop
     btop
