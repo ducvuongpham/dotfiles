@@ -9,12 +9,16 @@
   xdg.configFile."tmux".source = config.lib.file.mkOutOfStoreSymlink
     "${config.home.homeDirectory}/dotfiles/home/tmux";
 
-  # Bootstrap TPM (Tmux Plugin Manager) on first run. Plugins installed via
-  # `prefix + I` inside tmux. Plugin dirs are gitignored.
-  home.activation.cloneTPM = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [ ! -d "$HOME/dotfiles/home/tmux/plugins/tpm" ]; then
-      ${pkgs.git}/bin/git clone --depth=1 https://github.com/tmux-plugins/tpm \
-        "$HOME/dotfiles/home/tmux/plugins/tpm"
+  # Bootstrap TPM (Tmux Plugin Manager) + auto-install configured plugins on
+  # first run. Plugin dirs are gitignored. Must run after linkGeneration so
+  # the ~/dotfiles symlink (zsh.nix) is in place; otherwise the clone target
+  # path is dangling on a fresh machine.
+  home.activation.cloneTPM = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    tpm_dir="$HOME/dotfiles/home/tmux/plugins/tpm"
+    if [ ! -d "$tpm_dir" ]; then
+      ${pkgs.git}/bin/git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm_dir"
     fi
+    # Install the plugins listed in tmux.conf (idempotent — skips already-installed).
+    [ -x "$tpm_dir/bin/install_plugins" ] && "$tpm_dir/bin/install_plugins" >/dev/null 2>&1 || true
   '';
 }
