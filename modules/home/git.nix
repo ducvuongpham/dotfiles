@@ -28,12 +28,6 @@
         line-numbers = true;
         syntax-theme = "Catppuccin Macchiato";
       };
-      # Narrow-pane variant used by lazygit (delta has no --no-side-by-side flag).
-      "delta \"lazygit\"" = {
-        side-by-side = false;
-        line-numbers = true;
-        syntax-theme = "Catppuccin Macchiato";
-      };
       merge.conflictstyle = "zdiff3";
       diff.colorMoved = "default";
 
@@ -77,12 +71,30 @@
   programs.lazygit = {
     enable = true;
     settings = {
-      # Route lazygit's diff/log panes through delta. Lazygit handles its
-      # own pane layout, so we override side-by-side from the git config to
-      # keep delta single-column inside the smaller pane.
+      # delta's --features can only enable settings; it can't disable
+      # side-by-side once [delta] has it on. So pass --no-gitconfig and
+      # re-specify the desired settings inline so lazygit's narrow pane
+      # gets single-column rendering.
       git.paging = {
         colorArg = "always";
-        pager = "delta --paging=never --features=lazygit";
+        pager = "delta --paging=never --no-gitconfig --line-numbers --navigate --syntax-theme 'Catppuccin Macchiato'";
+      };
+
+      # Catppuccin Macchiato (sapphire accent, matching system). catppuccin/nix
+      # doesn't theme lazygit, so set the palette inline.
+      gui = {
+        theme = {
+          activeBorderColor = [ "#7dc4e4" "bold" ];      # sapphire
+          inactiveBorderColor = [ "#cad3f5" ];           # text
+          optionsTextColor = [ "#8aadf4" ];              # blue
+          selectedLineBgColor = [ "#363a4f" ];           # surface0
+          cherryPickedCommitBgColor = [ "#494d64" ];     # surface1
+          cherryPickedCommitFgColor = [ "#f4dbd6" ];     # rosewater
+          unstagedChangesColor = [ "#ed8796" ];          # red
+          defaultFgColor = [ "#cad3f5" ];                # text
+          searchingActiveBorderColor = [ "#eed49f" ];    # yellow
+        };
+        authorColors."*" = "#b7bdf8";                    # lavender
       };
     };
   };
