@@ -1,9 +1,18 @@
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 {
-  # ~/dotfiles → ~/.dotfiles. Legacy refs (this file's p10k.zsh path, alias
-  # drs/nhs/nhh below) use `~/dotfiles`; the repo lives at `~/.dotfiles`.
-  home.file."dotfiles".source = config.lib.file.mkOutOfStoreSymlink
-    "${config.home.homeDirectory}/.dotfiles";
+  # ~/dotfiles compatibility shim. Legacy refs (this file's p10k.zsh path,
+  # alias drs/nhs/nhh below, modules/home/tmux.nix activation, etc.) hardcode
+  # `~/dotfiles`. If the repo is cloned somewhere else (e.g. ~/.dotfiles), this
+  # creates a symlink so those refs still resolve. If ~/dotfiles already exists
+  # (tada-mbp clones directly to ~/dotfiles), this is a no-op — we *cannot*
+  # use `home.file."dotfiles"` because home-manager would back up the real
+  # repo directory to ~/dotfiles.hm-backup. Must run before linkGeneration so
+  # the path resolves when other modules' mkOutOfStoreSymlinks try to follow it.
+  home.activation.dotfilesShim = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+    if [ ! -e "$HOME/dotfiles" ] && [ -d "$HOME/.dotfiles" ]; then
+      ${pkgs.coreutils}/bin/ln -s "$HOME/.dotfiles" "$HOME/dotfiles"
+    fi
+  '';
 
   # ~/.p10k.zsh — symlinked out of dotfiles so edits via `p10k configure`
   # persist + appended catppuccin overrides stay tracked.
