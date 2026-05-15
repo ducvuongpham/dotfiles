@@ -1,4 +1,4 @@
-{ ... }:
+{ keyboardType ? "jis", ... }:
 {
   # Karabiner-Elements installed via brew cask. Config = JSON at
   # ~/.config/karabiner/karabiner.json. Minimal starter: caps_lock -> escape (tap)
@@ -74,7 +74,7 @@
           ];
         };
         virtual_hid_keyboard = {
-          keyboard_type_v2 = "jis";
+          keyboard_type_v2 = keyboardType;
         };
       }
     ];

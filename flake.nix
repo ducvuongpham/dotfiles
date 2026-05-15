@@ -28,6 +28,7 @@
       defaults = {
         system = "aarch64-darwin";
         username = "tada";
+        keyboardType = "jis";   # karabiner virtual_hid_keyboard.keyboard_type_v2: ansi | iso | jis
       };
 
       hostNames = lib.attrNames (
@@ -43,7 +44,7 @@
         let m = metaFor hostname; in
         nix-darwin.lib.darwinSystem {
           inherit (m) system;
-          specialArgs = { inherit inputs hostname; inherit (m) username system; };
+          specialArgs = { inherit inputs hostname; inherit (m) username system keyboardType; };
           modules = [
             ./hosts/${hostname}
             home-manager.darwinModules.home-manager
@@ -51,7 +52,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "hm-backup";
-              home-manager.extraSpecialArgs = { inherit inputs; inherit (m) username; };
+              home-manager.extraSpecialArgs = { inherit inputs; inherit (m) username keyboardType; };
               home-manager.sharedModules = [ catppuccin.homeModules.catppuccin ];
               home-manager.users.${m.username} = import ./home/${m.username}.nix;
             }
