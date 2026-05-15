@@ -76,12 +76,10 @@
       # side-by-side once [delta] has it on. Pass --no-gitconfig and
       # re-specify settings inline so lazygit's narrow pane stays single-column.
       # --hyperlinks lets clicking line numbers open the file in $EDITOR.
-      git = {
-        paging.colorArg = "always";
-        pagers = [{
-          pager = "delta --paging=never --no-gitconfig --line-numbers --navigate --hyperlinks --hyperlinks-file-link-format=lazygit-edit://{path}:{line} --syntax-theme 'Catppuccin Macchiato'";
-        }];
-      };
+      git.pagers = [{
+        colorArg = "always";
+        pager = "delta --paging=never --no-gitconfig --line-numbers --navigate --hyperlinks --hyperlinks-file-link-format=lazygit-edit://{path}:{line} --syntax-theme 'Catppuccin Macchiato'";
+      }];
 
       # Catppuccin Macchiato (sapphire accent, matching system). catppuccin/nix
       # doesn't theme lazygit, so set the palette inline.
