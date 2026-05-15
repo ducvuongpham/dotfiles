@@ -9,6 +9,13 @@
     settings = {
       env.TERM = "xterm-256color";
 
+      # Single-instance daemon. Without this, Cmd-N's `CreateNewWindow` action
+      # forks a new alacritty process, so each window gets its own dock icon
+      # and Cmd-Tab entry. With ipc_socket on, the first launch becomes a
+      # server and subsequent CreateNewWindow / `alacritty msg create-window`
+      # invocations open windows inside that server → one dock icon.
+      general.ipc_socket = true;
+
       window = {
         opacity = 0.97;
         padding = { x = 12; y = 12; };
