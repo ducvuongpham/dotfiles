@@ -1,9 +1,49 @@
 { pkgs, config, ... }:
 {
+  # ~/dotfiles → ~/.dotfiles. Legacy refs (this file's p10k.zsh path, alias
+  # drs/nhs/nhh below) use `~/dotfiles`; the repo lives at `~/.dotfiles`.
+  home.file."dotfiles".source = config.lib.file.mkOutOfStoreSymlink
+    "${config.home.homeDirectory}/.dotfiles";
+
   # ~/.p10k.zsh — symlinked out of dotfiles so edits via `p10k configure`
   # persist + appended catppuccin overrides stay tracked.
   home.file.".p10k.zsh".source = config.lib.file.mkOutOfStoreSymlink
     "${config.home.homeDirectory}/dotfiles/home/zsh/p10k.zsh";
+
+  # ~/.zshenv — loaded before .zshrc. Standard z4h pattern: fetch z4h.zsh on
+  # first run, then source it so `z4h` function is available in .zshrc.
+  home.file.".zshenv".text = ''
+    if [ -n "''${ZSH_VERSION-}" ]; then
+      : ''${ZDOTDIR:=~}
+      setopt no_global_rcs
+      [[ -o no_interactive && -z "''${Z4H_BOOTSTRAPPING-}" ]] && return
+      setopt no_rcs
+      unset Z4H_BOOTSTRAPPING
+    fi
+
+    Z4H_URL="https://raw.githubusercontent.com/romkatv/zsh4humans/v5"
+    : "''${Z4H:=''${XDG_CACHE_HOME:-$HOME/.cache}/zsh4humans/v5}"
+
+    umask o-w
+
+    if [ ! -e "$Z4H"/z4h.zsh ]; then
+      mkdir -p -- "$Z4H" || return
+      >&2 printf '\033[33mz4h\033[0m: fetching \033[4mz4h.zsh\033[0m\n'
+      if command -v curl >/dev/null 2>&1; then
+        curl -fsSL -- "$Z4H_URL"/z4h.zsh >"$Z4H"/z4h.zsh.$$ || return
+      elif command -v wget >/dev/null 2>&1; then
+        wget -O-   -- "$Z4H_URL"/z4h.zsh >"$Z4H"/z4h.zsh.$$ || return
+      else
+        >&2 printf '\033[33mz4h\033[0m: please install \033[32mcurl\033[0m or \033[32mwget\033[0m\n'
+        return 1
+      fi
+      mv -- "$Z4H"/z4h.zsh.$$ "$Z4H"/z4h.zsh || return
+    fi
+
+    . "$Z4H"/z4h.zsh || return
+
+    setopt rcs
+  '';
 
   # zsh4humans bootstraps itself on first shell launch (clones to ~/.cache/zsh4humans).
   # We just write a .zshrc following the official z4h pattern + our extras.
@@ -37,7 +77,7 @@
 
     # fzf-tab is installed via nix (modules/home/packages.nix) and sourced
     # from its store path after z4h init below — z4h's plugin loader uses
-    # its own tar invocation that breaks against uutils-tar 0.0.1.
+    # its own tar invocation, and uutils-tar (when present) breaks it.
 
     # Enable ('yes') or disable ('no') automatic teleportation of z to
     # a directory of the most-recently-visited subdirectory.
@@ -248,11 +288,16 @@
 
     # Command-not-found: if zsh can't find a binary but it exists in the
     # nixpkgs cache, transparently re-run the line as
-    # `nix run 'nixpkgs#<cmd>' -- <args>`.
+    # `nix run 'nixpkgs#<cmd>' -- <args>`. Build the cache on first miss
+    # so this works without prior tab-completion priming it.
     command_not_found_handler() {
       local cmd=$1
       shift
       local cache="''${XDG_CACHE_HOME:-$HOME/.cache}/nix-pkg-names"
+      if [[ ! -f $cache ]]; then
+        print -u2 "→ building nixpkgs package-name cache (one-time, ~30s)..."
+        _my_nix_refresh_cache >/dev/null 2>&1
+      fi
       if [[ -f $cache ]] && grep -qxF "$cmd" "$cache"; then
         print -u2 "→ nix run 'nixpkgs#$cmd' -- $*"
         nix run "nixpkgs#$cmd" -- "$@"

@@ -60,13 +60,13 @@
     curl
 
     # Rust-implemented uutils (https://github.com/uutils) take the standard
-    # names. Replaces GNU coreutils/sed/tar; skips gawk (uutils-awk not ready).
+    # names. Replaces GNU coreutils/sed; skips gawk (uutils-awk not ready)
+    # and tar (uutils-tar 0.0.1 lacks -C, breaks z4h + many other tools).
     # Skipped: uutils-acl/login/procps/util-linux (Linux-only).
     uutils-coreutils-noprefix  # includes hostname — uutils-hostname conflicts
     uutils-diffutils
     uutils-findutils
     uutils-sed
-    uutils-tar
     gawk
   ];
 }

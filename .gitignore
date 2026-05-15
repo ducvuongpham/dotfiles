@@ -4,6 +4,7 @@ result-*
 .direnv/
 .envrc.local
 *.swp
+.claude/
 
 # tmux plugins populated by TPM at runtime
 home/tmux/plugins/
