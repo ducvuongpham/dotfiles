@@ -38,6 +38,11 @@
     flavor = "macchiato";
     accent = "sapphire";
   };
+
+  # Enable bat via the home-manager module so catppuccin/nix can apply the
+  # macchiato theme automatically. (Raw `bat` in packages.nix was unthemed —
+  # catppuccin only hooks programs.* modules.)
+  programs.bat.enable = true;
   # We don't use programs.neovim/programs.tmux home-manager modules
   # (nvim is managed via vim.pack + symlink, tmux is symlinked + TPM),
   # so there are no programs.{neovim,tmux}.catppuccin options to opt out
