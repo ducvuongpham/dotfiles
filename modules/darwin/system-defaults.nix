@@ -219,5 +219,8 @@
     # so they auto-start at login independently of AeroSpace.
     /usr/bin/sudo -u ${username} /opt/homebrew/bin/brew services start borders 2>/dev/null || true
     /usr/bin/sudo -u ${username} /opt/homebrew/bin/brew services start sketchybar 2>/dev/null || true
+    # sleepwatcher: runs ~/.wakeup on every wake (restarts sketchybar so the
+    # aerospace workspace indicator doesn't stall after sleep).
+    /usr/bin/sudo -u ${username} /opt/homebrew/bin/brew services start sleepwatcher 2>/dev/null || true
   '';
 }

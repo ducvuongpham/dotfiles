@@ -139,15 +139,12 @@ items[1]:subscribe({
   "forced",
   "window_focus",
   "space_windows_change",
-  "routine",           -- periodic safety net (update_freq below)
 }, function()
   refresh_query()
 end)
 
--- Safety-net poll. After sleep/wake the system_woke/display_wake events
--- sometimes fire before AeroSpace has reconnected, leaving the indicator
--- stuck on its pre-sleep state. A 5s routine tick catches anything the
--- event subscriptions miss without meaningful overhead.
-items[1]:set({ update_freq = 5 })
+-- Polling was tried (update_freq=5 + routine subscribe) and didn't catch
+-- the post-sleep stall reliably. Wake handling moved to sleepwatcher
+-- (home/sleepwatcher/wakeup.sh) which restarts sketchybar on wake.
 
 refresh_query()

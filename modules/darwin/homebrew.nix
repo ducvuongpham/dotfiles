@@ -18,6 +18,7 @@
       "felixkratz/formulae/sketchybar"   # custom menu bar
       "switchaudio-osx"                  # SwitchAudioSource CLI (audio output picking)
       "blueutil"                         # bluetooth CLI (power + paired devices)
+      "sleepwatcher"                     # runs ~/.wakeup on wake (used to repoke sketchybar)
       # input-source CLI: compiled via Swift in modules/home/sketchybar.nix activation
     ];
 

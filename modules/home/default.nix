@@ -20,6 +20,7 @@
     ./claude.nix
     ./ccstatusline.nix
     ./raycast.nix
+    ./sleepwatcher.nix
     ./fastfetch.nix
     ./kew.nix
     ./brew-bin-shims.nix
