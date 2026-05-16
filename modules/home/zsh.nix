@@ -393,6 +393,16 @@
     alias neofetch='fastfetch'
     alias ncdu='dua i'
 
+    # Render `man` through bat for syntax/colour (uses the catppuccin theme
+    # wired by programs.bat). `col -bx` strips backspace overstrike that
+    # roff emits for bold/underline so bat doesn't choke on the codes.
+    export MANPAGER="sh -c 'col -bx | bat -l man -p --paging=always'"
+    export MANROFFOPT="-c"
+
+    # tealdeer: keep the cache fresh so first `tldr foo` after install
+    # isn't a "no pages found" surprise. (`tldr --update` is idempotent.)
+    alias tldr-update='tldr --update'
+
     # Rebuild shortcuts — flake at ~/dotfiles, host = $(hostname -s).
     # Use noglob/quoted form so zsh doesn't expand `#`.
     alias drs='noglob sudo darwin-rebuild switch --flake ~/dotfiles#'"$(hostname -s)"
