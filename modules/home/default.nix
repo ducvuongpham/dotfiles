@@ -43,6 +43,13 @@
   # macchiato theme automatically. (Raw `bat` in packages.nix was unthemed —
   # catppuccin only hooks programs.* modules.)
   programs.bat.enable = true;
+
+  # tealdeer: fast Rust `tldr` client. auto_update=true → cache refreshes
+  # on first run after expiry (default 30d), no manual `tldr --update`.
+  programs.tealdeer = {
+    enable = true;
+    settings.updates.auto_update = true;
+  };
   # We don't use programs.neovim/programs.tmux home-manager modules
   # (nvim is managed via vim.pack + symlink, tmux is symlinked + TPM),
   # so there are no programs.{neovim,tmux}.catppuccin options to opt out

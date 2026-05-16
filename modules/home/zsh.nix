@@ -399,9 +399,8 @@
     export MANPAGER="sh -c 'col -bx | bat -l man -p --paging=always'"
     export MANROFFOPT="-c"
 
-    # tealdeer: keep the cache fresh so first `tldr foo` after install
-    # isn't a "no pages found" surprise. (`tldr --update` is idempotent.)
-    alias tldr-update='tldr --update'
+    # tealdeer cache auto-updates (programs.tealdeer settings in default.nix).
+    # Manual refresh: `tldr --update`.
 
     # Rebuild shortcuts — flake at ~/dotfiles, host = $(hostname -s).
     # Use noglob/quoted form so zsh doesn't expand `#`.

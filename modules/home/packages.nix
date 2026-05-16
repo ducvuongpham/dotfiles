@@ -5,7 +5,8 @@
     eza
     # bat is managed via programs.bat in modules/home/default.nix so the
     # catppuccin/nix module can wire its theme. Don't add here too.
-    tealdeer          # tldr client (fast Rust impl) — simplified `man` w/ examples
+    # tealdeer (tldr) is enabled via programs.tealdeer in default.nix so
+    # auto_update + settings flow declaratively. Don't add here too.
     zoxide
     fzf
     ripgrep
