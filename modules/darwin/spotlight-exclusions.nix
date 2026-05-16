@@ -8,7 +8,7 @@
   system.activationScripts.postActivation.text = ''
     # Hide background-only apps from Spotlight + Finder.
     HIDDEN_APPS=(
-      "/Applications/Nix Apps/Maccy.app"
+      # Maccy left visible to Spotlight/Raycast — useful as a discoverable app.
       "/Applications/Nix Apps/Mos.app"
       "/Applications/Nix Apps/KeyCastr.app"
     )
