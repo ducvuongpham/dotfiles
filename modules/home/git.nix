@@ -6,8 +6,8 @@
     settings = {
       user = {
         name = "ducvuongpham";
-        email = "ducvuongpham2004@gmail.com";
-        signingkey = "~/.ssh/id_ed25519.pub";
+        email = "ducvuongpham2004@outlook.com";
+        signingkey = "~/.ssh/id_rsa.pub";
       };
 
       init.defaultBranch = "main";
@@ -160,12 +160,12 @@
     nix-direnv.enable = true;
   };
 
-  # allowed_signers populated by activation script after ed25519 key exists
+  # allowed_signers populated by activation script after RSA signing key exists
   home.activation.gitAllowedSigners = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [ -f "$HOME/.ssh/id_ed25519.pub" ]; then
+    if [ -f "$HOME/.ssh/id_rsa.pub" ]; then
       mkdir -p "$HOME/.config/git"
-      PUBKEY=$(cat "$HOME/.ssh/id_ed25519.pub")
-      echo "ducvuongpham2004@gmail.com namespaces=\"git\" $PUBKEY" > "$HOME/.config/git/allowed_signers"
+      PUBKEY=$(cat "$HOME/.ssh/id_rsa.pub")
+      echo "ducvuongpham2004@outlook.com namespaces=\"git\" $PUBKEY" > "$HOME/.config/git/allowed_signers"
     fi
   '';
 }
