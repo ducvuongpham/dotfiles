@@ -25,6 +25,7 @@
     ./kew.nix
     ./brew-bin-shims.nix
     ./whisper-stream.nix
+    ./dbeaver-secrets.nix
     # spotlight.nix renamed to apps.nix conceptually — keeping path same.
     ./spotlight.nix
   ];

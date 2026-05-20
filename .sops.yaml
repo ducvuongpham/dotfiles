@@ -1,0 +1,22 @@
+# sops config. Each file under secrets/ is encrypted to the recipients listed
+# here. Bootstrap: see home/dbeaver/encrypt.sh comments for the one-time setup.
+#
+# To add a new device:
+#   1. Generate an age key on the new device:
+#        mkdir -p ~/.config/sops/age
+#        age-keygen -o ~/.config/sops/age/keys.txt
+#   2. Print its public key:
+#        age-keygen -y ~/.config/sops/age/keys.txt
+#   3. Add it below as a new &device anchor and include it in the age: list
+#      under creation_rules.
+#   4. On a device that already has a key, run:
+#        sops updatekeys secrets/dbeaver/credentials-config.enc
+#        sops updatekeys secrets/dbeaver/data-sources.enc
+#      to re-encrypt the existing secrets to the new recipient set.
+keys:
+  - &pc391_macbook age163xlnluhk4934yjftjm96sr72tuj728sem3mg4nhqu5r3xerufvsn9wyue
+
+creation_rules:
+  - path_regex: secrets/.*\.enc$
+    age:
+      - *pc391_macbook

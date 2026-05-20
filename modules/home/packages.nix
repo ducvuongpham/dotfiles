@@ -53,6 +53,13 @@
     # lang version manager
     mise
 
+    # secrets management (used by modules/home/dbeaver-secrets.nix and any future
+    # sops-encrypted dotfiles secrets). age generates the keypair; sops handles
+    # the encrypt/decrypt of files referenced from .sops.yaml.
+    sops
+    age
+    ssh-to-age         # convert ssh public keys to age recipients if you ever want to sign secrets with an ssh key
+
     # nix helper + dev tooling
     nh
     nixd                # LSP server (richer, uses nixpkgs eval)

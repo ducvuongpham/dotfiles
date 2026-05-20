@@ -12,3 +12,18 @@ home/tmux/plugins/
 # nvim plugin data lives in $XDG_DATA_HOME, not config — but exclude any stray
 # downloads if they ever land in config dir
 home/nvim/plugged/
+
+# sops/age secrets — defense in depth. The real key lives in ~/.config/sops/age/
+# (outside this repo), but block any of these patterns from sneaking in if a
+# key is ever accidentally generated or copied inside the dotfiles tree.
+keys.txt
+*.age
+age-keys.txt
+.config/sops/
+
+# DBeaver plaintext exports. Only the .enc forms (sops-encrypted) belong in git;
+# raw credentials-config.json / data-sources.json must never be committed.
+secrets/**/*.json
+secrets/**/credentials-config
+secrets/**/data-sources
+!secrets/**/*.enc

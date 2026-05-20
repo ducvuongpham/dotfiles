@@ -15,9 +15,14 @@
     };
 
     catppuccin.url = "github:catppuccin/nix";
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, catppuccin, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, catppuccin, sops-nix, ... }@inputs:
     let
       lib = nixpkgs.lib;
 
@@ -53,7 +58,10 @@
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "hm-backup";
               home-manager.extraSpecialArgs = { inherit inputs; inherit (m) username keyboardType; };
-              home-manager.sharedModules = [ catppuccin.homeModules.catppuccin ];
+              home-manager.sharedModules = [
+                catppuccin.homeModules.catppuccin
+                sops-nix.homeManagerModules.sops
+              ];
               home-manager.users.${m.username} = import ./home/${m.username}.nix;
             }
           ];
@@ -66,6 +74,7 @@
           modules = [
             ./home/${username}.nix
             catppuccin.homeModules.catppuccin
+            sops-nix.homeManagerModules.sops
           ];
         };
 
