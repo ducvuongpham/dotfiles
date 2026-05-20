@@ -18,6 +18,7 @@
       "felixkratz/formulae/sketchybar"   # custom menu bar
       "switchaudio-osx"                  # SwitchAudioSource CLI (audio output picking)
       "blueutil"                         # bluetooth CLI (power + paired devices)
+      "gulp-cli"                         # gulp task runner CLI (not in nixpkgs since nodePackages removal)
       # input-source CLI: compiled via Swift in modules/home/sketchybar.nix activation
     ];
 

@@ -41,19 +41,30 @@
     on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
     # Workspace -> monitor pinning with fallback chains.
-    #   1 mon  : everything on built-in.
-    #   2 mons : 1-4 built-in, 5-9 secondary (per spec).
-    #   3 mons : 1-4 built-in, 5-6 secondary, 7-9 tertiary.
+    #   Monitor 1 (built-in):  1 2 3 4 5
+    #   Monitor 2 (secondary): Q W E R T
+    #   Monitor 3 (tertiary):  A S D F G
+    # With fewer monitors, each set falls back along its chain to the next
+    # available monitor (so e.g. on a single screen everything lands on built-in).
     [workspace-to-monitor-force-assignment]
     1 = 'built-in'
     2 = 'built-in'
     3 = 'built-in'
     4 = 'built-in'
-    5 = ['secondary', 'built-in']
-    6 = ['secondary', 'built-in']
-    7 = [3, 'secondary', 'built-in']
-    8 = [3, 'secondary', 'built-in']
-    9 = [3, 'secondary', 'built-in']
+    5 = 'built-in'
+    Q = ['secondary', 'built-in']
+    W = ['secondary', 'built-in']
+    E = ['secondary', 'built-in']
+    R = ['secondary', 'built-in']
+    T = ['secondary', 'built-in']
+    # Note: 'secondary' is intentionally skipped so A-G fall back to built-in
+    # (not monitor 2) when only 2 monitors are present — otherwise they'd
+    # collide with Q-T on the external display.
+    A = [3, 'built-in']
+    S = [3, 'built-in']
+    D = [3, 'built-in']
+    F = [3, 'built-in']
+    G = [3, 'built-in']
 
     [key-mapping]
     preset = 'qwerty'
@@ -101,7 +112,8 @@
     alt-comma = 'layout accordion horizontal vertical'
 
     # i3-style zoom: toggle focused window to cover the workspace.
-    alt-f = 'fullscreen'
+    # Moved off alt-f because F is now a workspace key (monitor 3).
+    alt-m = 'fullscreen'
 
     # Smart split + spawn. Delegated to a script so we can branch:
     #   1 window in workspace → force `tiles horizontal` so the new Alacritty
@@ -113,16 +125,24 @@
     # single-child containers left behind by closed windows).
     alt-shift-slash = 'flatten-workspace-tree'
 
-    # workspaces
+    # workspaces — monitor 1 (built-in): numbers
     alt-1 = 'workspace 1'
     alt-2 = 'workspace 2'
     alt-3 = 'workspace 3'
     alt-4 = 'workspace 4'
     alt-5 = 'workspace 5'
-    alt-6 = 'workspace 6'
-    alt-7 = 'workspace 7'
-    alt-8 = 'workspace 8'
-    alt-9 = 'workspace 9'
+    # workspaces — monitor 2 (secondary): Q W E R T
+    alt-q = 'workspace Q'
+    alt-w = 'workspace W'
+    alt-e = 'workspace E'
+    alt-r = 'workspace R'
+    alt-t = 'workspace T'
+    # workspaces — monitor 3 (tertiary): A S D F G
+    alt-a = 'workspace A'
+    alt-s = 'workspace S'
+    alt-d = 'workspace D'
+    alt-f = 'workspace F'
+    alt-g = 'workspace G'
 
     # move window AND follow it to that workspace
     alt-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
@@ -130,10 +150,16 @@
     alt-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
     alt-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
     alt-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
-    alt-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
-    alt-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
-    alt-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
-    alt-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+    alt-shift-q = ['move-node-to-workspace Q', 'workspace Q']
+    alt-shift-w = ['move-node-to-workspace W', 'workspace W']
+    alt-shift-e = ['move-node-to-workspace E', 'workspace E']
+    alt-shift-r = ['move-node-to-workspace R', 'workspace R']
+    alt-shift-t = ['move-node-to-workspace T', 'workspace T']
+    alt-shift-a = ['move-node-to-workspace A', 'workspace A']
+    alt-shift-s = ['move-node-to-workspace S', 'workspace S']
+    alt-shift-d = ['move-node-to-workspace D', 'workspace D']
+    alt-shift-f = ['move-node-to-workspace F', 'workspace F']
+    alt-shift-g = ['move-node-to-workspace G', 'workspace G']
 
     alt-tab = 'workspace-back-and-forth'
     alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'

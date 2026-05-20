@@ -1,7 +1,10 @@
 local sbar = require("sketchybar")
 local colors = require("colors")
 
--- AeroSpace workspaces 1-9.
+-- AeroSpace workspaces, per-monitor naming:
+--   Monitor 1 (built-in):  1 2 3 4 5
+--   Monitor 2 (secondary): Q W E R T
+--   Monitor 3 (tertiary):  A S D F G
 -- Highlights:
 --   focused        → yellow background, icon highlighted
 --   visible-other  → surface2 (shown on another monitor)
@@ -20,11 +23,13 @@ local function app_icon(name)
   return icon_table[name] or ":default:"
 end
 
+local workspaces = { "1", "2", "3", "4", "5", "Q", "W", "E", "R", "T", "A", "S", "D", "F", "G" }
+
 local items = {}
-for i = 1, 9 do
-  items[i] = sbar.add("item", "space." .. i, {
+for _, ws in ipairs(workspaces) do
+  items[ws] = sbar.add("item", "space." .. ws, {
     icon = {
-      string = tostring(i),
+      string = ws,
       padding_left = 10,
       padding_right = 6,
       color = colors.subtext0,
@@ -47,7 +52,7 @@ for i = 1, 9 do
     padding_left = 2,
     padding_right = 2,
     drawing = true,
-    click_script = "aerospace workspace " .. i,
+    click_script = "aerospace workspace " .. ws,
   })
 end
 
@@ -68,9 +73,7 @@ local function refresh(focused)
       visible[ws:match("^%s*(.-)%s*$")] = true
     end
 
-    for i = 1, 9 do
-      local ws = tostring(i)
-
+    for _, ws in ipairs(workspaces) do
       -- List apps in this workspace; one icon per window. Sort by
       -- window-id (numeric, stable) so the order doesn't shuffle as
       -- focus moves between windows.
@@ -95,7 +98,7 @@ local function refresh(focused)
           -- empty + not focused/visible = hide. An empty workspace that's
           -- still the visible one on its monitor (e.g. external monitor
           -- with no apps yet) keeps drawing so the user can tell which
-          -- workspace number that monitor is on.
+          -- workspace that monitor is on.
           local draw = has_apps or is_focused or is_visible
 
           local color
@@ -103,7 +106,7 @@ local function refresh(focused)
           elseif is_visible then color = colors.surface2
           else color = colors.surface0 end
 
-          items[i]:set({
+          items[ws]:set({
             drawing = draw,
             background = { color = color },
             icon = { highlight = is_focused },
@@ -115,7 +118,7 @@ local function refresh(focused)
           local icons = lookup_icons(apps)
           local label = ""
           for _, g in ipairs(icons) do label = label .. g .. " " end
-          items[i]:set({ label = { string = label:gsub("%s+$", "") } })
+          items[ws]:set({ label = { string = label:gsub("%s+$", "") } })
         end
       )
     end
@@ -128,10 +131,11 @@ local function refresh_query()
   end)
 end
 
-items[1]:subscribe("aerospace_workspace_change", function(env)
+local first = items[workspaces[1]]
+first:subscribe("aerospace_workspace_change", function(env)
   refresh(env.FOCUSED_WORKSPACE)
 end)
-items[1]:subscribe({ "front_app_switched", "system_woke", "forced", "window_focus", "space_windows_change" }, function()
+first:subscribe({ "front_app_switched", "system_woke", "forced", "window_focus", "space_windows_change" }, function()
   refresh_query()
 end)
 

@@ -8,6 +8,6 @@ while IFS= read -r pid; do
   [ -z "$pid" ] && continue
   pgid="$(/bin/ps -o pgid= -p "$pid" 2>/dev/null | /usr/bin/tr -d ' ')"
   [ -n "$pgid" ] && /bin/kill -KILL -- "-$pgid" 2>/dev/null
-done < <(/opt/homebrew/bin/tmux list-panes -s -t "$session_id" -F '#{pane_pid}' 2>/dev/null)
+done < <(tmux list-panes -s -t "$session_id" -F '#{pane_pid}' 2>/dev/null)
 
-/opt/homebrew/bin/tmux kill-session -t "$session_id"
+tmux kill-session -t "$session_id"
