@@ -15,8 +15,10 @@
 #      to re-encrypt the existing secrets to the new recipient set.
 keys:
   - &pc391_macbook age163xlnluhk4934yjftjm96sr72tuj728sem3mg4nhqu5r3xerufvsn9wyue
+  - &tada_mbp      age1p7wuh8kyvzk72ct77qrlfh030pzghjt529mv5tzcemycj8pjmv5s5qq6dt
 
 creation_rules:
   - path_regex: secrets/.*\.enc$
     age:
       - *pc391_macbook
+      - *tada_mbp
