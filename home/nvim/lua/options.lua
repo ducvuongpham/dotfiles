@@ -72,6 +72,9 @@ vim.env.PATH = node_bin .. delim .. mise_shims .. delim .. mason_bin .. delim ..
 -- Session options (required by auto-session for correct filetype/highlight restore)
 o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
 
+-- Treat Google Apps Script (.gs) files as JavaScript so typescript-tools attaches
+vim.filetype.add { extension = { gs = "javascript" } }
+
 -- Spell checking
 vim.opt.spell = true
 vim.opt.spelllang = "en_us,cjk"
