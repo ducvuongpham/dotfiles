@@ -1,6 +1,7 @@
 [tools]
 # claude moved to nix (modules/home/packages.nix) — version pinned via flake.lock.
 node = "20"
+ruby = "3.2"
 xcodes = "latest"
 # ccstatusline: claude code status line renderer. Wired into
 # ~/.claude/settings.json via statusLine.command = "ccstatusline".

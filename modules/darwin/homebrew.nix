@@ -40,6 +40,7 @@
       "blackhole-2ch"          # virtual audio device — capture system audio for whisper-stream
       "rustdesk"               # remote desktop — brew cask is the signed build with TCC entitlements
       "microsoft-edge"
+      "anki"                   # spaced-repetition flashcards; not in nixpkgs darwin
     ];
 
     masApps = { };

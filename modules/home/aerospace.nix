@@ -66,6 +66,12 @@
     F = [3, 'built-in']
     G = [3, 'built-in']
 
+    # Auto-float on window detection. Find an app's bundle id with
+    # `aerospace list-apps` while the app is running.
+    [[on-window-detected]]
+    if.app-id = 'net.ankiweb.launcher'
+    run = ['layout floating']
+
     [key-mapping]
     preset = 'qwerty'
 
