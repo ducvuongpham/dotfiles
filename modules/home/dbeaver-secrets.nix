@@ -40,6 +40,14 @@ in
           install -m 0600 \
             "${config.sops.secrets.dbeaver-data-sources.path}" \
             "${dbeaverDir}/data-sources.json"
+          # data-sources.json embeds absolute home-dir paths (SSH key, mysql
+          # client install dir) baked from the host that ran encrypt.sh. Rewrite
+          # /Users/<author>/... → this host's $HOME so connections work without
+          # per-machine forks of the encrypted file. Extend the sed list as new
+          # author home-dirs show up.
+          ${pkgs.gnused}/bin/sed -i \
+            -e 's|/Users/pc391|${config.home.homeDirectory}|g' \
+            "${dbeaverDir}/data-sources.json"
         fi
       '';
   };
