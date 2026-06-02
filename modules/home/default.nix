@@ -3,6 +3,7 @@
   imports = [
     ./packages.nix
     ./zsh.nix
+    ./nushell.nix
     ./git.nix
     ./alacritty.nix
     ./aerospace.nix
