@@ -26,6 +26,25 @@ in
       };
     };
 
+    # sops-nix's own activation runs:
+    #   /bin/launchctl bootout  ... && true     # &&-true does NOT swallow failures
+    #   /bin/launchctl bootstrap ...
+    # On every rebuild this prints "Unrecognized target specifier" + "I/O error 5"
+    # because the prior agent is still attached when bootstrap fires. Override
+    # with a corrected version that suppresses the bootout failure and retries
+    # bootstrap after a brief settle if the first attempt loses the race.
+    home.activation.sops-nix = lib.mkForce (
+      lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        uid=$(id -u "$USER")
+        plist="$HOME/Library/LaunchAgents/org.nix-community.home.sops-nix.plist"
+        /bin/launchctl bootout "gui/$uid/org.nix-community.home.sops-nix" 2>/dev/null || true
+        if ! /bin/launchctl bootstrap "gui/$uid" "$plist" 2>/dev/null; then
+          sleep 0.3
+          /bin/launchctl bootstrap "gui/$uid" "$plist"
+        fi
+      ''
+    );
+
     home.activation.dbeaverSecretsSync =
       # Must run after sops-nix has decrypted the secrets — without this,
       # the source paths don't exist yet and the install commands no-op.
