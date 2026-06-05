@@ -9,4 +9,14 @@
   home.file.".claude/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink
       "${config.home.homeDirectory}/dotfiles/home/claude/settings.json";
+
+  # Status line script — referenced by settings.json statusLine.command.
+  home.file.".claude/statusline.sh".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles/home/claude/statusline.sh";
+
+  # Caveman mode tracker — UserPromptSubmit hook that writes /caveman <mode> to .caveman-active.
+  home.file.".claude/caveman-track.sh".source =
+    config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles/home/claude/caveman-track.sh";
 }
