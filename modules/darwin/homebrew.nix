@@ -4,7 +4,10 @@
     enable = true;
     onActivation = {
       autoUpdate = true;
-      cleanup = "zap";
+      # "zap" requires brew bundle's --force-cleanup which nix-darwin does not
+      # yet pass; newer Homebrew refuses --cleanup without it. Revert to "zap"
+      # once nix-darwin upstream adds the flag.
+      cleanup = "none";
       upgrade = true;
     };
 
@@ -19,6 +22,7 @@
       "switchaudio-osx"                  # SwitchAudioSource CLI (audio output picking)
       "blueutil"                         # bluetooth CLI (power + paired devices)
       "gulp-cli"                         # gulp task runner CLI (not in nixpkgs since nodePackages removal)
+      "rtk"                              # rtk-ai/rtk — CLI proxy compressing LLM tool output (~60-90% token savings)
       # input-source CLI: compiled via Swift in modules/home/sketchybar.nix activation
     ];
 
@@ -40,6 +44,7 @@
       "rustdesk"               # remote desktop — brew cask is the signed build with TCC entitlements
       "microsoft-edge"
       "anki"                   # spaced-repetition flashcards; not in nixpkgs darwin
+      "vivaldi"                # Chromium-based browser; not in nixpkgs darwin
     ];
 
     masApps = { };
