@@ -2,5 +2,35 @@
   "theme": "dark",
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "env": {
+    "CAVEMAN_DEFAULT_MODE": "ultra"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/caveman-track.sh"
+          }
+        ]
+      }
+    ]
   }
 }
