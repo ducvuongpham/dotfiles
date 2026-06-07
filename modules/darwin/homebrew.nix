@@ -45,6 +45,7 @@
       "rustdesk"               # remote desktop — brew cask is the signed build with TCC entitlements
       "microsoft-edge"
       "anki"                   # spaced-repetition flashcards; not in nixpkgs darwin
+      "bitwarden"              # password manager GUI — brew cask for auto-updates + signed bundle
       "vivaldi"                # Chromium-based browser; not in nixpkgs darwin
     ];
 
