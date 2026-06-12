@@ -1,178 +1,120 @@
 # dotfiles
 
-macOS system + user config managed by [nix-darwin](https://github.com/LnL7/nix-darwin) and
-[home-manager](https://github.com/nix-community/home-manager), wired together with a flake.
+My macOS setup as a single command. nix-darwin + home-manager via a flake, Catppuccin Macchiato theme.
 
-Theme: [Catppuccin Macchiato](https://github.com/catppuccin/nix) (system-wide).
+Tiling WM (AeroSpace), sketchybar bar, Alacritty + tmux + zsh4humans, Neovim, Karabiner caps-lock remap, Homebrew casks for the rest. Everything declarative — `darwin-rebuild switch` reproduces the whole system.
 
-## Hosts
+## Use it as your own
 
-| host                       | system            | user      | keyboard |
-| -------------------------- | ----------------- | --------- | -------- |
-| `tada-mbp`                 | `aarch64-darwin`  | `tada`    | jis      |
-| `pishi391noMacBook-Pro`    | `aarch64-darwin`  | `pc391`   | ansi     |
+To get my exact setup, you change **three things**: your macOS hostname, the host directory name, and your username. Then run one command.
 
-Per-host overrides go in `hosts/<host>/meta.nix`. Supported fields:
-`system`, `username`, `keyboardType` (`ansi` | `iso` | `jis`).
-
-## Layout
-
-```
-flake.nix              # entry — declares hosts, pins inputs
-hosts/<host>/          # per-host darwin module (system-level)
-modules/darwin/        # shared darwin modules (homebrew, defaults, …)
-modules/home/          # shared home-manager modules (zsh, tmux, nvim, …)
-home/                  # raw config files (sketchybar lua, tmux.conf, aerospace.toml scripts, …)
-                       # symlinked into $HOME via mkOutOfStoreSymlink so edits apply live
-home/<username>.nix    # entry import for the user's home-manager profile
-```
-
-`mkOutOfStoreSymlink` is used for anything where I want to edit-and-go without rebuilding
-(tmux, sketchybar, aerospace scripts). Pure nix-managed files (most `modules/*.nix`) need a
-rebuild to apply.
-
-## Bootstrap
-
-### Pre-flight
-
-Things to know *before* the first `darwin-rebuild`:
-
-- **Hostname must match `hosts/<name>/`.** Set it first or `darwin-rebuild`
-  can't find the matching configuration:
-  ```bash
-  sudo scutil --set HostName       <hostname>
-  sudo scutil --set LocalHostName  <hostname>
-  sudo scutil --set ComputerName   <hostname>
-  ```
-- **SSH signing key.** `modules/home/git.nix` enables `commit.gpgsign` against
-  `~/.ssh/id_ed25519.pub`. Without the key the first git commit fails with
-  `Couldn't load public key`. Generate it before switching:
-  ```bash
-  ssh-keygen -t ed25519 -C "<your-email>"   # accept default path, set passphrase
-  ```
-  Then add the public key to GitHub as a **Signing Key** (Settings → SSH and
-  GPG keys). The `gitAllowedSigners` activation writes
-  `~/.config/git/allowed_signers` on every switch — if the file is empty after
-  the first switch, the key didn't exist yet; just rebuild.
-- **Repo clone path.** Prefer `~/dotfiles`. If you clone to `~/.dotfiles`
-  instead, the `dotfilesShim` activation in `modules/home/zsh.nix` creates a
-  `~/dotfiles → ~/.dotfiles` symlink so legacy refs (p10k.zsh path, tmux
-  plugin path, `drs`/`nhs`/`nhh` aliases) keep resolving. Cloning to a third
-  location won't work without editing those refs.
-- **zsh `#` glob.** zsh expands `#` so the bare flake ref errors with
-  `no matches found`. Use `noglob`, escape (`\#`), or quote the path:
-  ```bash
-  noglob nix run nix-darwin -- switch --flake .#<hostname>
-  ```
-
-### Steps
+### 1. Install Nix
 
 ```bash
-# 1. install Determinate Nix (or any nix with flakes)
 curl -fsSL https://install.determinate.systems/nix | sh -s -- install
-
-# 2. clone (see pre-flight note above re: path)
-git clone git@git.tada.io.vn:tada/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-
-# 3. (optional) generate ed25519 signing key (see pre-flight note)
-ssh-keygen -t ed25519 -C "<your-email>"
-
-# 4. first build (replace <hostname> with your `scutil --get LocalHostName`)
-noglob sudo nix run nix-darwin -- switch --flake .#<hostname>
 ```
 
-After the first switch:
-- `darwin-rebuild`, `home-manager`, `nh` are on PATH.
-- `drs` / `nhs` / `nhh` aliases work hostname-aware.
-- A `.zshrc.hm-backup` / `.zshenv.hm-backup` may sit next to the new symlinked
-  copies — that's home-manager moving your existing files aside. Delete when
-  you're sure the new config is what you want.
-- Grant the macOS TCC permissions in the next section, otherwise SketchyBar,
-  Karabiner, AeroSpace will misbehave silently.
+Restart your terminal so `nix` is on PATH.
 
-## System permissions (post-switch checklist)
+### 2. Clone
 
-macOS gates several APIs behind TCC (privacy permission prompts) and
-driver-extension approval flows. nix cannot grant these — you must approve
-them once after the first switch. Until you do, the bits below misbehave
-silently (no error, just nothing happens).
+```bash
+git clone https://github.com/<this-repo> ~/dotfiles
+cd ~/dotfiles
+```
 
-Open **System Settings → Privacy & Security** and walk down the list:
+Clone to `~/dotfiles` exactly — several configs reference that path.
 
-| Panel                              | App / target                          | Why it's needed                                                                 |
-| ---------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------- |
-| **Screen Recording**               | SketchyBar                            | Reads menu-bar items, display info (brightness widget needs per-display UUIDs)  |
-| **Input Monitoring**               | Karabiner-Elements, Karabiner-EventViewer | Captures key events for caps-lock → esc/ctrl remap                          |
-| **Input Monitoring**               | KeyCastr                              | Shows pressed keys on screen during presentations/screen-share                  |
-| **Accessibility**                  | AeroSpace                             | Window focus / move / workspace switching                                       |
-| **Accessibility**                  | Maccy                                 | Listens for the global Cmd-Shift-V hotkey                                       |
-| **Accessibility**                  | Mos                                   | Scrolls under non-Apple mice (system extension hook)                            |
-| **Accessibility**                  | Raycast                               | Window management, system commands                                              |
-| **Full Disk Access**               | Your terminal (Alacritty / Terminal)  | `brew bundle`'s `zap` step removes files outside `/opt/homebrew`                |
-| **Local Network**                  | Telegram, Brave, Microsoft Edge       | Bonjour / LAN discovery — granted on first launch via popup                     |
-| **Notifications**                  | Telegram, etc.                        | Granted on first launch                                                         |
-| **Login Items & Extensions** → **Background Items** | Karabiner_DriverKit_VirtualHIDDevice, BetterDisplay driver | Driver extensions need to be **Allowed** here AND under "System software from…" at the bottom of the panel |
-| **Login Items**                    | (Optional) AeroSpace, sketchybar, borders, Karabiner-Elements, Maccy | If you want them to launch at login. Most are already wired via launchd / brew services in `modules/darwin/`. |
+### 3. Set your macOS hostname
 
-After granting Screen Recording / Input Monitoring / Accessibility, restart
-the affected services so they re-read the permission:
+Pick a hostname (letters, digits, hyphens) and set all three:
+
+```bash
+sudo scutil --set HostName       my-mac
+sudo scutil --set LocalHostName  my-mac
+sudo scutil --set ComputerName   my-mac
+```
+
+Verify: `scutil --get LocalHostName` should print `my-mac`.
+
+### 4. Rename the host + user files to match
+
+The flake auto-discovers hosts from `hosts/<hostname>/` and users from `home/<username>.nix`. Rename both to match yours:
+
+```bash
+mv hosts/pishi391noMacBook-Pro  hosts/my-mac     # match your scutil hostname
+mv home/pc391.nix               home/alice.nix   # match your macOS username (whoami)
+```
+
+Then edit `hosts/my-mac/meta.nix`:
+
+```nix
+{
+  system       = "aarch64-darwin";   # or "x86_64-darwin" on Intel Macs
+  username     = "alice";            # match home/<this>.nix and `whoami`
+  keyboardType = "ansi";             # "ansi" | "iso" | "jis"
+}
+```
+
+### 5. Generate an SSH signing key
+
+Git commits are signed with SSH. Without a key, the first commit fails:
+
+```bash
+ssh-keygen -t ed25519 -C "you@example.com"   # accept default path
+```
+
+(Optional) Add the public key to GitHub as a **Signing Key** so commits show as Verified.
+
+### 6. Build
+
+zsh expands `#` in unquoted args, so prefix with `noglob`:
+
+```bash
+noglob sudo nix run nix-darwin -- switch --flake .#my-mac
+```
+
+First run takes 10–30 min (downloads + Homebrew casks). Subsequent runs are seconds.
+
+After it finishes:
+
+- `darwin-rebuild`, `home-manager`, `nh` are on PATH
+- `drs` / `nhs` / `nhh` shell aliases work (hostname-aware rebuild shortcuts)
+- Home-manager may leave `.zshrc.hm-backup` next to its new symlinks — delete once you're happy
+
+### 7. Grant macOS permissions
+
+macOS gates a few APIs behind privacy prompts that Nix can't approve. Open **System Settings → Privacy & Security** and grant:
+
+| Panel                                           | App / target                                                | Why                                                            |
+| ----------------------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------- |
+| Screen Recording                                | SketchyBar                                                  | Reads menu-bar items, per-display info                         |
+| Input Monitoring                                | Karabiner-Elements, Karabiner-EventViewer, KeyCastr         | Key event capture (caps→esc/ctrl, on-screen keys)              |
+| Accessibility                                   | AeroSpace, Maccy, Mos, Raycast                              | Window focus, hotkeys, scroll, automation                      |
+| Full Disk Access                                | Your terminal (Alacritty)                                   | `brew bundle` zap step touches files outside `/opt/homebrew`   |
+| Login Items & Extensions → Background Items     | Karabiner_DriverKit_VirtualHIDDevice, BetterDisplay driver  | Driver extensions need explicit approval                       |
+
+After granting, restart the affected services:
 
 ```bash
 brew services restart sketchybar borders
-killall aerospace; aerospace &        # or just log out / in
-open -a "Karabiner-Elements"          # opens the GUI; loads new perms
+killall aerospace; aerospace &
+open -a "Karabiner-Elements"
 ```
 
-A few extras that aren't TCC but still need a one-time tap:
+A few one-offs that aren't TCC:
 
-- **Touch ID for sudo** — `modules/darwin/default.nix` sets
-  `security.pam.services.sudo_local.touchIdAuth = true`. macOS may require
-  a logout/reboot before Touch ID actually prompts. Test with `sudo -k; sudo true`.
-- **DriverKit extensions (Karabiner, BlackHole, BetterDisplay)** — after
-  install, macOS shows a banner "System software from <vendor> requires
-  approval" in **Privacy & Security**. Approve once, then reboot for the
-  extension to load.
-- **Karabiner profile** — after granting permissions, launch
-  Karabiner-Elements once and confirm the "Default" profile is active. The
-  profile JSON is at `~/.config/karabiner/karabiner.json` (nix-managed).
+- **Touch ID for sudo** — already enabled in nix; may need a reboot. Test: `sudo -k; sudo true`.
+- **DriverKit extensions** — after Karabiner / BlackHole / BetterDisplay install, macOS shows "System software from <vendor> requires approval" in Privacy & Security. Approve, then reboot.
 
-### Things nix does manage but require state outside the repo
+Done. You have my system.
 
-- **TPM plugins** — `modules/home/tmux.nix` clones tpm + runs `install_plugins`
-  on every `home-manager` activation. If the plugin dirs got nuked, just run
-  `darwin-rebuild switch` again.
-- **z4h cache** — `modules/home/zsh.nix` writes a `.zshenv` that bootstraps
-  z4h on the first interactive shell. If z4h goes into "recovery mode",
-  `rm -rf ~/.cache/zsh4humans/v5` and `exec zsh`.
-- **nixpkgs package-name cache** (for `command_not_found_handler`) —
-  `command_not_found_handler` in `modules/home/zsh.nix` builds
-  `~/.cache/nix-pkg-names` lazily on the first miss (one-time ~30s).
-
-## Adding a new machine
-
-Hosts are auto-discovered from `hosts/`. To add a new machine:
-
-```bash
-cp -r hosts/tada-mbp hosts/<new-hostname>
-# edit hosts/<new-hostname>/meta.nix if system/username/keyboard differ
-#   system       = "aarch64-darwin" | "x86_64-darwin"
-#   username     = "tada" | ...
-#   keyboardType = "ansi" | "iso" | "jis"
-# also add home/<username>.nix if you introduced a new user
-scutil --set LocalHostName <new-hostname>
-noglob darwin-rebuild switch --flake ~/dotfiles#<new-hostname>
-```
-
-`flake.nix` needs no edits — it reads `hosts/` at evaluation time.
-
-## Daily rebuild
-
-Using [nh](https://github.com/viperML/nh) (installed by this flake):
+## Daily use
 
 ```bash
 nh os switch ~/dotfiles      # full system rebuild
 nh home switch ~/dotfiles    # home-manager only (faster)
+nix flake update             # bump inputs
 ```
 
 Or vanilla:
@@ -182,11 +124,33 @@ darwin-rebuild switch --flake ~/dotfiles
 home-manager switch --flake ~/dotfiles
 ```
 
-Flake inputs update:
+## Adding more machines later
+
+Same flake, more hosts — no flake edits needed:
 
 ```bash
-nix flake update
+cp -r hosts/my-mac hosts/<new-hostname>
+# edit hosts/<new-hostname>/meta.nix
+scutil --set LocalHostName <new-hostname>
+noglob darwin-rebuild switch --flake ~/dotfiles#<new-hostname>
 ```
+
+If the new machine has a new user, also `cp home/alice.nix home/<new-user>.nix`.
+
+## Layout
+
+```
+flake.nix              entry — auto-discovers hosts/, pins inputs
+hosts/<host>/          per-host darwin module (system-level)
+  meta.nix             system / username / keyboardType overrides
+modules/darwin/        shared darwin modules (homebrew, defaults, …)
+modules/home/          shared home-manager modules (zsh, tmux, nvim, …)
+home/<user>.nix        user entrypoint
+home/                  raw config files (sketchybar lua, tmux.conf, aerospace, …)
+                       symlinked into $HOME so edits apply without a rebuild
+```
+
+`mkOutOfStoreSymlink` is used for anything I want to edit live (tmux, sketchybar, aerospace scripts). Pure nix-managed files (most `modules/*.nix`) need a rebuild to apply.
 
 ## Tools wired up
 
@@ -195,16 +159,18 @@ nix flake update
 - **Terminal:** [Alacritty](https://github.com/alacritty/alacritty) + [tmux](https://github.com/tmux/tmux) (TPM bootstrapped)
 - **Shell:** zsh + [zsh4humans](https://github.com/romkatv/zsh4humans), [atuin](https://github.com/atuinsh/atuin), [fzf-tab](https://github.com/Aloxaf/fzf-tab)
 - **Editor:** Neovim
-- **Browsers / apps not in nixpkgs:** managed via [`homebrew`](modules/darwin/homebrew.nix) cask
+- **Browsers / apps not in nixpkgs:** [Homebrew casks](modules/darwin/homebrew.nix)
+- **Secrets:** [sops-nix](https://github.com/Mic92/sops-nix) (age-encrypted) for DBeaver connections + creds
 
 ## Secrets
 
-Nothing secret lives in this repo. AWS / SSH / API credentials stay under `~/.aws/`, `~/.ssh/`,
-or [fnox](https://fnox.jdx.dev). The repo is intentionally public-publishable.
+Nothing private lives in the repo. AWS / SSH / API credentials stay under `~/.aws/`, `~/.ssh/`, or [fnox](https://fnox.jdx.dev). sops-encrypted secrets in `secrets/` are unreadable without the matching age key. The repo is intentionally public-publishable.
 
-## Notes
+## Troubleshooting
 
-- `home/tmux/plugins/`, `home/nvim/plugged/` are gitignored — populated at runtime by their
-  respective plugin managers.
-- The Claude Code permission allowlist in `.claude/settings.local.json` is committed so a
-  fresh clone gets the same tool permissions; rotate/edit freely.
+- **`no matches found: .#<hostname>`** — zsh ate the `#`. Prefix with `noglob` or quote the flake ref.
+- **First commit fails with `Couldn't load public key`** — generate `~/.ssh/id_ed25519` (step 5) and rebuild.
+- **Empty `~/.config/git/allowed_signers`** — key didn't exist at activation time; just rebuild.
+- **z4h "recovery mode"** — `rm -rf ~/.cache/zsh4humans/v5 && exec zsh`.
+- **TPM plugins missing** — `darwin-rebuild switch` again; `modules/home/tmux.nix` reinstalls on every activation.
+- **`command_not_found_handler` slow first time** — building `~/.cache/nix-pkg-names` (one-time ~30s).
