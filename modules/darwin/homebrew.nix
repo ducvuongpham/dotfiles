@@ -47,7 +47,6 @@
       "anki"                   # spaced-repetition flashcards; not in nixpkgs darwin
       "bitwarden"              # password manager GUI — brew cask for auto-updates + signed bundle
       "vivaldi"                # Chromium-based browser; not in nixpkgs darwin
-      "peazip"                 # archive manager; not in nixpkgs darwin
     ];
 
     masApps = { };
