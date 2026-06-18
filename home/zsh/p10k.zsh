@@ -1906,7 +1906,7 @@ function prompt_mise() {
   fi
   (( ${#to_show} == 0 )) && return
 
-  local seg t v icon fg display
+  local seg t v icon fg display state
   for seg in $to_show; do
     t="${seg%% *}"
     v="${seg#* }"
@@ -1917,7 +1917,12 @@ function prompt_mise() {
     else
       display="$t $v"
     fi
-    p10k segment -s "$t" -t "$display" -f "$fg"
+    # p10k folds -s into the segment's parameter name (prompt_mise_<STATE>),
+    # so the state must be [A-Za-z0-9_] only. Backend tool names carry ':' and
+    # '/' (e.g. github:extism/cli, npm:oazapfts) — left raw, the ':E…' reads as
+    # a zsh ':E' modifier and errors. Sanitize for -s; display/lookup keep $t.
+    state="${t//[^[:alnum:]]/_}"
+    p10k segment -s "$state" -t "$display" -f "$fg"
   done
 }
 # (No need for global MISE_FOREGROUND / VISUAL_IDENTIFIER overrides — each
