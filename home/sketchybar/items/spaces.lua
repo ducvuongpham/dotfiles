@@ -23,7 +23,17 @@ local function app_icon(name)
   return icon_table[name] or ":default:"
 end
 
-local workspaces = { "1", "2", "3", "4", "5", "Q", "W", "E", "R", "T", "A", "S", "D", "F", "G" }
+-- Per-monitor rows. The blank-slot logic below is computed independently per
+-- row so each monitor shows its own "next empty" workspace.
+local rows = {
+  { "1", "2", "3", "4", "5" },
+  { "Q", "W", "E", "R", "T" },
+  { "A", "S", "D", "F", "G" },
+}
+local workspaces = {}
+for _, row in ipairs(rows) do
+  for _, ws in ipairs(row) do table.insert(workspaces, ws) end
+end
 
 local items = {}
 for _, ws in ipairs(workspaces) do
@@ -73,20 +83,39 @@ local function refresh(focused)
       visible[ws:match("^%s*(.-)%s*$")] = true
     end
 
-    for _, ws in ipairs(workspaces) do
-      -- List apps in this workspace; one icon per window. Sort by
-      -- window-id (numeric, stable) so the order doesn't shuffle as
-      -- focus moves between windows.
-      sbar.exec(
-        "aerospace list-windows --workspace " .. ws .. " --format '%{window-id} %{app-name}'",
-        function(apps_out)
-          local entries = {}
-          for line in (apps_out or ""):gmatch("[^\r\n]+") do
-            local id, name = line:match("^%s*(%d+)%s+(.+)%s*$")
-            if id and name then
-              table.insert(entries, { id = tonumber(id), name = name })
-            end
+    -- One query for every window across all workspaces; group app entries per
+    -- workspace. A single exec (vs one per workspace) lets us compute the
+    -- per-row blank slot from a complete picture before drawing.
+    sbar.exec(
+      "aerospace list-windows --all --format '%{workspace}|%{window-id}|%{app-name}'",
+      function(all_out)
+        local entries_by_ws = {}
+        for line in (all_out or ""):gmatch("[^\r\n]+") do
+          local ws, id, name = line:match("^%s*(.-)|(%d+)|(.-)%s*$")
+          if ws and id and name then
+            entries_by_ws[ws] = entries_by_ws[ws] or {}
+            table.insert(entries_by_ws[ws], { id = tonumber(id), name = name })
           end
+        end
+
+        -- Blank slot = a row's first empty workspace, shown only when the row
+        -- already has ≥1 populated workspace (reads as "next place to drop a
+        -- window"). A gap before populated workspaces IS the first empty, so no
+        -- trailing blank appears — e.g. 2,3 populated but 1 empty shows no 4.
+        local is_blank = {}
+        for _, row in ipairs(rows) do
+          local has_any, first_empty = false, nil
+          for _, ws in ipairs(row) do
+            if entries_by_ws[ws] then has_any = true
+            elseif not first_empty then first_empty = ws end
+          end
+          if has_any and first_empty then is_blank[first_empty] = true end
+        end
+
+        for _, ws in ipairs(workspaces) do
+          -- Sort by window-id (numeric, stable) so icon order doesn't shuffle
+          -- as focus moves between windows.
+          local entries = entries_by_ws[ws] or {}
           table.sort(entries, function(a, b) return a.id < b.id end)
           local apps = {}
           for _, e in ipairs(entries) do table.insert(apps, e.name) end
@@ -94,34 +123,39 @@ local function refresh(focused)
           local is_focused = (ws == focused)
           local is_visible = visible[ws] or false
           local has_apps = #apps > 0
+          local blank = is_blank[ws] or false
 
-          -- empty + not focused/visible = hide. An empty workspace that's
-          -- still the visible one on its monitor (e.g. external monitor
-          -- with no apps yet) keeps drawing so the user can tell which
-          -- workspace that monitor is on.
-          local draw = has_apps or is_focused or is_visible
+          -- empty + not focused/visible/blank = hide. An empty workspace that's
+          -- still the visible one on its monitor (e.g. external monitor with no
+          -- apps yet) keeps drawing so the user can tell which workspace that
+          -- monitor is on. The blank slot keeps drawing as a spare target.
+          local draw = has_apps or is_focused or is_visible or blank
 
           local color
           if is_focused then color = colors.yellow
           elseif is_visible then color = colors.surface2
-          else color = colors.surface0 end
+          elseif has_apps then color = colors.surface0
+          else color = colors.mantle end -- blank slot: dimmer than populated
 
           items[ws]:set({
             drawing = draw,
             background = { color = color },
-            icon = { highlight = is_focused },
+            icon = {
+              highlight = is_focused,
+              color = (blank and not is_focused) and colors.overlay0 or colors.subtext0,
+            },
           })
 
-          if not draw then return end
-
-          -- Resolve glyphs synchronously (icon_map.lua is in-process).
-          local icons = lookup_icons(apps)
-          local label = ""
-          for _, g in ipairs(icons) do label = label .. g .. " " end
-          items[ws]:set({ label = { string = label:gsub("%s+$", "") } })
+          if draw then
+            -- Resolve glyphs synchronously (icon_map.lua is in-process).
+            local icons = lookup_icons(apps)
+            local label = ""
+            for _, g in ipairs(icons) do label = label .. g .. " " end
+            items[ws]:set({ label = { string = label:gsub("%s+$", "") } })
+          end
         end
-      )
-    end
+      end
+    )
   end)
 end
 
