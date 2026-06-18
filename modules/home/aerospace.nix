@@ -131,6 +131,9 @@
     # single-child containers left behind by closed windows).
     alt-shift-slash = 'flatten-workspace-tree'
 
+    # Reload sketchybar (re-reads the Lua config after edits).
+    alt-shift-b = 'exec-and-forget sketchybar --reload'
+
     # workspaces — monitor 1 (built-in): numbers
     alt-1 = 'workspace 1'
     alt-2 = 'workspace 2'
