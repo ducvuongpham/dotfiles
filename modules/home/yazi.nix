@@ -3,7 +3,10 @@
   programs.yazi = {
     enable = true;
     package = pkgs.yazi;
-    enableZshIntegration = false; # programs.zsh.enable = false; we wire shellWrapperName below
+    enableZshIntegration = false; # programs.zsh.enable = false; we wire the `y` fn manually in zsh.nix
+    # Integration is off so this wrapper isn't emitted, but pinning it silences
+    # the 26.05 default-change warning (yy → y) under stateVersion 25.05.
+    shellWrapperName = "yy";
 
     plugins = { inherit (pkgs.yaziPlugins) ouch compress; };
 

@@ -65,7 +65,7 @@
     # nix helper + dev tooling
     nh
     nixd                # LSP server (richer, uses nixpkgs eval)
-    nixfmt-rfc-style    # formatter (rfc spec)
+    nixfmt              # formatter (rfc spec; nixfmt-rfc-style merged into this)
     statix              # linter
     deadnix             # find dead code
 
