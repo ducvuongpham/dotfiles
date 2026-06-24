@@ -36,6 +36,7 @@
     # GUI apps go here so nix-darwin rsyncs them to /Applications/Nix Apps
     # (Spotlight indexes that path; user-level HM apps don't get indexed reliably).
     alacritty-graphics
+    rio
     vscode
     zed-editor
     # karabiner-elements: managed via brew (nix bundle breaks DriverKit + helper SMAppServices)

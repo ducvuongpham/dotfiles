@@ -6,6 +6,7 @@
     ./nushell.nix
     ./git.nix
     ./alacritty.nix
+    ./rio.nix
     ./aerospace.nix
     ./karabiner.nix
     ./neovim.nix
