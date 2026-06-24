@@ -2,7 +2,7 @@
   "theme": "dark",
   "statusLine": {
     "type": "command",
-    "command": "ccstatusline"
+    "command": "~/.claude/statusline.sh"
   },
   "extraKnownMarketplaces": {
     "tada-skills": {
@@ -11,19 +11,39 @@
         "path": "/Users/tada/dotfiles/home/claude/marketplace.json"
       },
       "autoUpdate": true
+    },
+    "karpathy-skills": {
+      "source": {
+        "source": "github",
+        "repo": "multica-ai/andrej-karpathy-skills"
+      }
+    },
+    "air-closet-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "air-closet/claude-code-plugin"
+      }
     }
   },
   "enabledPlugins": {
     "mattpocock-skills@tada-skills": true,
     "devops-skills@tada-skills": true,
-    "rust-analyzer-lsp@claude-plugins-official": true
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "ac-gws@air-closet-plugins": true,
+    "ac-share@air-closet-plugins": true,
+    "ace-share@air-closet-plugins": true,
+    "en-tools@air-closet-plugins": true,
+    "jason-tools@air-closet-plugins": true,
+    "mall-tools@air-closet-plugins": true,
+    "maru-tools@air-closet-plugins": true,
+    "phoenix-tools@air-closet-plugins": true,
+    "ray-tools@air-closet-plugins": true,
+    "tada-mcphub@air-closet-plugins": true,
+    "figma@claude-plugins-official": true
   },
   "env": {
     "CAVEMAN_DEFAULT_MODE": "ultra"
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh"
   },
   "hooks": {
     "PreToolUse": [
@@ -47,5 +67,6 @@
         ]
       }
     ]
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
