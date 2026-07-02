@@ -128,8 +128,79 @@ vim.api.nvim_create_autocmd("VimEnter", {
       vim.fn.mkdir(history_dir, "p")
     end
 
+    -- Image preview for the standard file pickers (find_files → <leader>ff /
+    -- <leader>fa, oldfiles, etc.). Overriding buffer_previewer_maker routes every
+    -- file preview through here: image entries render via image.nvim (kitty
+    -- protocol) in the preview window, everything else uses the built-in maker.
+    local previewers = require "telescope.previewers"
+    local image = require "image"
+    local default_maker = previewers.buffer_previewer_maker
+    local image_exts = {
+      png = true, jpg = true, jpeg = true, gif = true,
+      webp = true, avif = true, svg = true, svgz = true,
+    }
+    -- Clear EVERY image image.nvim is holding in a given window (not a single
+    -- tracked handle): async renders can leak a handle when the selection moves
+    -- faster than vim.schedule fires, so query image.nvim for the live set.
+    local function clear_images_in(win)
+      if not win then return end
+      for _, img in ipairs(image.get_images { window = win }) do
+        pcall(function() img:clear() end)
+      end
+    end
+    -- Bumped on every maker call; a scheduled render checks it's still current so
+    -- a stale (superseded) selection never draws over the new one.
+    local render_seq = 0
+    local function image_previewer_maker(filepath, bufnr, opts)
+      local win = opts and opts.winid
+      render_seq = render_seq + 1
+      local my_seq = render_seq
+      clear_images_in(win) -- wipe the previous entry's image(s) synchronously
+      local ext = filepath:match "%.([%w]+)$"
+      ext = ext and ext:lower()
+      if not (ext and image_exts[ext]) then
+        return default_maker(filepath, bufnr, opts)
+      end
+      -- Validate the file is rasterizable BEFORE handing it to image.nvim. Some
+      -- images (icon-font / viewBox-only SVGs, corrupt files) make ImageMagick
+      -- emit "negative or zero image size" and image.nvim then raises inside a
+      -- vim.system callback that runs in the event loop — NOT under a pcall — so
+      -- it spams a traceback. Running identify ourselves turns that into a
+      -- captured non-zero exit, letting us fall back to the text previewer.
+      vim.system(
+        { "magick", "identify", "-format", "%w %h\n", filepath },
+        { text = true },
+        vim.schedule_wrap(function(res)
+          if my_seq ~= render_seq then return end -- superseded by a newer selection
+          if not vim.api.nvim_buf_is_valid(bufnr) then return end
+          local w, h = (res.stdout or ""):match "(%d+)%s+(%d+)"
+          local ok_dims = res.code == 0 and w and tonumber(w) > 0 and tonumber(h) > 0
+          if ok_dims and win and vim.api.nvim_win_is_valid(win) then
+            vim.bo[bufnr].modifiable = true
+            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {})
+            local ok, img = pcall(image.from_file, filepath, {
+              window = win, buffer = bufnr, with_virtual_padding = true,
+            })
+            if ok and img and my_seq == render_seq then
+              pcall(function() img:render() end)
+            end
+          else
+            default_maker(filepath, bufnr, opts) -- unrenderable → show source as text
+          end
+        end)
+      )
+    end
+    -- Clear any lingering preview image when a window (the preview) closes.
+    vim.api.nvim_create_autocmd("WinClosed", {
+      group = vim.api.nvim_create_augroup("TelescopeImagePreview", { clear = true }),
+      callback = function(ev)
+        clear_images_in(tonumber(ev.match))
+      end,
+    })
+
     telescope.setup {
       defaults = {
+        buffer_previewer_maker = image_previewer_maker,
         prompt_prefix = "   ",
         selection_caret = " ",
         entry_prefix = " ",
