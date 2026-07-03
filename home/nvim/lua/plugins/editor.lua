@@ -298,8 +298,12 @@ vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
   callback = function()
     require("ufo").setup {
       -- Simple table provider avoids promise-chain reentrancy inside the decorator
-      provider_selector = function(_, filetype, _)
-        if filetype == "NvimTree" then return "" end
+      provider_selector = function(_, filetype, buftype)
+        -- Skip ufo on special buffers (blame.nvim panel, NvimTree, etc.). Their
+        -- buftype is "nofile", which makes the treesitter provider throw
+        -- UfoFallbackException; as the terminal provider it has no fallback, so
+        -- the rejection surfaces unhandled (e.g. on :BlameToggle).
+        if buftype ~= "" or filetype == "NvimTree" then return "" end
         local lang = vim.treesitter.language.get_lang(filetype) or filetype
         local has_folds = vim.treesitter.query.get(lang, "folds") ~= nil
         return has_folds and { "lsp", "treesitter" } or { "lsp", "indent" }

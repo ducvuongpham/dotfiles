@@ -52,6 +52,12 @@
           specialArgs = { inherit inputs hostname; inherit (m) username system keyboardType; };
           modules = [
             ./hosts/${hostname}
+            # mise's build test `preserve_metadata_dir_layer_keeps_special_permission_bits`
+            # asserts a setuid bit (0o4755) that nix's build sandbox strips to
+            # 0o755, so it fails at nixpkgs 26.11 and breaks the whole build.
+            # Skip mise's tests; runtime behaviour is unaffected. useGlobalPkgs
+            # means this overlay also reaches the home-manager packages.
+            { nixpkgs.overlays = [ (_: prev: { mise = prev.mise.overrideAttrs (_: { doCheck = false; }); }) ]; }
             home-manager.darwinModules.home-manager
             {
               home-manager.useGlobalPkgs = true;

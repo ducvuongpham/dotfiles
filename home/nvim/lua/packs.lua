@@ -102,8 +102,6 @@ vim.pack.add({
 
   -- Images (kitty graphics protocol; needs ImageMagick `magick` on PATH)
   { src = "https://github.com/3rd/image.nvim" },
-  -- Pets (SSH src so the key authenticates against the self-hosted git)
-  { src = "ssh://git@ssh.tada.io.vn/tada/pets.nvim.git",                     name = "pets.nvim" },
 
   -- VimL plugins (need load = true so their plugin/*.vim files are sourced)
   { src = "https://github.com/rhysd/clever-f.vim" },

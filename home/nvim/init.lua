@@ -16,7 +16,6 @@ require "plugins.coding"  -- copilot (VimL), cmp, codecompanion, claudecode
 require "plugins.editor"  -- snacks, treesitter, telescope, conform, nvimtree, trouble…
 require "plugins.lsp"     -- LSP + mason + none-ls (lazy on BufReadPre)
 require "plugins.image"   -- image.nvim: inline image render + insert-mode toggle
-require "plugins.pets"    -- pets.nvim: animated companion pets (after image.nvim)
 
 vim.schedule(function()
   require "mappings"

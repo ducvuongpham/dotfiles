@@ -25,15 +25,11 @@ image.setup {
     typst = { enabled = true },
   },
   max_height_window_percentage = 50,
-  -- MUST stay false: pets.nvim keeps an always-on floating window on top of the
-  -- editor. With overlap-clear on, image.nvim treats that float as covering the
-  -- main-window image and refuses to render it (log: `overlap` → success:false),
-  -- while the pet itself still shows. Trade-off: images no longer auto-hide
-  -- behind cmp/noice popups, which is acceptable.
-  window_overlap_clear_enabled = false,
-  -- Both left OFF: they hide ALL images when nvim isn't "focused" / its tmux
-  -- window isn't active, which also hides the always-on pets (and focus events
-  -- don't propagate reliably through Rio+tmux, so images stayed hidden entirely).
+  -- ON so a real overlay (lazygit, Telescope, …) masks the image instead of the
+  -- image bleeding through its transparent background.
+  window_overlap_clear_enabled = true,
+  -- Off: they hide ALL images when nvim loses focus; focus events don't
+  -- propagate reliably through Rio+tmux, so images stayed hidden entirely.
   editor_only_render_when_focused = false,
   tmux_show_only_in_active_window = false,
   -- Opening one of these files directly renders it as an image (file hijack).

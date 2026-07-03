@@ -1,5 +1,6 @@
 {
   "theme": "dark",
+  "tui": "fullscreen",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -23,6 +24,12 @@
         "source": "github",
         "repo": "air-closet/claude-code-plugin"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
   "enabledPlugins": {
@@ -40,7 +47,8 @@
     "phoenix-tools@air-closet-plugins": true,
     "ray-tools@air-closet-plugins": true,
     "tada-mcphub@air-closet-plugins": true,
-    "figma@claude-plugins-official": true
+    "figma@claude-plugins-official": true,
+    "ponytail@ponytail": true
   },
   "env": {
     "CAVEMAN_DEFAULT_MODE": "ultra"

@@ -245,7 +245,7 @@
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
     },
     "pets.nvim": {
-      "rev": "3c641e7248a50b5852f1c20490b430c4dd5d9b23",
+      "rev": "70f04a143ba52ac97709e7332884b7783685e27d",
       "src": "ssh://git@ssh.tada.io.vn/tada/pets.nvim.git"
     },
     "plenary.nvim": {
