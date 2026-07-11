@@ -39,6 +39,7 @@
   # win.
   catppuccin = {
     enable = true;
+    autoEnable = true; # explicit match to enable; silences upcoming default flip warning
     flavor = "macchiato";
     accent = "sapphire";
   };
