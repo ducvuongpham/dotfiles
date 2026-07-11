@@ -40,6 +40,8 @@
     poppler
     imagemagick
     chafa
+    ouch              # archive preview + extraction (used by yaziPlugins.ouch)
+    unar              # fallback rar/etc extractor (unrar-free)
 
     # nvim runtime deps
     neovim
