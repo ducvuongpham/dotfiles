@@ -24,6 +24,7 @@
       "sleepwatcher"                     # runs ~/.wakeup on wake (used to repoke sketchybar)
       "gulp-cli"                         # gulp task runner CLI (not in nixpkgs since nodePackages removal)
       "rtk"                              # rtk-ai/rtk — CLI proxy compressing LLM tool output (~60-90% token savings)
+      "mas"                              # Mac App Store CLI — required for homebrew.masApps below
       # input-source CLI: compiled via Swift in modules/home/sketchybar.nix activation
     ];
 
@@ -49,6 +50,8 @@
       "vivaldi"                # Chromium-based browser; not in nixpkgs darwin
     ];
 
-    masApps = { };
+    masApps = {
+      "TeraBox" = 1509453185;  # cloud storage — only distributed via MAS or unsigned .dmg
+    };
   };
 }
