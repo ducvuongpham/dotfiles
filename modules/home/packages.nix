@@ -24,6 +24,7 @@
     atuin             # shell history search/sync
     android-tools     # adb / fastboot
     awscli2           # AWS CLI v2; creds live in ~/.aws/ (never in nix)
+    ssm-session-manager-plugin
     ecspresso         # ECS deployment tool
     yt-dlp            # video downloader (YouTube + many other sites)
     uv                # fast Python package/project manager
@@ -36,6 +37,7 @@
 
     # yazi runtime previewers
     ffmpeg
+    ffmpegthumbnailer # video thumbnail extractor — yazi's built-in video previewer
     p7zip
     poppler
     imagemagick

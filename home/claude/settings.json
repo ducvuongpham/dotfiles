@@ -1,9 +1,52 @@
 {
-  "theme": "dark",
-  "tui": "fullscreen",
+  "env": {
+    "CAVEMAN_DEFAULT_MODE": "ultra"
+  },
+  "model": "claude-fable-5[1m]",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/caveman-track.sh"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
+  },
+  "enabledPlugins": {
+    "mattpocock-skills@tada-skills": true,
+    "devops-skills@tada-skills": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "andrej-karpathy-skills@karpathy-skills": true,
+    "ac-gws@air-closet-plugins": true,
+    "ac-share@air-closet-plugins": true,
+    "ace-share@air-closet-plugins": true,
+    "en-tools@air-closet-plugins": true,
+    "jason-tools@air-closet-plugins": true,
+    "mall-tools@air-closet-plugins": true,
+    "maru-tools@air-closet-plugins": true,
+    "phoenix-tools@air-closet-plugins": true,
+    "ray-tools@air-closet-plugins": true,
+    "tada-mcphub@air-closet-plugins": true,
+    "figma@claude-plugins-official": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "tada-skills": {
@@ -32,49 +75,7 @@
       }
     }
   },
-  "enabledPlugins": {
-    "mattpocock-skills@tada-skills": true,
-    "devops-skills@tada-skills": true,
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "andrej-karpathy-skills@karpathy-skills": true,
-    "ac-gws@air-closet-plugins": true,
-    "ac-share@air-closet-plugins": true,
-    "ace-share@air-closet-plugins": true,
-    "en-tools@air-closet-plugins": true,
-    "jason-tools@air-closet-plugins": true,
-    "mall-tools@air-closet-plugins": true,
-    "maru-tools@air-closet-plugins": true,
-    "phoenix-tools@air-closet-plugins": true,
-    "ray-tools@air-closet-plugins": true,
-    "tada-mcphub@air-closet-plugins": true,
-    "figma@claude-plugins-official": true,
-    "ponytail@ponytail": true
-  },
-  "env": {
-    "CAVEMAN_DEFAULT_MODE": "ultra"
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "rtk hook claude"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/caveman-track.sh"
-          }
-        ]
-      }
-    ]
-  },
-  "skipDangerousModePermissionPrompt": true
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark"
 }

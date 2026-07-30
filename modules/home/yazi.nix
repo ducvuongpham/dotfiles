@@ -33,8 +33,17 @@
       };
       opener = {
         edit = [ { run = ''nvim "$@"''; block = true; } ];
-        open = [ { run = ''open "$@"''; desc = "Open"; } ];
+        open = [
+          { run = ''open "$@"''; desc = "Open"; }
+          { run = ''open -a VLC "$@"''; desc = "Open with VLC"; orphan = true; }
+        ];
         extract = [ { run = ''ouch d -y "$@"''; desc = "Extract here"; } ];
+        # `play` is yazi's default opener for audio/*, video/*. Pressing `o`
+        # runs the first entry (VLC); `O` shows the picker with both.
+        play = [
+          { run = ''open -a VLC "$@"''; desc = "Play with VLC"; orphan = true; }
+          { run = ''open "$@"''; desc = "Open with default"; orphan = true; }
+        ];
       };
       plugin.prepend_previewers = [
         { mime = "application/{*zip,tar,bzip2,7z*,rar,xz,zstd,java-archive}"; run = "ouch"; }

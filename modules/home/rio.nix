@@ -47,13 +47,12 @@
         features = [ "calt" "liga" "dlig" ];
         # Per-slot `style` is SLANT only — Rio accepts "Normal" / "Italic", NOT
         # weight names (the old "Medium"/"Bold" strings made Rio reject the whole
-        # config). Weight is a SEPARATE numeric field: bump the body to 500
-        # so text isn't razor-thin on macOS. 700 = Bold; drop toward 500/600 if
-        # too heavy.
-        regular = { style = "Normal"; weight = 700; };
-        bold.style = "Normal";
-        italic.style = "Italic";
-        bold-italic.style = "Italic";
+        # config). Weight is a SEPARATE numeric field. JetBrainsMono ships up to
+        # 800 (ExtraBold); drop toward 600/500 if the body reads too heavy.
+        regular = { style = "Normal"; weight = 800; };
+        bold = { style = "Normal"; weight = 800; };
+        italic = { style = "Italic"; weight = 800; };
+        bold-italic = { style = "Italic"; weight = 800; };
       };
 
       cursor = {

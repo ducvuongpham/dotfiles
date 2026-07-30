@@ -371,6 +371,14 @@
     export EDITOR=nvim
     export VISUAL=nvim
 
+    # Force yazi to use the kitty graphics protocol. Inside tmux (TERM=tmux-*)
+    # yazi can't autodetect that the OUTER terminal (Rio) supports kitty
+    # graphics, so it falls back to chafa/unicode blocks and images render
+    # tiny. tmux's `allow-passthrough on` (home/tmux/tmux.conf) forwards the
+    # DCS-wrapped sequences through to Rio. Set unconditionally — Rio is the
+    # only outer terminal used, and Alacritty won't render either way.
+    export YAZI_ADAPTER=kgp
+
     # History — 100k entries, dedup aggressively.
     HISTSIZE=100000
     SAVEHIST=100000
