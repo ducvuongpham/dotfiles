@@ -84,5 +84,6 @@
     uutils-findutils
     uutils-sed
     gawk
+    ollama
   ];
 }
